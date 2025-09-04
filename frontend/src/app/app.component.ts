@@ -7,5 +7,5 @@ import { AppStateService } from './core/app-state.service';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
-  constructor(private appState: AppStateService) {}
+  constructor(private readonly appState: AppStateService) {}
 }
