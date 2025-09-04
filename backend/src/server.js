@@ -31,6 +31,11 @@ function parseDate(dateStr) {
   return new Date(`${dateStr}T00:00:00-03:00`);
 }
 
+// Replace potentially dangerous characters from original file names.
+function sanitizeFilename(name) {
+  return path.basename(name).replace(/[^a-zA-Z0-9._-]/g, '_');
+}
+
 async function ensureUser(id) {
   return prisma.user.upsert({
     where: { id },
@@ -120,7 +125,7 @@ app.post('/api/posts', upload.array('attachments'), async (req, res) => {
     if (req.files && req.files.length) {
       const attachmentsData = req.files.map((f) => ({
         postId: post.id,
-        filename: f.originalname,
+        filename: sanitizeFilename(f.originalname),
         mimeType: f.mimetype,
         size: f.size,
         url: `/uploads/${f.filename}`,
@@ -192,7 +197,7 @@ app.post('/api/posts/:id/replies', upload.array('attachments'), async (req, res)
     if (req.files && req.files.length) {
       const attData = req.files.map((f) => ({
         replyId: reply.id,
-        filename: f.originalname,
+        filename: sanitizeFilename(f.originalname),
         mimeType: f.mimetype,
         size: f.size,
         url: `/uploads/${f.filename}`,
