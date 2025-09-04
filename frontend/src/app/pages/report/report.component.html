@@ -1,17 +1,9 @@
 <div class="max-w-[70rem] mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-10">
-  <div class="flex items-start justify-between">
-    <div>
-      <h1 class="text-3xl font-display text-black">Relatório de Turno</h1>
-      <p *ngIf="context$ | async as ctx" class="mt-2 text-aluminium font-arial">
-        {{ ctx.area }} — {{ ctx.date | date:'dd/MM/yyyy' }} — Turno {{ ctx.shift }}
-      </p>
-    </div>
-    <img
-      src="assets/brand/hydro/sail/sail-blue.eps"
-      alt=""
-      aria-hidden="true"
-      class="w-24 h-24 object-contain opacity-20"
-    />
+  <div>
+    <h1 class="text-3xl font-display text-black">Relatório de Turno</h1>
+    <p *ngIf="context$ | async as ctx" class="mt-2 text-aluminium font-arial">
+      {{ ctx.area }} — {{ ctx.date | date:'dd/MM/yyyy' }} — Turno {{ ctx.shift }}
+    </p>
   </div>
 
   <section id="composer">
