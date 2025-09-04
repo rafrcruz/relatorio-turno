@@ -32,7 +32,7 @@ export class ReplyThreadComponent implements OnInit, OnDestroy {
 
   private destroy$ = new Subject<void>();
 
-  constructor(private repliesService: RepliesService) {}
+  constructor(private readonly repliesService: RepliesService) {}
 
   ngOnInit(): void {
     this.load();
