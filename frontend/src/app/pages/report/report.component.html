@@ -7,19 +7,14 @@
   </section>
 
   <app-area-indicators id="area-indicators"></app-area-indicators>
+  <div *ngIf="otherContext" class="p-4 bg-yellow-100 border border-yellow-300 rounded">
+    Post pertencente a outro contexto.
+    <button (click)="changeContext()" class="underline">Ajustar contexto</button>
+  </div>
 
-  <section id="urgencies" class="p-4 border border-dashed border-gray-300 dark:border-gray-700 rounded">
-    <h3 class="text-lg font-semibold mb-2">Urgências</h3>
-    <p class="text-gray-500 dark:text-gray-400">Placeholder</p>
-  </section>
+  <app-post-list id="urgencies" type="URGENCY" title="Urgências" [highlightId]="highlightType === 'URGENCY' ? highlightId : undefined"></app-post-list>
 
-  <section id="pendencies" class="p-4 border border-dashed border-gray-300 dark:border-gray-700 rounded">
-    <h3 class="text-lg font-semibold mb-2">Pendências</h3>
-    <p class="text-gray-500 dark:text-gray-400">Placeholder</p>
-  </section>
+  <app-post-list id="pendencies" type="PENDENCY" title="Pendências" [highlightId]="highlightType === 'PENDENCY' ? highlightId : undefined"></app-post-list>
 
-  <section id="notes" class="p-4 border border-dashed border-gray-300 dark:border-gray-700 rounded">
-    <h3 class="text-lg font-semibold mb-2">Anotações</h3>
-    <p class="text-gray-500 dark:text-gray-400">Placeholder</p>
-  </section>
+  <app-post-list id="notes" type="ANNOTATION" title="Anotações" [highlightId]="highlightType === 'ANNOTATION' ? highlightId : undefined"></app-post-list>
 </div>
