@@ -39,7 +39,7 @@ export class ReplyThreadComponent implements OnInit, OnDestroy {
     this.repliesService.created$
       .pipe(takeUntil(this.destroy$))
       .subscribe((r) => {
-        if (r.postId === this.post.id) {
+        if (r.postId === this.post.id && !this.replies.some((rr) => rr.id === r.id)) {
           this.replies.push(r);
           this.post._count.replies++;
           this.total++;
@@ -131,7 +131,10 @@ export class ReplyThreadComponent implements OnInit, OnDestroy {
     this.repliesService
       .create(this.post.id, { content: sanitized, attachments: this.attachments.map((a) => a.file) })
       .subscribe({
-        next: () => {
+        next: (reply) => {
+          this.replies.push(reply);
+          this.post._count.replies++;
+          this.total++;
           this.editor.nativeElement.innerHTML = '';
           this.attachments = [];
           this.showForm = false;
