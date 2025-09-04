@@ -20,7 +20,10 @@ if (!fs.existsSync(uploadDir)) {
 
 const upload = multer({
   dest: uploadDir,
-  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB
+  // Align backend upload limits with frontend expectations.
+  // Each file may be up to 20MB and the total request size is
+  // validated later in the route handler (50MB).
+  limits: { fileSize: 20 * 1024 * 1024 }, // 20MB per file
   fileFilter: (req, file, cb) => {
     const allowed = ['image/png', 'image/jpeg', 'application/pdf'];
     if (allowed.includes(file.mimetype)) cb(null, true);
@@ -125,6 +128,16 @@ app.post('/api/posts', upload.array('attachments'), async (req, res) => {
     });
 
     if (req.files && req.files.length) {
+      // Enforce a 50MB total payload size across all attachments.
+      const totalSize = req.files.reduce((sum, f) => sum + f.size, 0);
+      if (totalSize > 50 * 1024 * 1024) {
+        // Remove uploaded files to free disk space before returning.
+        for (const f of req.files) {
+          fs.unlink(f.path, () => {});
+        }
+        return res.status(400).json({ error: 'Total attachments size exceeds 50MB' });
+      }
+
       const attachmentsData = req.files.map((f) => ({
         postId: post.id,
         filename: sanitizeFilename(f.originalname),
@@ -211,6 +224,14 @@ app.post('/api/posts/:id/replies', upload.array('attachments'), async (req, res)
     });
 
     if (req.files && req.files.length) {
+      const totalSize = req.files.reduce((sum, f) => sum + f.size, 0);
+      if (totalSize > 50 * 1024 * 1024) {
+        for (const f of req.files) {
+          fs.unlink(f.path, () => {});
+        }
+        return res.status(400).json({ error: 'Total attachments size exceeds 50MB' });
+      }
+
       const attData = req.files.map((f) => ({
         replyId: reply.id,
         filename: sanitizeFilename(f.originalname),
