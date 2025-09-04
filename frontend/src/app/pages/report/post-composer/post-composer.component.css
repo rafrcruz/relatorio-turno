@@ -1,4 +1,1 @@
-.editor:empty::before {
-  content: attr(data-placeholder);
-  color: #757575; /* mid-gray */
-}
+/* Placeholder is handled natively by the textarea element */
