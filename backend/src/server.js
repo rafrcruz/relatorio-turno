@@ -88,6 +88,7 @@ app.get('/api/reports', async (req, res) => {
     const reports = await prisma.report.findMany();
     res.json(reports);
   } catch (error) {
+    console.error('Erro ao buscar relatórios', error);
     res.status(500).json({ error: 'Erro ao buscar relatórios' });
   }
 });
@@ -153,6 +154,7 @@ app.post('/api/posts', upload.array('attachments'), async (req, res) => {
     });
     res.status(201).json(fullPost);
   } catch (error) {
+    console.error('Failed to create post', error);
     res.status(400).json({ error: 'Failed to create post' });
   }
 });
@@ -228,14 +230,15 @@ app.post('/api/posts/:id/replies', upload.array('attachments'), async (req, res)
       },
     });
 
-    const fullReply = await prisma.reply.findUnique({
-      where: { id: reply.id },
-      include: { attachments: true },
-    });
-    res.status(201).json(fullReply);
-  } catch (error) {
-    res.status(400).json({ error: 'Failed to create reply' });
-  }
+  const fullReply = await prisma.reply.findUnique({
+    where: { id: reply.id },
+    include: { attachments: true },
+  });
+  res.status(201).json(fullReply);
+} catch (error) {
+  console.error('Failed to create reply', error);
+  res.status(400).json({ error: 'Failed to create reply' });
+}
 });
 
 app.get('/api/posts/:id/replies', async (req, res) => {
