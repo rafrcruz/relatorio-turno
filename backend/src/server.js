@@ -88,6 +88,7 @@ app.get('/api/reports', async (req, res) => {
     const reports = await prisma.report.findMany();
     res.json(reports);
   } catch (error) {
+    console.error('Erro ao buscar relatórios', error);
     res.status(500).json({ error: 'Erro ao buscar relatórios' });
   }
 });
