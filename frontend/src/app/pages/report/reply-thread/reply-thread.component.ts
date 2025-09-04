@@ -87,7 +87,7 @@ export class ReplyThreadComponent implements OnInit, OnDestroy {
 
   onPaste(evt: ClipboardEvent): void {
     const items = evt.clipboardData?.files;
-    if (items && items.length) this.addFiles(Array.from(items));
+    if (items?.length) this.addFiles(Array.from(items));
   }
 
   private addFiles(files: File[]): void {
