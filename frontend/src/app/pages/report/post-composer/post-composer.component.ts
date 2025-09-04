@@ -1,4 +1,5 @@
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
+import { QuillEditorComponent } from 'ngx-quill';
 import { AppStateService, ReportContext } from '../../../core/app-state.service';
 import { AreasService, Area } from '../../../core/areas.service';
 import { PostsService, PostType } from '../../../core/posts.service';
@@ -16,7 +17,7 @@ interface AttachmentView {
   styleUrls: ['./post-composer.component.css']
 })
 export class PostComposerComponent implements OnInit {
-  @ViewChild('editor') editor!: ElementRef<HTMLTextAreaElement>;
+  @ViewChild('editor') editor!: QuillEditorComponent;
 
   ctx!: ReportContext;
   areas: Area[] = [];
@@ -24,6 +25,14 @@ export class PostComposerComponent implements OnInit {
   attachments: AttachmentView[] = [];
   message = '';
   sending = false;
+  content = '';
+  modules = {
+    toolbar: [
+      ['bold', 'italic', 'underline', 'strike'],
+      [{ list: 'ordered' }, { list: 'bullet' }],
+      ['link', 'blockquote', 'code-block', 'clean']
+    ]
+  };
 
   private readonly draftKey = 'post-draft';
 
@@ -37,62 +46,6 @@ export class PostComposerComponent implements OnInit {
     this.appState.context$.subscribe((c) => (this.ctx = c));
     this.areasService.getAreasWithIds().subscribe((areas) => (this.areas = areas));
     this.restoreDraft();
-  }
-
-  format(cmd: string): void {
-    const editorEl = this.editor.nativeElement;
-    const start = editorEl.selectionStart;
-    const end = editorEl.selectionEnd;
-    if (start == null || end == null) {
-      return;
-    }
-    const before = editorEl.value.substring(0, start);
-    const selected = editorEl.value.substring(start, end);
-    const after = editorEl.value.substring(end);
-    let wrapped = '';
-    switch (cmd) {
-      case 'bold':
-        wrapped = `<b>${selected}</b>`;
-        break;
-      case 'italic':
-        wrapped = `<i>${selected}</i>`;
-        break;
-      case 'insertUnorderedList':
-        wrapped = `<ul><li>${selected}</li></ul>`;
-        break;
-      case 'insertOrderedList':
-        wrapped = `<ol><li>${selected}</li></ol>`;
-        break;
-      default:
-        return;
-    }
-    editorEl.value = before + wrapped + after;
-    const cursor = before.length;
-    editorEl.selectionStart = cursor;
-    editorEl.selectionEnd = cursor + wrapped.length;
-    this.saveDraft();
-  }
-
-  formatLink(): void {
-    const url = prompt('URL');
-    if (!url) {
-      return;
-    }
-    const editorEl = this.editor.nativeElement;
-    const start = editorEl.selectionStart;
-    const end = editorEl.selectionEnd;
-    if (start == null || end == null) {
-      return;
-    }
-    const before = editorEl.value.substring(0, start);
-    const selected = editorEl.value.substring(start, end);
-    const after = editorEl.value.substring(end);
-    const anchor = `<a href="${url}">${selected}</a>`;
-    editorEl.value = before + anchor + after;
-    const cursor = before.length;
-    editorEl.selectionStart = cursor;
-    editorEl.selectionEnd = cursor + anchor.length;
-    this.saveDraft();
   }
 
   onFileInput(event: Event): void {
@@ -160,7 +113,7 @@ export class PostComposerComponent implements OnInit {
       this.message = 'Área inválida.';
       return;
     }
-    const html = this.editor.nativeElement.value.trim();
+    const html = this.content.trim();
     if (!html) {
       this.message = 'Conteúdo vazio.';
       return;
@@ -181,7 +134,7 @@ export class PostComposerComponent implements OnInit {
       .subscribe({
         next: () => {
           this.message = 'Publicação criada.';
-          this.editor.nativeElement.value = '';
+          this.content = '';
           this.type = 'ANNOTATION';
           this.attachments = [];
           this.clearDraft();
@@ -195,7 +148,7 @@ export class PostComposerComponent implements OnInit {
   }
 
   saveDraft(): void {
-    const html = this.editor?.nativeElement?.value || '';
+    const html = this.content || '';
     const draft = { type: this.type, content: html };
     localStorage.setItem(this.draftKey, JSON.stringify(draft));
   }
@@ -206,9 +159,7 @@ export class PostComposerComponent implements OnInit {
       try {
         const draft = JSON.parse(raw);
         this.type = draft.type || 'ANNOTATION';
-        setTimeout(() => {
-          if (this.editor) this.editor.nativeElement.value = draft.content || '';
-        });
+        this.content = draft.content || '';
       } catch {
         /* ignore */
       }
