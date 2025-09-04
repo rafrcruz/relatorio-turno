@@ -25,10 +25,10 @@ export interface ReplyCreate {
 
 @Injectable({ providedIn: 'root' })
 export class RepliesService {
-  private createdSource = new Subject<Reply>();
+  private readonly createdSource = new Subject<Reply>();
   readonly created$ = this.createdSource.asObservable();
 
-  constructor(private http: HttpClient) {}
+  constructor(private readonly http: HttpClient) {}
 
   list(postId: number, page = 1, pageSize = 5): Observable<ReplyPage> {
     const params = new HttpParams()

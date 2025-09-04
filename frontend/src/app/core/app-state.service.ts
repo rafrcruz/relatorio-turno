@@ -13,7 +13,7 @@ export interface ReportContext {
  */
 @Injectable({ providedIn: 'root' })
 export class AppStateService {
-  private contextSubject: BehaviorSubject<ReportContext>;
+  private readonly contextSubject: BehaviorSubject<ReportContext>;
   readonly context$;
 
   constructor() {
