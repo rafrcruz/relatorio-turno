@@ -4,7 +4,7 @@ import { Observable } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class ExportService {
-  constructor(private http: HttpClient) {}
+  constructor(private readonly http: HttpClient) {}
 
   /** Requests a PDF export for the given context. */
   downloadPdf(areaId: number, date: string, shift: number): Observable<Blob> {
