@@ -154,6 +154,7 @@ app.post('/api/posts', upload.array('attachments'), async (req, res) => {
     });
     res.status(201).json(fullPost);
   } catch (error) {
+    console.error('Failed to create post', error);
     res.status(400).json({ error: 'Failed to create post' });
   }
 });
@@ -229,14 +230,15 @@ app.post('/api/posts/:id/replies', upload.array('attachments'), async (req, res)
       },
     });
 
-    const fullReply = await prisma.reply.findUnique({
-      where: { id: reply.id },
-      include: { attachments: true },
-    });
-    res.status(201).json(fullReply);
-  } catch (error) {
-    res.status(400).json({ error: 'Failed to create reply' });
-  }
+  const fullReply = await prisma.reply.findUnique({
+    where: { id: reply.id },
+    include: { attachments: true },
+  });
+  res.status(201).json(fullReply);
+} catch (error) {
+  console.error('Failed to create reply', error);
+  res.status(400).json({ error: 'Failed to create reply' });
+}
 });
 
 app.get('/api/posts/:id/replies', async (req, res) => {
