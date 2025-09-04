@@ -1,35 +1,35 @@
-<section class="p-4 border border-gray-200 dark:border-gray-700 rounded mb-8">
+<section class="p-4 border border-light-gray rounded mb-8">
   <h3 class="text-lg font-semibold mb-4">{{ title }} ({{ count }})</h3>
-  <div *ngIf="loading" class="text-gray-500 dark:text-gray-400">Carregando...</div>
-  <div *ngIf="error" class="text-red-600">
+  <div *ngIf="loading" class="text-mid-gray">Carregando...</div>
+  <div *ngIf="error" class="text-bauxite">
     Erro ao carregar. <button (click)="retry()" class="underline">Tentar novamente</button>
   </div>
-  <div *ngIf="!loading && !error && posts.length === 0" class="text-gray-500 dark:text-gray-400">
+  <div *ngIf="!loading && !error && posts.length === 0" class="text-mid-gray">
     Sem {{ title.toLowerCase() }} para este turno.
   </div>
-  <article *ngFor="let post of posts; trackBy: trackById" [attr.id]="'post-' + post.id" class="mb-4 p-4 border border-gray-200 dark:border-gray-700 rounded" [class.bg-yellow-50]="post.id === highlightId">
+  <article *ngFor="let post of posts; trackBy: trackById" [attr.id]="'post-' + post.id" class="mb-4 p-4 border border-light-gray rounded" [class.bg-warm]="post.id === highlightId">
     <div class="flex justify-between items-start">
       <span class="text-xs font-semibold px-2 py-1 rounded" [ngClass]="tagClass()">{{ typeLabel() }}</span>
-      <span class="text-xs text-gray-500">{{ post.author.name }} — {{ post.createdAt | date:'dd/MM/yyyy HH:mm' }}</span>
+      <span class="text-xs text-mid-gray">{{ post.author.name }} — {{ post.createdAt | date:'dd/MM/yyyy HH:mm' }}</span>
     </div>
     <div class="mt-2 prose prose-sm max-w-none" [innerHTML]="post.content"></div>
     <div *ngIf="post.attachments.length" class="mt-2 flex flex-wrap gap-2">
       <ng-container *ngFor="let att of post.attachments">
         <img *ngIf="att.mimeType.startsWith('image/')" [src]="att.url" [alt]="att.filename" class="w-24 h-24 object-cover border" />
-        <a *ngIf="att.mimeType === 'application/pdf'" [href]="att.url" target="_blank" class="flex items-center text-blue-600 text-sm underline">
+        <a *ngIf="att.mimeType === 'application/pdf'" [href]="att.url" target="_blank" class="flex items-center text-hydro-blue text-sm underline">
           📄 {{ att.filename }}
         </a>
       </ng-container>
     </div>
-    <div class="mt-2 flex items-center gap-4 text-sm text-gray-600">
-      <button class="text-blue-600 hover:underline" (click)="thread.toggleComposer()">Responder</button>
-      <button class="text-blue-600 hover:underline" (click)="copyLink(post)">Copiar link</button>
+    <div class="mt-2 flex items-center gap-4 text-sm text-aluminium">
+      <button class="text-hydro-blue hover:underline" (click)="thread.toggleComposer()">Responder</button>
+      <button class="text-hydro-blue hover:underline" (click)="copyLink(post)">Copiar link</button>
       <span>{{ post._count.replies }} respostas</span>
       <span>Atualizado {{ post.updatedAt | date:'dd/MM HH:mm' }}</span>
     </div>
     <app-reply-thread #thread [post]="post"></app-reply-thread>
   </article>
   <div *ngIf="!loading && posts.length < count" class="text-center mt-4">
-    <button (click)="loadMore()" class="px-4 py-2 bg-gray-200 dark:bg-gray-700 rounded">Carregar mais</button>
+    <button (click)="loadMore()" class="px-4 py-2 bg-light-gray rounded">Carregar mais</button>
   </div>
 </section>

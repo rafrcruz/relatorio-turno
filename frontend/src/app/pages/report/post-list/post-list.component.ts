@@ -117,11 +117,11 @@ export class PostListComponent implements OnDestroy, OnChanges {
   tagClass(): string {
     switch (this.type) {
       case 'URGENCY':
-        return 'bg-red-100 text-red-800';
+        return 'bg-bauxite text-white';
       case 'PENDENCY':
-        return 'bg-yellow-100 text-yellow-800';
+        return 'bg-warm text-black';
       default:
-        return 'bg-blue-100 text-blue-800';
+        return 'bg-hydro-blue text-white';
     }
   }
 
@@ -131,8 +131,8 @@ export class PostListComponent implements OnDestroy, OnChanges {
       const el = document.getElementById(`post-${this.highlightId}`);
       if (el) {
         el.scrollIntoView();
-        el.classList.add('ring', 'ring-yellow-400');
-        setTimeout(() => el.classList.remove('ring', 'ring-yellow-400'), 2000);
+        el.classList.add('ring', 'ring-hydro-light-blue');
+        setTimeout(() => el.classList.remove('ring', 'ring-hydro-light-blue'), 2000);
       }
     }, 100);
   }

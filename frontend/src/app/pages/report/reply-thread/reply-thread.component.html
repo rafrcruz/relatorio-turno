@@ -1,38 +1,38 @@
-<div class="mt-2 border-l pl-4"> 
-  <div *ngIf="loading" class="text-gray-500 dark:text-gray-400">Carregando respostas...</div>
-  <div *ngIf="error" class="text-red-600">Falha ao carregar respostas. <button class="underline" (click)="load()">Tentar novamente</button></div>
-  <div *ngIf="!loading && !error && replies.length === 0" class="text-gray-500 dark:text-gray-400">Nenhuma resposta para este post.</div>
+<div class="mt-2 border-l border-light-gray pl-4">
+  <div *ngIf="loading" class="text-mid-gray">Carregando respostas...</div>
+  <div *ngIf="error" class="text-bauxite">Falha ao carregar respostas. <button class="underline" (click)="load()">Tentar novamente</button></div>
+  <div *ngIf="!loading && !error && replies.length === 0" class="text-mid-gray">Nenhuma resposta para este post.</div>
   <ng-container *ngFor="let r of replies">
     <article class="mb-2">
-      <div class="text-xs text-gray-500">{{ r.author.name }} — {{ r.createdAt | date:'dd/MM/yyyy HH:mm' }}</div>
+      <div class="text-xs text-mid-gray">{{ r.author.name }} — {{ r.createdAt | date:'dd/MM/yyyy HH:mm' }}</div>
       <div class="prose prose-sm max-w-none" [innerHTML]="r.content"></div>
       <div *ngIf="r.attachments.length" class="mt-1 flex flex-wrap gap-2">
         <ng-container *ngFor="let att of r.attachments">
           <img *ngIf="att.mimeType.startsWith('image/')" [src]="att.url" [alt]="att.filename" class="w-16 h-16 object-cover border" />
-          <a *ngIf="att.mimeType === 'application/pdf'" [href]="att.url" target="_blank" class="flex items-center text-blue-600 text-sm underline">
+          <a *ngIf="att.mimeType === 'application/pdf'" [href]="att.url" target="_blank" class="flex items-center text-hydro-blue text-sm underline">
             📄 {{ att.filename }}
           </a>
         </ng-container>
       </div>
     </article>
   </ng-container>
-  <button *ngIf="replies.length < total && !loading" (click)="loadMore()" class="text-sm text-blue-600 underline">Ver mais respostas</button>
+  <button *ngIf="replies.length < total && !loading" (click)="loadMore()" class="text-sm text-hydro-blue underline">Ver mais respostas</button>
   <div *ngIf="showForm" class="mt-2">
-    <div #editor contenteditable="true" class="border p-2 rounded min-h-[80px]" (drop)="onDrop($event)" (paste)="onPaste($event)"></div>
+    <div #editor contenteditable="true" class="border border-light-gray p-2 rounded min-h-[80px]" (drop)="onDrop($event)" (paste)="onPaste($event)"></div>
     <input type="file" multiple (change)="onFileInput($event)" class="mt-2" />
     <div *ngIf="attachments.length" class="mt-2 flex flex-wrap gap-2">
       <ng-container *ngFor="let att of attachments">
         <div class="relative">
-          <img *ngIf="att.url" [src]="att.url" class="w-16 h-16 object-cover border" />
+          <img *ngIf="att.url" [src]="att.url" class="w-16 h-16 object-cover border border-light-gray" />
           <span *ngIf="!att.url" class="text-xs">{{ att.file.name }}</span>
-          <button (click)="removeAttachment(att)" aria-label="Remover" class="absolute top-0 right-0 text-red-600 bg-white">✕</button>
+          <button (click)="removeAttachment(att)" aria-label="Remover" class="absolute top-0 right-0 text-bauxite bg-white">✕</button>
         </div>
       </ng-container>
     </div>
     <div class="mt-2 flex items-center gap-2">
-      <button (click)="send()" [disabled]="sending" class="px-3 py-1 bg-blue-600 text-white rounded">Enviar</button>
+      <button (click)="send()" [disabled]="sending" class="px-3 py-1 bg-hydro-blue hover:bg-hydro-light-blue text-white rounded">Enviar</button>
       <button (click)="toggleComposer()" class="px-3 py-1">Cancelar</button>
-      <span class="text-sm text-gray-600" *ngIf="message">{{ message }}</span>
+      <span class="text-sm text-aluminium" *ngIf="message">{{ message }}</span>
     </div>
   </div>
 </div>
