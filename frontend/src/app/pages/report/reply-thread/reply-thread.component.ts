@@ -93,6 +93,13 @@ export class ReplyThreadComponent implements OnInit, OnDestroy {
     this.modalImageUrl = undefined;
   }
 
+  onContentClick(event: Event): void {
+    const target = event.target as HTMLElement;
+    if (target instanceof HTMLImageElement) {
+      this.openImage(target.src);
+    }
+  }
+
   deleteReply(r: Reply): void {
     if (!confirm('Excluir esta resposta?')) return;
     this.repliesService.delete(this.post.id, r.id).subscribe({

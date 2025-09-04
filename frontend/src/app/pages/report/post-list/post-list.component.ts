@@ -123,6 +123,13 @@ export class PostListComponent implements OnDestroy, OnChanges {
     this.modalImageUrl = undefined;
   }
 
+  onContentClick(event: Event): void {
+    const target = event.target as HTMLElement;
+    if (target instanceof HTMLImageElement) {
+      this.openImage(target.src);
+    }
+  }
+
   trackById(_: number, item: Post): number {
     return item.id;
   }

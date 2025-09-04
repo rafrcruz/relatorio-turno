@@ -18,7 +18,7 @@
       <span class="text-xs font-semibold px-2 py-1 rounded" [ngClass]="tagClass()">{{ typeLabel() }}</span>
       <span class="text-xs text-mid-gray">{{ post.author.name }} — {{ post.createdAt | date:'dd/MM/yyyy HH:mm' }}</span>
     </div>
-    <div class="mt-2 prose prose-sm max-w-none" [innerHTML]="post.content"></div>
+    <div class="mt-2 prose prose-sm max-w-none" [innerHTML]="post.content" (click)="onContentClick($event)"></div>
     <div *ngIf="post.attachments.length" class="mt-2 flex flex-col gap-2">
       <ng-container *ngFor="let att of post.attachments">
         <img
