@@ -16,10 +16,10 @@ app.get('/', (req, res) => {
   res.json({ message: 'Backend Node.js + Express funcionando!' });
 });
 
-// Endpoint que retorna "Olá Rafael"
+// Endpoint que retorna "Hello World"
 app.get('/api/hello', (req, res) => {
   res.json({
-    message: 'Olá Rafael',
+    message: 'Hello World',
     timestamp: new Date().toISOString(),
     backend: 'Node.js + Express'
   });
