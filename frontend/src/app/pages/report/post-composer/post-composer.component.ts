@@ -28,7 +28,7 @@ export class PostComposerComponent implements OnInit {
   private readonly draftKey = 'post-draft';
 
   constructor(
-    private appState: AppStateService,
+    private readonly appState: AppStateService,
     private areasService: AreasService,
     private readonly posts: PostsService
   ) {}
