@@ -29,6 +29,7 @@ export class ReplyThreadComponent implements OnInit, OnDestroy {
   sending = false;
   message = '';
   attachments: AttachmentView[] = [];
+  modalImageUrl?: string;
 
   private readonly destroy$ = new Subject<void>();
 
@@ -73,6 +74,14 @@ export class ReplyThreadComponent implements OnInit, OnDestroy {
     if (this.showForm) {
       setTimeout(() => this.editor?.nativeElement.focus());
     }
+  }
+
+  openImage(url: string): void {
+    this.modalImageUrl = url;
+  }
+
+  closeImage(): void {
+    this.modalImageUrl = undefined;
   }
 
   onFileInput(event: Event): void {

@@ -19,6 +19,7 @@ export class PostListComponent implements OnDestroy, OnChanges {
   count = 0;
   loading = true;
   error = false;
+  modalImageUrl?: string;
   private page = 1;
   private ctx!: ReportContext;
   private readonly areaMap = new Map<string, number>();
@@ -101,6 +102,14 @@ export class PostListComponent implements OnDestroy, OnChanges {
   copyLink(post: Post): void {
     const url = `${window.location.pathname}?area=${encodeURIComponent(this.ctx.area)}&date=${this.ctx.date}&shift=${this.ctx.shift}#post-${post.id}`;
     navigator.clipboard.writeText(url);
+  }
+
+  openImage(url: string): void {
+    this.modalImageUrl = url;
+  }
+
+  closeImage(): void {
+    this.modalImageUrl = undefined;
   }
 
   trackById(_: number, item: Post): number {
