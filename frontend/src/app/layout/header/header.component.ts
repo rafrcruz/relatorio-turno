@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, HostListener, OnInit } from '@angular/core';
 import { AppStateService } from '../../core/app-state.service';
 import { AreasService, Area } from '../../core/areas.service';
 import { ExportService } from '../../core/export.service';
@@ -12,6 +12,7 @@ export class HeaderComponent implements OnInit {
   areas: Area[] = [];
   exportMessage = '';
   readonly context$ = this.appState.context$;
+  areaDropdownOpen = false;
 
   constructor(
     private readonly appState: AppStateService,
@@ -33,6 +34,23 @@ export class HeaderComponent implements OnInit {
 
   onShiftChange(shift: number): void {
     this.appState.setShift(shift);
+  }
+
+  toggleAreaDropdown(): void {
+    this.areaDropdownOpen = !this.areaDropdownOpen;
+  }
+
+  selectArea(area: string): void {
+    this.onAreaChange(area);
+    this.areaDropdownOpen = false;
+  }
+
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: Event): void {
+    const target = event.target as HTMLElement;
+    if (!target.closest('#area-selector')) {
+      this.areaDropdownOpen = false;
+    }
   }
 
   exportPdf(): void {
