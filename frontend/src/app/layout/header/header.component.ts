@@ -15,8 +15,8 @@ export class HeaderComponent implements OnInit {
 
   constructor(
     private readonly appState: AppStateService,
-    private areasService: AreasService,
-    private exportService: ExportService
+    private readonly areasService: AreasService,
+    private readonly exportService: ExportService
   ) {}
 
   ngOnInit(): void {
