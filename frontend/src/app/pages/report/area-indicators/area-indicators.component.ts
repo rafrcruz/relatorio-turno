@@ -17,7 +17,7 @@ export class AreaIndicatorsComponent implements OnDestroy {
 
   private destroy$ = new Subject<void>();
 
-  constructor(private appState: AppStateService, private indicators: IndicatorsService) {
+  constructor(private appState: AppStateService, private readonly indicators: IndicatorsService) {
     this.indicators$ = this.appState.context$.pipe(
       tap(() => { this.loading = true; this.error = false; }),
       switchMap((ctx: ReportContext) => this.indicators.getIndicators(ctx.area, ctx.date, ctx.shift)),
