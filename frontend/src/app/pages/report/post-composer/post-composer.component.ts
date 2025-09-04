@@ -64,7 +64,7 @@ export class PostComposerComponent implements OnInit {
 
   onPaste(evt: ClipboardEvent): void {
     const items = evt.clipboardData?.files;
-    if (items && items.length) {
+    if (items?.length) {
       this.addFiles(Array.from(items));
     }
   }
