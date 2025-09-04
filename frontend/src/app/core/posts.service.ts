@@ -42,7 +42,7 @@ export class PostsService {
   /** Emits newly created posts so that lists can refresh. */
   readonly created$ = this.createdSource.asObservable();
 
-  constructor(private http: HttpClient) {}
+  constructor(private readonly http: HttpClient) {}
 
   /** Sends a new post to the backend API. */
   create(payload: PostCreate): Observable<any> {
