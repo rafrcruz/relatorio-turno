@@ -6,33 +6,22 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        primary: {
-          50: '#eff6ff',
-          100: '#dbeafe',
-          200: '#bfdbfe',
-          300: '#93c5fd',
-          400: '#60a5fa',
-          500: '#3b82f6',
-          600: '#2563eb',
-          700: '#1d4ed8',
-          800: '#1e40af',
-          900: '#1e3a8a',
-        },
-        secondary: {
-          50: '#fdf4ff',
-          100: '#fae8ff',
-          200: '#f5d0fe',
-          300: '#f0abfc',
-          400: '#e879f9',
-          500: '#d946ef',
-          600: '#c026d3',
-          700: '#a21caf',
-          800: '#86198f',
-          900: '#701a75',
-        }
+        'hydro-blue': '#444D55',
+        'hydro-light-blue': '#768692',
+        'aluminium': '#8C8C8C',
+        'white': '#FFFFFF',
+        'black': '#000000',
+        'green': '#43807A',
+        'warm': '#C5B9AC',
+        'purple': '#4A3041',
+        'bauxite': '#B95946',
+        'mid-gray': '#757575',
+        'light-gray': '#F4F4F4',
       },
       fontFamily: {
-        sans: ['Inter', 'system-ui', 'sans-serif'],
+        display: ['"Ivar Display"', 'serif'],
+        text: ['"Ivar Text"', 'serif'],
+        arial: ['Arial', 'sans-serif'],
       },
       animation: {
         'fade-in': 'fadeIn 0.5s ease-out',

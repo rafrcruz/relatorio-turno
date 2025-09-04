@@ -1,27 +1,27 @@
-<section class="p-4 border border-dashed border-gray-300 dark:border-gray-700 rounded">
+<section class="p-4 border border-dashed border-aluminium rounded">
   <h3 class="text-lg font-semibold mb-2">Indicadores por Área</h3>
 
   <ng-container *ngIf="(indicators$ | async) as list">
     <ng-container *ngIf="list.length; else empty">
       <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-        <div *ngFor="let ind of list" class="p-3 border rounded bg-white dark:bg-gray-900">
+        <div *ngFor="let ind of list" class="p-3 border border-light-gray rounded bg-white">
           <div class="font-medium">{{ ind.name }}</div>
           <div class="text-2xl">
             {{ ind.value !== null ? (ind.value | number:'1.2-2':'pt-BR') : '—' }}
             <span class="text-base">{{ ind.unit }}</span>
           </div>
-          <div *ngIf="ind.target !== undefined" class="text-sm text-gray-500">Meta: {{ ind.target | number:'1.2-2':'pt-BR' }} {{ ind.unit }}</div>
-          <div class="text-sm mt-1" [ngClass]="{'text-green-600': ind.status==='good','text-yellow-600': ind.status==='warning','text-red-600': ind.status==='critical'}">
+          <div *ngIf="ind.target !== undefined" class="text-sm text-mid-gray">Meta: {{ ind.target | number:'1.2-2':'pt-BR' }} {{ ind.unit }}</div>
+          <div class="text-sm mt-1" [ngClass]="{'text-green': ind.status==='good','text-warm': ind.status==='warning','text-bauxite': ind.status==='critical'}">
             {{ statusLabel(ind) }}
           </div>
         </div>
       </div>
-      <p *ngIf="source" class="text-xs text-gray-500 mt-2">Fonte: {{ source === 'mock' ? 'Dados simulados' : source }}</p>
+      <p *ngIf="source" class="text-xs text-mid-gray mt-2">Fonte: {{ source === 'mock' ? 'Dados simulados' : source }}</p>
     </ng-container>
   </ng-container>
 
   <ng-template #empty>
-    <p class="text-gray-500" *ngIf="!loading">Sem indicadores configurados para esta área.</p>
-    <p class="text-gray-500" *ngIf="loading">Carregando...</p>
+    <p class="text-mid-gray" *ngIf="!loading">Sem indicadores configurados para esta área.</p>
+    <p class="text-mid-gray" *ngIf="loading">Carregando...</p>
   </ng-template>
 </section>

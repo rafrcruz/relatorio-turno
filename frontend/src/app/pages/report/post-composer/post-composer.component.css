@@ -1,4 +1,4 @@
 .editor:empty::before {
   content: attr(data-placeholder);
-  color: #6b7280; /* gray-500 */
+  color: #757575; /* mid-gray */
 }

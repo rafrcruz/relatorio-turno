@@ -2,20 +2,65 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Estilos globais personalizados */
-body {
-  margin: 0;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  background-color: #f8fafc;
+@font-face {
+  font-family: 'Ivar Display';
+  src: url('/assets/brand/hydro/fonts/ivar-hydro/display/ivar-hydro-display-regular.ttf')
+    format('truetype');
+  font-weight: 400;
+  font-style: normal;
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+@font-face {
+  font-family: 'Ivar Text';
+  src: url('/assets/brand/hydro/fonts/ivar-hydro/text/ivar-hydro-text-regular.ttf')
+    format('truetype');
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Ivar Text';
+  src: url('/assets/brand/hydro/fonts/ivar-hydro/text/ivar-hydro-text-italic.ttf')
+    format('truetype');
+  font-weight: 400;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: 'Ivar Text';
+  src: url('/assets/brand/hydro/fonts/ivar-hydro/text/ivar-hydro-text-bold.ttf')
+    format('truetype');
+  font-weight: 700;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Ivar Text';
+  src: url('/assets/brand/hydro/fonts/ivar-hydro/text/ivar-hydro-text-bold-italic.ttf')
+    format('truetype');
+  font-weight: 700;
+  font-style: italic;
+}
+
+/* Estilos globais personalizados */
+@layer base {
+  body {
+    @apply m-0 font-text text-aluminium bg-light-gray antialiased;
+  }
+
+  h1,
+  h2,
+  h3 {
+    @apply font-display text-black;
+  }
+
+  .lead,
+  .subhead,
+  label,
+  caption,
+  small {
+    @apply font-arial;
+  }
 }
 
 /* Componentes customizados com Tailwind */
@@ -23,24 +68,24 @@ code {
   .btn {
     @apply px-4 py-2 rounded-lg font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2;
   }
-  
+
   .btn-primary {
-    @apply bg-primary-600 text-white hover:bg-primary-700 focus:ring-primary-500;
+    @apply bg-hydro-blue text-white hover:bg-hydro-light-blue focus:ring-hydro-light-blue;
   }
-  
+
   .btn-secondary {
-    @apply bg-secondary-600 text-white hover:bg-secondary-700 focus:ring-secondary-500;
+    @apply bg-green text-white hover:bg-hydro-light-blue focus:ring-green;
   }
-  
+
   .card {
-    @apply bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden;
+    @apply bg-white rounded-xl shadow-lg border border-light-gray overflow-hidden;
   }
-  
+
   .card-header {
-    @apply bg-gradient-to-r from-primary-600 to-secondary-600 text-white p-6 text-center;
+    @apply bg-gradient-to-r from-hydro-blue to-hydro-light-blue text-white p-6 text-center;
   }
-  
+
   .input {
-    @apply w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent;
+    @apply w-full px-3 py-2 border border-aluminium rounded-lg focus:outline-none focus:ring-2 focus:ring-hydro-light-blue focus:border-transparent;
   }
 }
