@@ -22,7 +22,7 @@ export class PostListComponent implements OnDestroy, OnChanges {
   private page = 1;
   private ctx!: ReportContext;
   private areaMap = new Map<string, number>();
-  private destroy$ = new Subject<void>();
+  private readonly destroy$ = new Subject<void>();
 
   constructor(private appState: AppStateService, private postsService: PostsService, private areas: AreasService) {
     this.areas.getAreasWithIds().pipe(takeUntil(this.destroy$)).subscribe((areas) => {
