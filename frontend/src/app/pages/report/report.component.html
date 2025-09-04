@@ -1,6 +1,18 @@
-<div class="max-w-7xl mx-auto px-4 py-8 space-y-8">
-  <h2 class="text-2xl font-semibold">Relatório de Turno</h2>
-  <p *ngIf="context$ | async as ctx" class="text-aluminium">{{ ctx.area }} — {{ ctx.date | date:'dd/MM/yyyy' }} — Turno {{ ctx.shift }}</p>
+<div class="max-w-[70rem] mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-10">
+  <div class="flex items-start justify-between">
+    <div>
+      <h1 class="text-3xl font-display text-black">Relatório de Turno</h1>
+      <p *ngIf="context$ | async as ctx" class="mt-2 text-aluminium font-arial">
+        {{ ctx.area }} — {{ ctx.date | date:'dd/MM/yyyy' }} — Turno {{ ctx.shift }}
+      </p>
+    </div>
+    <img
+      src="assets/brand/hydro/sail/sail-blue.eps"
+      alt=""
+      aria-hidden="true"
+      class="w-24 h-24 object-contain opacity-20"
+    />
+  </div>
 
   <section id="composer">
     <app-post-composer></app-post-composer>
@@ -9,12 +21,27 @@
   <app-area-indicators id="area-indicators"></app-area-indicators>
   <div *ngIf="otherContext" class="p-4 bg-warm border border-aluminium rounded">
     Post pertencente a outro contexto.
-    <button (click)="changeContext()" class="underline">Ajustar contexto</button>
+    <button (click)="changeContext()" class="text-hydro-blue underline">Ajustar contexto</button>
   </div>
 
-  <app-post-list id="urgencies" type="URGENCY" title="Urgências" [highlightId]="highlightType === 'URGENCY' ? highlightId : undefined"></app-post-list>
+  <app-post-list
+    id="urgencies"
+    type="URGENCY"
+    title="Urgências"
+    [highlightId]="highlightType === 'URGENCY' ? highlightId : undefined"
+  ></app-post-list>
 
-  <app-post-list id="pendencies" type="PENDENCY" title="Pendências" [highlightId]="highlightType === 'PENDENCY' ? highlightId : undefined"></app-post-list>
+  <app-post-list
+    id="pendencies"
+    type="PENDENCY"
+    title="Pendências"
+    [highlightId]="highlightType === 'PENDENCY' ? highlightId : undefined"
+  ></app-post-list>
 
-  <app-post-list id="notes" type="ANNOTATION" title="Anotações" [highlightId]="highlightType === 'ANNOTATION' ? highlightId : undefined"></app-post-list>
+  <app-post-list
+    id="notes"
+    type="ANNOTATION"
+    title="Anotações"
+    [highlightId]="highlightType === 'ANNOTATION' ? highlightId : undefined"
+  ></app-post-list>
 </div>

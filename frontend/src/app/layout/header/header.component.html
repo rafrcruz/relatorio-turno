@@ -1,13 +1,23 @@
-<header class="sticky top-0 z-10 bg-white border-b border-light-gray shadow-sm" role="banner">
-  <div class="max-w-7xl mx-auto px-4 py-4 flex flex-wrap items-center gap-4">
-    <img src="assets/brand/hydro/logos/primary/hydro-logo-vertical-blue.png" alt="Hydro" class="h-12" />
-    <h1 class="text-xl font-display text-black">Relatório de Turno</h1>
+<header class="sticky top-0 z-10 bg-white border-b border-light-gray" role="banner">
+  <div class="max-w-[70rem] mx-auto px-4 sm:px-6 lg:px-8 py-3 flex flex-wrap items-center gap-4">
+    <!-- Logos -->
+    <img
+      src="assets/brand/hydro/logos/primary/hydro-logo-vertical-blue.png"
+      alt="Hydro"
+      class="h-10 w-auto hidden sm:block"
+    />
+    <img
+      src="assets/brand/hydro/logos/secondary/hydro-logo-horizontal-blue.png"
+      alt="Hydro"
+      class="h-8 w-auto sm:hidden"
+    />
+
     <div class="flex flex-wrap items-center gap-2 ml-auto text-sm font-arial">
       <!-- Area selector -->
       <label for="area" class="sr-only">Área</label>
       <select
         id="area"
-        class="border border-aluminium rounded px-2 py-1 bg-white"
+        class="px-2 py-1 bg-white border border-aluminium rounded focus:outline-none focus:ring-2 focus:ring-hydro-light-blue"
         [ngModel]="(context$ | async)?.area"
         (ngModelChange)="onAreaChange($event)"
       >
@@ -19,16 +29,20 @@
       <input
         id="date"
         type="date"
-        class="border border-aluminium rounded px-2 py-1 bg-white"
+        class="px-2 py-1 bg-white border border-aluminium rounded focus:outline-none focus:ring-2 focus:ring-hydro-light-blue"
         [ngModel]="(context$ | async)?.date"
         (ngModelChange)="onDateChange($event)"
       />
 
       <!-- Shift selector -->
-      <div role="radiogroup" aria-label="Turno" class="flex border border-aluminium rounded overflow-hidden">
+      <div
+        role="radiogroup"
+        aria-label="Turno"
+        class="flex border border-aluminium rounded overflow-hidden divide-x divide-aluminium"
+      >
         <label
           *ngFor="let s of [1,2,3]"
-          class="px-2 py-1 cursor-pointer focus-within:ring-2 focus-within:ring-hydro-light-blue"
+          class="px-3 py-1 cursor-pointer hover:bg-light-gray focus-within:ring-2 focus-within:ring-hydro-light-blue"
           [class.bg-hydro-blue]="(context$ | async)?.shift === s"
           [class.text-white]="(context$ | async)?.shift === s"
         >
