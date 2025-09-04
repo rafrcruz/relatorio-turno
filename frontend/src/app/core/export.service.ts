@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from '../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class ExportService {
@@ -8,6 +9,6 @@ export class ExportService {
 
   /** Requests a PDF export for the given context. */
   downloadPdf(areaId: number, date: string, shift: number): Observable<Blob> {
-    return this.http.post('/api/export', { areaId, date, shift }, { responseType: 'blob' });
+    return this.http.post(`${environment.apiUrl}/api/export`, { areaId, date, shift }, { responseType: 'blob' });
   }
 }

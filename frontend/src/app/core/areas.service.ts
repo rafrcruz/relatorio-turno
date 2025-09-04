@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
+import { environment } from '../../environments/environment';
 
 export interface Area {
   id: number;
@@ -32,7 +33,7 @@ export class AreasService {
 
   /** Returns areas with id and name, using fallback data when API fails. */
   getAreasWithIds(): Observable<Area[]> {
-    return this.http.get<Area[]>('/api/areas').pipe(
+    return this.http.get<Area[]>(`${environment.apiUrl}/api/areas`).pipe(
       map((areas) => (areas?.length ? areas : this.fallbackAreas)),
       catchError(() => of(this.fallbackAreas))
     );

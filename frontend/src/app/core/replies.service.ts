@@ -3,6 +3,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, Subject } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { Attachment } from './posts.service';
+import { environment } from '../../environments/environment';
 
 export interface Reply {
   id: number;
@@ -34,7 +35,7 @@ export class RepliesService {
     const params = new HttpParams()
       .set('page', String(page))
       .set('pageSize', String(pageSize));
-    return this.http.get<ReplyPage>(`/api/posts/${postId}/replies`, { params });
+    return this.http.get<ReplyPage>(`${environment.apiUrl}/api/posts/${postId}/replies`, { params });
   }
 
   create(postId: number, payload: ReplyCreate): Observable<Reply> {
@@ -44,7 +45,7 @@ export class RepliesService {
       form.append('attachments', file);
     }
     return this.http
-      .post<Reply>(`/api/posts/${postId}/replies`, form)
+      .post<Reply>(`${environment.apiUrl}/api/posts/${postId}/replies`, form)
       .pipe(tap((r) => this.createdSource.next(r)));
   }
 }
