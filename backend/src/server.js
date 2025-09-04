@@ -153,6 +153,10 @@ app.post('/api/posts', upload.array('attachments'), async (req, res) => {
     if (area === undefined || !d || s === undefined || !t) {
       return res.status(400).json({ error: 'Invalid post parameters' });
     }
+    const areaExists = await prisma.area.findUnique({ where: { id: area } });
+    if (!areaExists) {
+      return res.status(400).json({ error: 'Invalid area' });
+    }
     const sanitized = sanitizeHtml(content || '');
     const post = await prisma.post.create({
       data: {
