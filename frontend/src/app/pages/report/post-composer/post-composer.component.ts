@@ -16,7 +16,7 @@ interface AttachmentView {
   styleUrls: ['./post-composer.component.css']
 })
 export class PostComposerComponent implements OnInit {
-  @ViewChild('editor') editor!: ElementRef<HTMLDivElement>;
+  @ViewChild('editor') editor!: ElementRef<HTMLTextAreaElement>;
 
   ctx!: ReportContext;
   areas: Area[] = [];
@@ -40,12 +40,44 @@ export class PostComposerComponent implements OnInit {
   }
 
   format(cmd: string): void {
-    document.execCommand(cmd, false);
+    const textarea = this.editor.nativeElement;
+    const start = textarea.selectionStart;
+    const end = textarea.selectionEnd;
+    const selected = textarea.value.substring(start, end);
+    let replacement = selected;
+
+    switch (cmd) {
+      case 'bold':
+        replacement = `<strong>${selected}</strong>`;
+        break;
+      case 'italic':
+        replacement = `<em>${selected}</em>`;
+        break;
+      case 'insertUnorderedList':
+        replacement = `<ul>\n<li>${selected}</li>\n</ul>`;
+        break;
+      case 'insertOrderedList':
+        replacement = `<ol>\n<li>${selected}</li>\n</ol>`;
+        break;
+      default:
+        return;
+    }
+
+    textarea.setRangeText(replacement, start, end, 'end');
+    this.saveDraft();
   }
 
   formatLink(): void {
     const url = prompt('URL');
-    if (url) document.execCommand('createLink', false, url);
+    if (url) {
+      const textarea = this.editor.nativeElement;
+      const start = textarea.selectionStart;
+      const end = textarea.selectionEnd;
+      const selected = textarea.value.substring(start, end) || url;
+      const replacement = `<a href="${url}">${selected}</a>`;
+      textarea.setRangeText(replacement, start, end, 'end');
+      this.saveDraft();
+    }
   }
 
   onFileInput(event: Event): void {
@@ -113,7 +145,7 @@ export class PostComposerComponent implements OnInit {
       this.message = 'Área inválida.';
       return;
     }
-    const html = this.editor.nativeElement.innerHTML.trim();
+    const html = this.editor.nativeElement.value.trim();
     if (!html) {
       this.message = 'Conteúdo vazio.';
       return;
@@ -134,7 +166,7 @@ export class PostComposerComponent implements OnInit {
       .subscribe({
         next: () => {
           this.message = 'Publicação criada.';
-          this.editor.nativeElement.innerHTML = '';
+          this.editor.nativeElement.value = '';
           this.type = 'ANNOTATION';
           this.attachments = [];
           this.clearDraft();
@@ -148,7 +180,7 @@ export class PostComposerComponent implements OnInit {
   }
 
   saveDraft(): void {
-    const html = this.editor?.nativeElement?.innerHTML || '';
+    const html = this.editor?.nativeElement?.value || '';
     const draft = { type: this.type, content: html };
     localStorage.setItem(this.draftKey, JSON.stringify(draft));
   }
@@ -160,7 +192,7 @@ export class PostComposerComponent implements OnInit {
         const draft = JSON.parse(raw);
         this.type = draft.type || 'ANNOTATION';
         setTimeout(() => {
-          if (this.editor) this.editor.nativeElement.innerHTML = draft.content || '';
+          if (this.editor) this.editor.nativeElement.value = draft.content || '';
         });
       } catch {
         /* ignore */

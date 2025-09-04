@@ -26,16 +26,14 @@
       <button type="button" (click)="format('insertOrderedList')" aria-label="Lista numerada" class="px-2 py-1 hover:bg-light-gray">1.</button>
       <button type="button" (click)="formatLink()" aria-label="Link" class="px-2 py-1 hover:bg-light-gray">🔗</button>
     </div>
-    <div
+    <textarea
       #editor
-      class="editor p-2 min-h-[120px] outline-none"
-      contenteditable="true"
-      role="textbox"
+      class="editor p-2 min-h-[120px] outline-none w-full"
       aria-label="Conteúdo"
-      data-placeholder="Escreva uma atualização do turno..."
+      placeholder="Escreva uma atualização do turno..."
       (input)="saveDraft()"
       (paste)="onPaste($event)"
-    ></div>
+    ></textarea>
   </div>
 
   <div *ngIf="attachments.length" class="space-y-2">
