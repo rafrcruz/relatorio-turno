@@ -12,17 +12,43 @@
       class="h-8 w-auto sm:hidden"
     />
 
-    <div class="flex flex-wrap items-center gap-1 ml-auto text-sm font-arial">
+    <div class="flex flex-wrap items-center gap-1 ml-auto text-sm font-arial" *ngIf="context$ | async as ctx">
       <!-- Area selector -->
-      <label for="area" class="sr-only">Área</label>
-      <select
-        id="area"
-        class="px-2 py-1.5 bg-white border border-aluminium rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-hydro-light-blue"
-        [ngModel]="(context$ | async)?.area"
-        (ngModelChange)="onAreaChange($event)"
-      >
-        <option *ngFor="let area of areas" [value]="area.name">{{ area.name }}</option>
-      </select>
+      <div class="relative" id="area-selector">
+        <label for="area-select" class="sr-only">Área</label>
+        <button
+          type="button"
+          id="area-select"
+          (click)="toggleAreaDropdown()"
+          class="min-w-[8rem] flex items-center justify-between gap-2 px-2 py-1.5 bg-white border border-aluminium rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-hydro-light-blue"
+        >
+          <span>{{ ctx.area || 'Selecione a área' }}</span>
+          <svg
+            class="w-4 h-4 transition-transform"
+            [ngClass]="{ 'rotate-180': areaDropdownOpen }"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke-width="1.5"
+            stroke="currentColor"
+          >
+            <path stroke-linecap="round" stroke-linejoin="round" d="m6 9 6 6 6-6" />
+          </svg>
+        </button>
+        <ul
+          *ngIf="areaDropdownOpen"
+          class="absolute left-0 mt-1 w-full max-h-60 overflow-auto bg-white border border-aluminium rounded-lg shadow-lg z-20"
+        >
+          <li
+            *ngFor="let area of areas"
+            (click)="selectArea(area.name)"
+            class="px-3 py-1.5 cursor-pointer transition-colors hover:bg-hydro-light-blue hover:text-white"
+            [ngClass]="{ 'bg-hydro-blue text-white hover:bg-hydro-dark-blue': ctx.area === area.name }"
+          >
+            {{ area.name }}
+          </li>
+        </ul>
+      </div>
 
       <!-- Date selector -->
       <label for="date" class="sr-only">Data</label>
@@ -30,7 +56,7 @@
         id="date"
         type="date"
         class="px-2 py-1.5 bg-white border border-aluminium rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-hydro-light-blue"
-        [ngModel]="(context$ | async)?.date"
+        [ngModel]="ctx.date"
         (ngModelChange)="onDateChange($event)"
       />
 
@@ -39,7 +65,6 @@
         role="radiogroup"
         aria-label="Turno"
         class="flex border border-aluminium rounded-lg overflow-hidden divide-x divide-aluminium text-sm shadow-sm"
-        *ngIf="context$ | async as ctx"
       >
         <label
           class="px-2 py-1 cursor-pointer flex-1 text-center transition-colors focus-within:ring-2 focus-within:ring-hydro-light-blue"
