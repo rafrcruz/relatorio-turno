@@ -1,23 +1,23 @@
 <header class="sticky top-0 z-10 bg-white border-b border-light-gray" role="banner">
-  <div class="max-w-[70rem] mx-auto px-4 sm:px-6 lg:px-8 py-3 flex flex-wrap items-center gap-4">
+  <div class="max-w-[70rem] mx-auto px-2 sm:px-4 lg:px-6 py-2 flex flex-wrap items-center gap-2">
     <!-- Logos -->
     <img
       src="assets/brand/hydro/logos/primary/hydro-logo-vertical-blue.png"
       alt="Hydro"
-      class="h-16 w-auto hidden sm:block"
+      class="h-12 w-auto hidden sm:block"
     />
     <img
       src="assets/brand/hydro/logos/secondary/hydro-logo-horizontal-blue.png"
       alt="Hydro"
-      class="h-10 w-auto sm:hidden"
+      class="h-8 w-auto sm:hidden"
     />
 
-    <div class="flex flex-wrap items-center gap-2 ml-auto text-sm font-arial">
+    <div class="flex flex-wrap items-center gap-1 ml-auto text-sm font-arial">
       <!-- Area selector -->
       <label for="area" class="sr-only">Área</label>
       <select
         id="area"
-        class="px-3 py-2 bg-white border border-aluminium rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-hydro-light-blue"
+        class="px-2 py-1.5 bg-white border border-aluminium rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-hydro-light-blue"
         [ngModel]="(context$ | async)?.area"
         (ngModelChange)="onAreaChange($event)"
       >
@@ -29,7 +29,7 @@
       <input
         id="date"
         type="date"
-        class="px-3 py-2 bg-white border border-aluminium rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-hydro-light-blue"
+        class="px-2 py-1.5 bg-white border border-aluminium rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-hydro-light-blue"
         [ngModel]="(context$ | async)?.date"
         (ngModelChange)="onDateChange($event)"
       />
@@ -42,7 +42,7 @@
         *ngIf="context$ | async as ctx"
       >
         <label
-          class="px-3 py-1 cursor-pointer flex-1 text-center transition-colors focus-within:ring-2 focus-within:ring-hydro-light-blue"
+          class="px-2 py-1 cursor-pointer flex-1 text-center transition-colors focus-within:ring-2 focus-within:ring-hydro-light-blue"
           [ngClass]="ctx.shift === 1 ? 'bg-hydro-blue text-white hover:bg-hydro-dark-blue' : 'hover:bg-light-gray'"
         >
           <input
@@ -58,7 +58,7 @@
           Turno 1
         </label>
         <label
-          class="px-3 py-1 cursor-pointer flex-1 text-center transition-colors focus-within:ring-2 focus-within:ring-hydro-light-blue"
+          class="px-2 py-1 cursor-pointer flex-1 text-center transition-colors focus-within:ring-2 focus-within:ring-hydro-light-blue"
           [ngClass]="ctx.shift === 2 ? 'bg-hydro-blue text-white hover:bg-hydro-dark-blue' : 'hover:bg-light-gray'"
         >
           <input
@@ -74,7 +74,7 @@
           Turno 2
         </label>
         <label
-          class="px-3 py-1 cursor-pointer flex-1 text-center transition-colors focus-within:ring-2 focus-within:ring-hydro-light-blue"
+          class="px-2 py-1 cursor-pointer flex-1 text-center transition-colors focus-within:ring-2 focus-within:ring-hydro-light-blue"
           [ngClass]="ctx.shift === 3 ? 'bg-hydro-blue text-white hover:bg-hydro-dark-blue' : 'hover:bg-light-gray'"
         >
           <input
@@ -95,7 +95,7 @@
       <button
         type="button"
         (click)="exportPdf()"
-        class="btn btn-primary p-2"
+        class="btn btn-primary p-1.5"
         aria-label="Exportar PDF"
       >
         <svg
@@ -118,12 +118,12 @@
 
       <!-- User placeholder -->
       <div
-        class="w-8 h-8 rounded-full bg-light-gray flex items-center justify-center text-hydro-blue"
+        class="w-7 h-7 rounded-full bg-light-gray flex items-center justify-center text-hydro-blue"
         aria-label="Usuário"
       >
         <span class="text-sm">U</span>
       </div>
     </div>
   </div>
-  <div *ngIf="exportMessage" class="text-center text-sm text-aluminium py-1">{{ exportMessage }}</div>
+  <div *ngIf="exportMessage" class="text-center text-sm text-aluminium py-0.5">{{ exportMessage }}</div>
 </header>

@@ -1,7 +1,7 @@
-<div class="max-w-[70rem] mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-10">
+<div class="max-w-[70rem] mx-auto px-2 sm:px-4 lg:px-6 py-4 space-y-6">
   <div>
-    <h1 class="text-3xl font-display text-black">Relatório de Turno</h1>
-    <p *ngIf="context$ | async as ctx" class="mt-2 text-aluminium font-arial">
+    <h1 class="text-2xl font-display text-black">Relatório de Turno</h1>
+    <p *ngIf="context$ | async as ctx" class="mt-1 text-aluminium font-arial">
       {{ ctx.area }} — {{ ctx.date | date:'dd/MM/yyyy' }} — Turno {{ ctx.shift }}
     </p>
   </div>
@@ -11,7 +11,7 @@
   </section>
 
   <app-area-indicators id="area-indicators"></app-area-indicators>
-  <div *ngIf="otherContext" class="p-4 bg-warm border border-aluminium rounded">
+  <div *ngIf="otherContext" class="p-3 bg-warm border border-aluminium rounded">
     Post pertencente a outro contexto.
     <button (click)="changeContext()" class="text-hydro-blue underline">Ajustar contexto</button>
   </div>
