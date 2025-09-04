@@ -1,10 +1,10 @@
-<section class="p-4 border border-dashed border-aluminium rounded">
-  <h3 class="text-lg font-semibold mb-2">Indicadores por Área</h3>
+<section class="mt-8 p-6 bg-white border border-light-gray rounded space-y-4">
+  <h2 class="text-xl font-display">Indicadores por Área</h2>
 
   <ng-container *ngIf="(indicators$ | async) as list">
     <ng-container *ngIf="list.length; else empty">
       <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-        <div *ngFor="let ind of list" class="p-3 border border-light-gray rounded bg-white">
+        <div *ngFor="let ind of list" class="p-3 border border-light-gray rounded">
           <div class="font-medium">{{ ind.name }}</div>
           <div class="text-2xl">
             {{ ind.value !== null ? (ind.value | number:'1.2-2':'pt-BR') : '—' }}
@@ -16,7 +16,7 @@
           </div>
         </div>
       </div>
-      <p *ngIf="source" class="text-xs text-mid-gray mt-2">Fonte: {{ source === 'mock' ? 'Dados simulados' : source }}</p>
+      <p *ngIf="source" class="text-xs text-mid-gray">Fonte: {{ source === 'mock' ? 'Dados simulados' : source }}</p>
     </ng-container>
   </ng-container>
 

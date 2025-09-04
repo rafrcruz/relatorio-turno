@@ -1,13 +1,19 @@
-<section class="p-4 border border-light-gray rounded mb-8">
-  <h3 class="text-lg font-semibold mb-4">{{ title }} ({{ count }})</h3>
-  <div *ngIf="loading" class="text-mid-gray">Carregando...</div>
+<section class="mt-8 p-6 bg-white border border-light-gray rounded space-y-4">
+  <h2 class="text-xl font-display">{{ title }} ({{ count }})</h2>
+  <div *ngIf="loading" class="text-aluminium">Carregando...</div>
   <div *ngIf="error" class="text-bauxite">
-    Erro ao carregar. <button (click)="retry()" class="underline">Tentar novamente</button>
+    Erro ao carregar.
+    <button (click)="retry()" class="text-hydro-blue underline">Tentar novamente</button>
   </div>
-  <div *ngIf="!loading && !error && posts.length === 0" class="text-mid-gray">
+  <div *ngIf="!loading && !error && posts.length === 0" class="text-aluminium">
     Sem {{ title.toLowerCase() }} para este turno.
   </div>
-  <article *ngFor="let post of posts; trackBy: trackById" [attr.id]="'post-' + post.id" class="mb-4 p-4 border border-light-gray rounded" [class.bg-warm]="post.id === highlightId">
+  <article
+    *ngFor="let post of posts; trackBy: trackById"
+    [attr.id]="'post-' + post.id"
+    class="p-4 border border-light-gray rounded" [class.bg-warm]="post.id === highlightId"
+    [class.mt-4]="post !== posts[0]"
+  >
     <div class="flex justify-between items-start">
       <span class="text-xs font-semibold px-2 py-1 rounded" [ngClass]="tagClass()">{{ typeLabel() }}</span>
       <span class="text-xs text-mid-gray">{{ post.author.name }} — {{ post.createdAt | date:'dd/MM/yyyy HH:mm' }}</span>

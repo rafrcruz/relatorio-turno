@@ -1,15 +1,15 @@
 <div
-  class="p-4 border border-aluminium rounded space-y-4"
+  class="p-6 bg-white border border-light-gray rounded space-y-4"
   (drop)="onDrop($event)"
   (dragover)="$event.preventDefault()"
 >
   <div
     role="radiogroup"
     aria-label="Tipo"
-    class="flex border border-aluminium rounded overflow-hidden"
+    class="flex border border-aluminium rounded overflow-hidden divide-x divide-aluminium text-sm"
   >
     <label
-      class="px-2 py-1 cursor-pointer focus-within:ring-2 focus-within:ring-hydro-light-blue"
+      class="px-3 py-1 cursor-pointer hover:bg-light-gray focus-within:ring-2 focus-within:ring-hydro-light-blue"
       [class.bg-hydro-blue]="type === 'ANNOTATION'"
       [class.text-white]="type === 'ANNOTATION'"
     >
@@ -24,7 +24,7 @@
       Anotação
     </label>
     <label
-      class="px-2 py-1 cursor-pointer focus-within:ring-2 focus-within:ring-hydro-light-blue"
+      class="px-3 py-1 cursor-pointer hover:bg-light-gray focus-within:ring-2 focus-within:ring-hydro-light-blue"
       [class.bg-hydro-blue]="type === 'URGENCY'"
       [class.text-white]="type === 'URGENCY'"
     >
@@ -39,7 +39,7 @@
       Urgência
     </label>
     <label
-      class="px-2 py-1 cursor-pointer focus-within:ring-2 focus-within:ring-hydro-light-blue"
+      class="px-3 py-1 cursor-pointer hover:bg-light-gray focus-within:ring-2 focus-within:ring-hydro-light-blue"
       [class.bg-hydro-blue]="type === 'PENDENCY'"
       [class.text-white]="type === 'PENDENCY'"
     >
@@ -55,7 +55,7 @@
     </label>
   </div>
 
-  <div class="border rounded">
+  <div class="border border-light-gray rounded">
     <div class="flex gap-1 border-b p-1">
       <button type="button" (click)="format('bold')" aria-label="Negrito" class="px-2 py-1 hover:bg-light-gray">B</button>
       <button type="button" (click)="format('italic')" aria-label="Itálico" class="px-2 py-1 hover:bg-light-gray"><em>I</em></button>
@@ -69,7 +69,7 @@
       contenteditable="true"
       role="textbox"
       aria-label="Conteúdo"
-      data-placeholder="Escreva uma atualização do turno..."
+      data-placeholder="Escreva uma atualização do turno… Ex.: status de produção, ocorrências, apontamentos"
       (input)="saveDraft()"
       (paste)="onPaste($event)"
     ></div>
@@ -79,12 +79,12 @@
     <div *ngFor="let att of attachments" class="flex items-center gap-2">
       <img *ngIf="att.url" [src]="att.url" alt="Pré-visualização" class="w-16 h-16 object-cover rounded" />
       <span class="text-sm">{{ att.file.name }} ({{ att.file.size / 1024 | number:'1.0-0' }} KB)</span>
-      <button type="button" (click)="removeAttachment(att)" class="text-bauxite text-sm">Remover</button>
+      <button type="button" (click)="removeAttachment(att)" class="text-hydro-blue text-sm underline">Remover</button>
     </div>
   </div>
 
   <div class="flex items-center gap-4">
-    <label class="cursor-pointer text-hydro-blue flex items-center gap-1">
+    <label class="cursor-pointer text-hydro-blue flex items-center gap-1 hover:underline">
       <input type="file" multiple class="hidden" (change)="onFileInput($event)" />
       <span>Anexar arquivos</span>
     </label>
@@ -96,6 +96,12 @@
     >
       {{ sending ? 'Publicando…' : 'Publicar' }}
     </button>
-    <span *ngIf="message" class="text-sm" [class.text-bauxite]="message.startsWith('Falha')" [class.text-green]="message.startsWith('Publicação')" >{{ message }}</span>
+    <span
+      *ngIf="message"
+      class="text-sm"
+      [class.text-bauxite]="message.startsWith('Falha')"
+      [class.text-green]="message.startsWith('Publicação')"
+      >{{ message }}</span
+    >
   </div>
 </div>

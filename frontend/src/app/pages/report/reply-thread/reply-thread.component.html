@@ -1,6 +1,9 @@
 <div class="mt-2 border-l border-light-gray pl-4">
   <div *ngIf="loading" class="text-mid-gray">Carregando respostas...</div>
-  <div *ngIf="error" class="text-bauxite">Falha ao carregar respostas. <button class="underline" (click)="load()">Tentar novamente</button></div>
+  <div *ngIf="error" class="text-bauxite">
+    Falha ao carregar respostas.
+    <button class="text-hydro-blue underline" (click)="load()">Tentar novamente</button>
+  </div>
   <div *ngIf="!loading && !error && replies.length === 0" class="text-mid-gray">Nenhuma resposta para este post.</div>
   <ng-container *ngFor="let r of replies">
     <article class="mb-2">
@@ -25,7 +28,7 @@
         <div class="relative">
           <img *ngIf="att.url" [src]="att.url" class="w-16 h-16 object-cover border border-light-gray" />
           <span *ngIf="!att.url" class="text-xs">{{ att.file.name }}</span>
-          <button (click)="removeAttachment(att)" aria-label="Remover" class="absolute top-0 right-0 text-bauxite bg-white">✕</button>
+          <button (click)="removeAttachment(att)" aria-label="Remover" class="absolute top-0 right-0 text-hydro-blue bg-white">✕</button>
         </div>
       </ng-container>
     </div>
