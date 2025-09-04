@@ -239,12 +239,21 @@ app.post('/api/posts/:id/replies', upload.array('attachments'), async (req, res)
 
 app.get('/api/posts/:id/replies', async (req, res) => {
   const postId = Number(req.params.id);
-  const replies = await prisma.reply.findMany({
-    where: { postId },
-    orderBy: { createdAt: 'asc' },
-    include: { attachments: true },
-  });
-  res.json(replies);
+  const { page = 1, pageSize = 10 } = req.query;
+  const skip = (Number(page) - 1) * Number(pageSize);
+
+  const [replies, total] = await Promise.all([
+    prisma.reply.findMany({
+      where: { postId },
+      orderBy: { createdAt: 'asc' },
+      skip,
+      take: Number(pageSize),
+      include: { attachments: true, author: true },
+    }),
+    prisma.reply.count({ where: { postId } }),
+  ]);
+
+  res.json({ replies, total });
 });
 
 // ----- Indicators -----
