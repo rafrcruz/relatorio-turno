@@ -100,12 +100,5 @@
       >
       {{ sending ? 'Publicando…' : 'Publicar' }}
     </button>
-    <span
-      *ngIf="message"
-      class="text-sm"
-      [class.text-bauxite]="message.startsWith('Falha')"
-      [class.text-green]="message.startsWith('Publicação')"
-      >{{ message }}</span
-    >
+    </div>
   </div>
-</div>

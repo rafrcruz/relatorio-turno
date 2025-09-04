@@ -17,6 +17,7 @@ import { ReplyThreadComponent } from './pages/report/reply-thread/reply-thread.c
 import { AdminComponent } from './pages/admin/admin.component';
 import { NotFoundComponent } from './pages/not-found/not-found.component';
 import { AppRoutingModule } from './app-routing.module';
+import { NotificationsComponent } from './layout/notifications/notifications.component';
 
 registerLocaleData(localePt);
 
@@ -31,7 +32,8 @@ registerLocaleData(localePt);
     PostListComponent,
     ReplyThreadComponent,
     AdminComponent,
-    NotFoundComponent
+    NotFoundComponent,
+    NotificationsComponent
   ],
   imports: [
     BrowserModule,

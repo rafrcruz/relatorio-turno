@@ -4,6 +4,7 @@ import { Subject, takeUntil } from 'rxjs';
 import DOMPurify from 'dompurify';
 import { Post } from '../../../core/posts.service';
 import { RepliesService, Reply } from '../../../core/replies.service';
+import { NotificationService } from '../../../core/notification.service';
 
 interface AttachmentView {
   file: File;
@@ -28,11 +29,10 @@ export class ReplyThreadComponent implements OnInit, OnDestroy {
   total = 0;
   showForm = false;
   sending = false;
-  message = '';
-  attachments: AttachmentView[] = [];
-  modalImageUrl?: string;
-  content = '';
-  modules = {
+    attachments: AttachmentView[] = [];
+    modalImageUrl?: string;
+    content = '';
+    modules = {
     toolbar: [
       ['bold', 'italic', 'underline', 'strike'],
       [{ list: 'ordered' }, { list: 'bullet' }],
@@ -42,7 +42,7 @@ export class ReplyThreadComponent implements OnInit, OnDestroy {
 
   private readonly destroy$ = new Subject<void>();
 
-  constructor(private readonly repliesService: RepliesService) {}
+    constructor(private readonly repliesService: RepliesService, private readonly notify: NotificationService) {}
 
   ngOnInit(): void {
     this.load();
@@ -102,15 +102,16 @@ export class ReplyThreadComponent implements OnInit, OnDestroy {
 
   deleteReply(r: Reply): void {
     if (!confirm('Excluir esta resposta?')) return;
-    this.repliesService.delete(this.post.id, r.id).subscribe({
-      next: () => {
-        this.replies = this.replies.filter((rr) => rr.id !== r.id);
-        this.post._count.replies--;
-        this.total--;
-      },
-      error: () => alert('Falha ao excluir resposta.'),
-    });
-  }
+      this.repliesService.delete(this.post.id, r.id).subscribe({
+        next: () => {
+          this.replies = this.replies.filter((rr) => rr.id !== r.id);
+          this.post._count.replies--;
+          this.total--;
+          this.notify.success('Resposta excluída.');
+        },
+        error: () => this.notify.error('Falha ao excluir resposta.'),
+      });
+    }
 
   onFileInput(event: Event): void {
     const input = event.target as HTMLInputElement;
@@ -131,20 +132,20 @@ export class ReplyThreadComponent implements OnInit, OnDestroy {
     for (const file of files) {
       const total = this.attachments.reduce((sum, a) => sum + a.file.size, 0);
       if (file.size > 20 * 1024 * 1024) {
-        this.message = `Arquivo muito grande: ${file.name}`;
+        this.notify.error(`Arquivo muito grande: ${file.name}`);
         continue;
       }
       if (total + file.size > 50 * 1024 * 1024) {
-        this.message = 'Limite total de anexos excedido';
+        this.notify.error('Limite total de anexos excedido');
         break;
       }
       if (!['image/png', 'image/jpeg', 'application/pdf'].includes(file.type)) {
-        this.message = `Tipo de arquivo não suportado: ${file.name}`;
+        this.notify.error(`Tipo de arquivo não suportado: ${file.name}`);
         continue;
       }
       const exists = this.attachments.some((a) => a.file.name === file.name && a.file.size === file.size);
       if (exists) {
-        this.message = `Arquivo duplicado ignorado: ${file.name}`;
+        this.notify.info(`Arquivo duplicado ignorado: ${file.name}`);
         continue;
       }
       const view: AttachmentView = { file };
@@ -160,7 +161,7 @@ export class ReplyThreadComponent implements OnInit, OnDestroy {
   send(): void {
     const html = this.content.trim();
     if (!html && this.attachments.length === 0) {
-      this.message = 'Conteúdo vazio.';
+      this.notify.error('Conteúdo vazio.');
       return;
     }
     const sanitized = DOMPurify.sanitize(html);
@@ -168,17 +169,18 @@ export class ReplyThreadComponent implements OnInit, OnDestroy {
     this.repliesService
       .create(this.post.id, { content: sanitized, attachments: this.attachments.map((a) => a.file) })
       .subscribe({
-        next: () => {
-          this.content = '';
-          this.attachments = [];
-          this.showForm = false;
-          this.sending = false;
-        },
-        error: () => {
-          this.message = 'Falha ao enviar.';
-          this.sending = false;
-        }
-      });
+          next: () => {
+            this.content = '';
+            this.attachments = [];
+            this.showForm = false;
+            this.sending = false;
+            this.notify.success('Resposta enviada.');
+          },
+          error: () => {
+            this.notify.error('Falha ao enviar.');
+            this.sending = false;
+          }
+        });
   }
 
   ngOnDestroy(): void {

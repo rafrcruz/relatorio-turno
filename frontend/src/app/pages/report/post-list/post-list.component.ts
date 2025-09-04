@@ -4,6 +4,7 @@ import { PostsService, PostType, Post } from '../../../core/posts.service';
 import { AreasService } from '../../../core/areas.service';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
+import { NotificationService } from '../../../core/notification.service';
 
 @Component({
   selector: 'app-post-list',
@@ -25,11 +26,12 @@ export class PostListComponent implements OnDestroy, OnChanges {
   private readonly areaMap = new Map<string, number>();
   private readonly destroy$ = new Subject<void>();
 
-  constructor(
-    private readonly appState: AppStateService,
-    private readonly postsService: PostsService,
-    private readonly areas: AreasService,
-  ) {
+    constructor(
+      private readonly appState: AppStateService,
+      private readonly postsService: PostsService,
+      private readonly areas: AreasService,
+      private readonly notify: NotificationService,
+    ) {
     this.areas.getAreasWithIds().pipe(takeUntil(this.destroy$)).subscribe((areas) => {
       for (const a of areas) this.areaMap.set(a.name, a.id);
       if (this.ctx) this.reset();
@@ -106,14 +108,15 @@ export class PostListComponent implements OnDestroy, OnChanges {
 
   deletePost(post: Post): void {
     if (!confirm('Excluir este post?')) return;
-    this.postsService.delete(post.id).subscribe({
-      next: () => {
-        this.posts = this.posts.filter((p) => p.id !== post.id);
-        this.count--;
-      },
-      error: () => alert('Falha ao excluir post.'),
-    });
-  }
+      this.postsService.delete(post.id).subscribe({
+        next: () => {
+          this.posts = this.posts.filter((p) => p.id !== post.id);
+          this.count--;
+          this.notify.success('Post excluído.');
+        },
+        error: () => this.notify.error('Falha ao excluir post.'),
+      });
+    }
 
   openImage(url: string): void {
     this.modalImageUrl = url;
