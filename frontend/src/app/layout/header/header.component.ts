@@ -15,7 +15,7 @@ export class HeaderComponent implements OnInit {
 
   constructor(
     private appState: AppStateService,
-    private areasService: AreasService,
+    private readonly areasService: AreasService,
     private exportService: ExportService
   ) {}
 
