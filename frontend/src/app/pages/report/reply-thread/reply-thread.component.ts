@@ -30,7 +30,7 @@ export class ReplyThreadComponent implements OnInit, OnDestroy {
   message = '';
   attachments: AttachmentView[] = [];
 
-  private destroy$ = new Subject<void>();
+  private readonly destroy$ = new Subject<void>();
 
   constructor(private repliesService: RepliesService) {}
 
