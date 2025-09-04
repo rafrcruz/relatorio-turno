@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { AppStateService } from '../../core/app-state.service';
 import { AreasService, Area } from '../../core/areas.service';
 import { ExportService } from '../../core/export.service';
+import { NotificationService } from '../../core/notification.service';
 
 @Component({
   selector: 'app-header',
@@ -10,14 +11,14 @@ import { ExportService } from '../../core/export.service';
 })
 export class HeaderComponent implements OnInit {
   areas: Area[] = [];
-  exportMessage = '';
   readonly context$ = this.appState.context$;
 
   constructor(
-    private readonly appState: AppStateService,
-    private readonly areasService: AreasService,
-    private exportService: ExportService
-  ) {}
+      private readonly appState: AppStateService,
+      private readonly areasService: AreasService,
+      private exportService: ExportService,
+      private readonly notify: NotificationService
+    ) {}
 
   ngOnInit(): void {
     this.areasService.getAreasWithIds().subscribe((areas) => (this.areas = areas));
@@ -39,25 +40,22 @@ export class HeaderComponent implements OnInit {
     const ctx = this.appState.context;
     const area = this.areas.find((a) => a.name === ctx.area);
     if (!area) {
-      this.exportMessage = 'Área inválida para exportação.';
-      setTimeout(() => (this.exportMessage = ''), 3000);
-      return;
+        this.notify.error('Área inválida para exportação.');
+        return;
+      }
+      this.exportService.downloadPdf(area.id, ctx.date, ctx.shift).subscribe({
+        next: (blob) => {
+          const url = URL.createObjectURL(blob);
+          const link = document.createElement('a');
+          link.href = url;
+          link.download = `relatorio-${ctx.date}-t${ctx.shift}.pdf`;
+          link.click();
+          URL.revokeObjectURL(url);
+          this.notify.success('PDF exportado.');
+        },
+        error: () => {
+          this.notify.error('Falha ao exportar PDF.');
+        },
+      });
     }
-    this.exportMessage = 'Gerando PDF...';
-    this.exportService.downloadPdf(area.id, ctx.date, ctx.shift).subscribe({
-      next: (blob) => {
-        const url = URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = `relatorio-${ctx.date}-t${ctx.shift}.pdf`;
-        link.click();
-        URL.revokeObjectURL(url);
-        this.exportMessage = '';
-      },
-      error: () => {
-        this.exportMessage = 'Falha ao exportar PDF.';
-        setTimeout(() => (this.exportMessage = ''), 3000);
-      },
-    });
   }
-}

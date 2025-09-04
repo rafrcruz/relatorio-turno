@@ -4,6 +4,7 @@ import { AppStateService, ReportContext } from '../../../core/app-state.service'
 import { AreasService, Area } from '../../../core/areas.service';
 import { PostsService, PostType } from '../../../core/posts.service';
 import DOMPurify from 'dompurify';
+import { NotificationService } from '../../../core/notification.service';
 
 interface AttachmentView {
   file: File;
@@ -23,7 +24,6 @@ export class PostComposerComponent implements OnInit {
   areas: Area[] = [];
   type: PostType = 'ANNOTATION';
   attachments: AttachmentView[] = [];
-  message = '';
   sending = false;
   content = '';
   modules = {
@@ -39,7 +39,8 @@ export class PostComposerComponent implements OnInit {
   constructor(
     private readonly appState: AppStateService,
     private readonly areasService: AreasService,
-    private readonly posts: PostsService
+    private readonly posts: PostsService,
+    private readonly notify: NotificationService
   ) {}
 
   ngOnInit(): void {
@@ -73,22 +74,22 @@ export class PostComposerComponent implements OnInit {
     for (const file of files) {
       const total = this.attachments.reduce((sum, a) => sum + a.file.size, 0);
       if (file.size > 20 * 1024 * 1024) {
-        this.message = `Arquivo muito grande: ${file.name}`;
+        this.notify.error(`Arquivo muito grande: ${file.name}`);
         continue;
       }
       if (total + file.size > 50 * 1024 * 1024) {
-        this.message = 'Limite total de anexos excedido';
+        this.notify.error('Limite total de anexos excedido');
         break;
       }
       if (!['image/png', 'image/jpeg', 'application/pdf'].includes(file.type)) {
-        this.message = `Tipo de arquivo não suportado: ${file.name}`;
+        this.notify.error(`Tipo de arquivo não suportado: ${file.name}`);
         continue;
       }
       const exists = this.attachments.some(
         (a) => a.file.name === file.name && a.file.size === file.size
       );
       if (exists) {
-        this.message = `Arquivo duplicado ignorado: ${file.name}`;
+        this.notify.info(`Arquivo duplicado ignorado: ${file.name}`);
         continue;
       }
       const view: AttachmentView = { file };
@@ -105,22 +106,21 @@ export class PostComposerComponent implements OnInit {
 
   async publish(): Promise<void> {
     if (!this.ctx.area || !this.ctx.date || !this.ctx.shift) {
-      this.message = 'Defina área, data e turno para publicar.';
+      this.notify.error('Defina área, data e turno para publicar.');
       return;
     }
     const area = this.areas.find((a) => a.name === this.ctx.area);
     if (!area) {
-      this.message = 'Área inválida.';
+      this.notify.error('Área inválida.');
       return;
     }
     const html = this.content.trim();
     if (!html) {
-      this.message = 'Conteúdo vazio.';
+      this.notify.error('Conteúdo vazio.');
       return;
     }
     const sanitized = DOMPurify.sanitize(html);
     this.sending = true;
-    this.message = '';
     this.saveDraft();
     this.posts
       .create({
@@ -131,20 +131,20 @@ export class PostComposerComponent implements OnInit {
         content: sanitized,
         attachments: this.attachments.map((a) => a.file),
       })
-      .subscribe({
-        next: () => {
-          this.message = 'Publicação criada.';
-          this.content = '';
-          this.type = 'ANNOTATION';
-          this.attachments = [];
-          this.clearDraft();
-          this.sending = false;
-        },
-        error: () => {
-          this.message = 'Falha ao publicar.';
-          this.sending = false;
-        },
-      });
+        .subscribe({
+          next: () => {
+            this.notify.success('Publicação criada.');
+            this.content = '';
+            this.type = 'ANNOTATION';
+            this.attachments = [];
+            this.clearDraft();
+            this.sending = false;
+          },
+          error: () => {
+            this.notify.error('Falha ao publicar.');
+            this.sending = false;
+          },
+        });
   }
 
   saveDraft(): void {
