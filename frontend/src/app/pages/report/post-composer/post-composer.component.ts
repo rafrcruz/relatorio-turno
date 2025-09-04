@@ -29,7 +29,7 @@ export class PostComposerComponent implements OnInit {
 
   constructor(
     private appState: AppStateService,
-    private areasService: AreasService,
+    private readonly areasService: AreasService,
     private posts: PostsService
   ) {}
 
