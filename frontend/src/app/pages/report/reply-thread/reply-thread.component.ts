@@ -140,10 +140,7 @@ export class ReplyThreadComponent implements OnInit, OnDestroy {
     this.repliesService
       .create(this.post.id, { content: sanitized, attachments: this.attachments.map((a) => a.file) })
       .subscribe({
-        next: (reply) => {
-          this.replies.push(reply);
-          this.post._count.replies++;
-          this.total++;
+        next: () => {
           this.editor.nativeElement.innerHTML = '';
           this.attachments = [];
           this.showForm = false;
