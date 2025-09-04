@@ -3,18 +3,55 @@
   (drop)="onDrop($event)"
   (dragover)="$event.preventDefault()"
 >
-  <div class="flex gap-4">
-    <label class="flex items-center gap-1">
-      <input type="radio" name="type" [(ngModel)]="type" value="ANNOTATION" (ngModelChange)="saveDraft()" />
-      <span>Anotação</span>
+  <div
+    role="radiogroup"
+    aria-label="Tipo"
+    class="flex border border-aluminium rounded overflow-hidden"
+  >
+    <label
+      class="px-2 py-1 cursor-pointer focus-within:ring-2 focus-within:ring-hydro-light-blue"
+      [class.bg-hydro-blue]="type === 'ANNOTATION'"
+      [class.text-white]="type === 'ANNOTATION'"
+    >
+      <input
+        class="sr-only"
+        type="radio"
+        name="type"
+        [(ngModel)]="type"
+        value="ANNOTATION"
+        (ngModelChange)="saveDraft()"
+      />
+      Anotação
     </label>
-    <label class="flex items-center gap-1">
-      <input type="radio" name="type" [(ngModel)]="type" value="URGENCY" (ngModelChange)="saveDraft()" />
-      <span>Urgência</span>
+    <label
+      class="px-2 py-1 cursor-pointer focus-within:ring-2 focus-within:ring-hydro-light-blue"
+      [class.bg-hydro-blue]="type === 'URGENCY'"
+      [class.text-white]="type === 'URGENCY'"
+    >
+      <input
+        class="sr-only"
+        type="radio"
+        name="type"
+        [(ngModel)]="type"
+        value="URGENCY"
+        (ngModelChange)="saveDraft()"
+      />
+      Urgência
     </label>
-    <label class="flex items-center gap-1">
-      <input type="radio" name="type" [(ngModel)]="type" value="PENDENCY" (ngModelChange)="saveDraft()" />
-      <span>Pendência</span>
+    <label
+      class="px-2 py-1 cursor-pointer focus-within:ring-2 focus-within:ring-hydro-light-blue"
+      [class.bg-hydro-blue]="type === 'PENDENCY'"
+      [class.text-white]="type === 'PENDENCY'"
+    >
+      <input
+        class="sr-only"
+        type="radio"
+        name="type"
+        [(ngModel)]="type"
+        value="PENDENCY"
+        (ngModelChange)="saveDraft()"
+      />
+      Pendência
     </label>
   </div>
 
