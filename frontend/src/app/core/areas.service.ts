@@ -28,7 +28,7 @@ export class AreasService {
     { id: 11, name: 'Meio Ambiente' }
   ];
 
-  constructor(private http: HttpClient) {}
+  constructor(private readonly http: HttpClient) {}
 
   /** Returns areas with id and name, using fallback data when API fails. */
   getAreasWithIds(): Observable<Area[]> {
