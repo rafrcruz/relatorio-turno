@@ -10,6 +10,7 @@ import { HeaderComponent } from './layout/header/header.component';
 import { FooterComponent } from './layout/footer/footer.component';
 import { ReportComponent } from './pages/report/report.component';
 import { PostComposerComponent } from './pages/report/post-composer/post-composer.component';
+import { AreaIndicatorsComponent } from './pages/report/area-indicators/area-indicators.component';
 import { AdminComponent } from './pages/admin/admin.component';
 import { NotFoundComponent } from './pages/not-found/not-found.component';
 import { AppRoutingModule } from './app-routing.module';
@@ -23,6 +24,7 @@ registerLocaleData(localePt);
     FooterComponent,
     ReportComponent,
     PostComposerComponent,
+    AreaIndicatorsComponent,
     AdminComponent,
     NotFoundComponent
   ],
