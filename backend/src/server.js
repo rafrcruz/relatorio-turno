@@ -208,7 +208,7 @@ app.post('/api/posts', upload.array('attachments'), async (req, res) => {
         filename: sanitizeFilename(f.originalname),
         mimeType: f.mimetype,
         size: f.size,
-        url: `/uploads/${f.filename}`,
+        url: `${req.protocol}://${req.get('host')}/uploads/${f.filename}`,
       }));
       await prisma.attachment.createMany({ data: attachmentsData });
     }
@@ -314,7 +314,7 @@ app.post('/api/posts/:id/replies', upload.array('attachments'), async (req, res)
         filename: sanitizeFilename(f.originalname),
         mimeType: f.mimetype,
         size: f.size,
-        url: `/uploads/${f.filename}`,
+        url: `${req.protocol}://${req.get('host')}/uploads/${f.filename}`,
       }));
       await prisma.attachment.createMany({ data: attData });
     }
