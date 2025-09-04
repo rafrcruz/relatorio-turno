@@ -1,0 +1,64 @@
+<div
+  class="p-4 border border-gray-300 dark:border-gray-700 rounded space-y-4"
+  (drop)="onDrop($event)"
+  (dragover)="$event.preventDefault()"
+>
+  <div class="flex gap-4">
+    <label class="flex items-center gap-1">
+      <input type="radio" name="type" [(ngModel)]="type" value="ANNOTATION" (ngModelChange)="saveDraft()" />
+      <span>Anotação</span>
+    </label>
+    <label class="flex items-center gap-1">
+      <input type="radio" name="type" [(ngModel)]="type" value="URGENCY" (ngModelChange)="saveDraft()" />
+      <span>Urgência</span>
+    </label>
+    <label class="flex items-center gap-1">
+      <input type="radio" name="type" [(ngModel)]="type" value="PENDENCY" (ngModelChange)="saveDraft()" />
+      <span>Pendência</span>
+    </label>
+  </div>
+
+  <div class="border rounded">
+    <div class="flex gap-1 border-b p-1">
+      <button type="button" (click)="format('bold')" aria-label="Negrito" class="px-2 py-1 hover:bg-gray-100">B</button>
+      <button type="button" (click)="format('italic')" aria-label="Itálico" class="px-2 py-1 hover:bg-gray-100"><em>I</em></button>
+      <button type="button" (click)="format('insertUnorderedList')" aria-label="Lista" class="px-2 py-1 hover:bg-gray-100">•</button>
+      <button type="button" (click)="format('insertOrderedList')" aria-label="Lista numerada" class="px-2 py-1 hover:bg-gray-100">1.</button>
+      <button type="button" (click)="formatLink()" aria-label="Link" class="px-2 py-1 hover:bg-gray-100">🔗</button>
+    </div>
+    <div
+      #editor
+      class="editor p-2 min-h-[120px] outline-none"
+      contenteditable="true"
+      role="textbox"
+      aria-label="Conteúdo"
+      data-placeholder="Escreva uma atualização do turno..."
+      (input)="saveDraft()"
+      (paste)="onPaste($event)"
+    ></div>
+  </div>
+
+  <div *ngIf="attachments.length" class="space-y-2">
+    <div *ngFor="let att of attachments" class="flex items-center gap-2">
+      <img *ngIf="att.url" [src]="att.url" alt="Pré-visualização" class="w-16 h-16 object-cover rounded" />
+      <span class="text-sm">{{ att.file.name }} ({{ att.file.size / 1024 | number:'1.0-0' }} KB)</span>
+      <button type="button" (click)="removeAttachment(att)" class="text-red-600 text-sm">Remover</button>
+    </div>
+  </div>
+
+  <div class="flex items-center gap-4">
+    <label class="cursor-pointer text-blue-600 flex items-center gap-1">
+      <input type="file" multiple class="hidden" (change)="onFileInput($event)" />
+      <span>Anexar arquivos</span>
+    </label>
+    <button
+      type="button"
+      (click)="publish()"
+      [disabled]="sending"
+      class="px-4 py-2 rounded bg-blue-600 text-white disabled:opacity-50"
+    >
+      {{ sending ? 'Publicando…' : 'Publicar' }}
+    </button>
+    <span *ngIf="message" class="text-sm" [class.text-red-600]="message.startsWith('Falha')" [class.text-green-600]="message.startsWith('Publicação')" >{{ message }}</span>
+  </div>
+</div>
