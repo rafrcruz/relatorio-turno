@@ -98,15 +98,25 @@ app.get('/api/reports', async (req, res) => {
 
 // ----- Areas -----
 app.get('/api/areas', async (req, res) => {
-  const areas = await prisma.area.findMany();
-  res.json(areas);
+  try {
+    const areas = await prisma.area.findMany();
+    res.json(areas);
+  } catch (error) {
+    console.error('Erro ao buscar áreas', error);
+    res.status(500).json({ error: 'Erro ao buscar áreas' });
+  }
 });
 
 // ----- Profile -----
 app.get('/api/me', async (req, res) => {
-  const userId = Number(req.header('x-user-id')) || 1;
-  const user = await ensureUser(userId);
-  res.json({ id: user.id, name: user.name, avatar: user.avatar, role: user.role });
+  try {
+    const userId = Number(req.header('x-user-id')) || 1;
+    const user = await ensureUser(userId);
+    res.json({ id: user.id, name: user.name, avatar: user.avatar, role: user.role });
+  } catch (error) {
+    console.error('Erro ao buscar usuário', error);
+    res.status(500).json({ error: 'Erro ao buscar usuário' });
+  }
 });
 
 // ----- Posts -----
