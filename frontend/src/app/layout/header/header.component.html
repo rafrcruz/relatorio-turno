@@ -10,7 +10,7 @@
         [ngModel]="(context$ | async)?.area"
         (ngModelChange)="onAreaChange($event)"
       >
-        <option *ngFor="let area of areas" [value]="area">{{ area }}</option>
+        <option *ngFor="let area of areas" [value]="area.name">{{ area.name }}</option>
       </select>
 
       <!-- Date selector -->
@@ -24,17 +24,23 @@
       />
 
       <!-- Shift selector -->
-      <div role="group" aria-label="Turno" class="flex border rounded overflow-hidden">
-        <button
+      <div role="radiogroup" aria-label="Turno" class="flex border rounded overflow-hidden">
+        <label
           *ngFor="let s of [1,2,3]"
-          type="button"
-          (click)="onShiftChange(s)"
+          class="px-2 py-1 cursor-pointer focus-within:ring"
           [class.bg-blue-600]="(context$ | async)?.shift === s"
           [class.text-white]="(context$ | async)?.shift === s"
-          class="px-2 py-1 focus:outline-none focus:ring"
         >
-          {{ s }}
-        </button>
+          <input
+            class="sr-only"
+            type="radio"
+            name="shift"
+            [value]="s"
+            [checked]="(context$ | async)?.shift === s"
+            (change)="onShiftChange(s)"
+          />
+          Turno {{ s }}
+        </label>
       </div>
 
       <!-- Export PDF -->
