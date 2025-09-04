@@ -4,6 +4,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { registerLocaleData } from '@angular/common';
 import localePt from '@angular/common/locales/pt';
 import { FormsModule } from '@angular/forms';
+import { QuillModule } from 'ngx-quill';
 
 import { AppComponent } from './app.component';
 import { HeaderComponent } from './layout/header/header.component';
@@ -36,6 +37,7 @@ registerLocaleData(localePt);
     BrowserModule,
     HttpClientModule,
     FormsModule,
+    QuillModule.forRoot(),
     AppRoutingModule
   ],
   providers: [{ provide: LOCALE_ID, useValue: 'pt-BR' }],

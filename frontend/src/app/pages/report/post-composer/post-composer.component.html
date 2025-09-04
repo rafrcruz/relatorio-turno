@@ -67,22 +67,16 @@
     </label>
   </div>
 
-  <div class="border border-light-gray rounded">
-    <div class="flex gap-1 border-b p-1">
-      <button type="button" (click)="format('bold')" aria-label="Negrito" class="px-2 py-1 hover:bg-light-gray">B</button>
-      <button type="button" (click)="format('italic')" aria-label="Itálico" class="px-2 py-1 hover:bg-light-gray"><em>I</em></button>
-      <button type="button" (click)="format('insertUnorderedList')" aria-label="Lista" class="px-2 py-1 hover:bg-light-gray">•</button>
-      <button type="button" (click)="format('insertOrderedList')" aria-label="Lista numerada" class="px-2 py-1 hover:bg-light-gray">1.</button>
-      <button type="button" (click)="formatLink()" aria-label="Link" class="px-2 py-1 hover:bg-light-gray">🔗</button>
-    </div>
-    <textarea
+  <div class="border border-light-gray rounded" (paste)="onPaste($event)">
+    <quill-editor
       #editor
-      class="editor p-2 min-h-[120px] outline-none w-full resize-none"
-      aria-label="Conteúdo"
+      [(ngModel)]="content"
+      [modules]="modules"
+      format="html"
+      (ngModelChange)="saveDraft()"
       placeholder="Escreva uma atualização do turno… Ex.: status de produção, ocorrências, apontamentos"
-      (input)="saveDraft()"
-      (paste)="onPaste($event)"
-    ></textarea>
+      class="min-h-[120px]"
+    ></quill-editor>
   </div>
 
   <div *ngIf="attachments.length" class="space-y-2">

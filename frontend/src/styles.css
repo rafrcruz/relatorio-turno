@@ -2,6 +2,8 @@
 @tailwind components;
 @tailwind utilities;
 
+@import '~quill/dist/quill.snow.css';
+
 @font-face {
   font-family: 'Ivar Display';
   src: url('/assets/brand/hydro/fonts/ivar-hydro/display/ivar-hydro-display-regular.ttf')

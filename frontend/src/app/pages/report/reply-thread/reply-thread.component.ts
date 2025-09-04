@@ -1,4 +1,5 @@
-import { Component, ElementRef, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { QuillEditorComponent } from 'ngx-quill';
 import { Subject, takeUntil } from 'rxjs';
 import DOMPurify from 'dompurify';
 import { Post } from '../../../core/posts.service';
@@ -17,7 +18,7 @@ interface AttachmentView {
 })
 export class ReplyThreadComponent implements OnInit, OnDestroy {
   @Input() post!: Post;
-  @ViewChild('editor') editor!: ElementRef<HTMLDivElement>;
+  @ViewChild('editor') editor!: QuillEditorComponent;
 
   replies: Reply[] = [];
   loading = false;
@@ -30,6 +31,14 @@ export class ReplyThreadComponent implements OnInit, OnDestroy {
   message = '';
   attachments: AttachmentView[] = [];
   modalImageUrl?: string;
+  content = '';
+  modules = {
+    toolbar: [
+      ['bold', 'italic', 'underline', 'strike'],
+      [{ list: 'ordered' }, { list: 'bullet' }],
+      ['link', 'blockquote', 'code-block', 'clean']
+    ]
+  };
 
   private readonly destroy$ = new Subject<void>();
 
@@ -72,7 +81,7 @@ export class ReplyThreadComponent implements OnInit, OnDestroy {
   toggleComposer(): void {
     this.showForm = !this.showForm;
     if (this.showForm) {
-      setTimeout(() => this.editor?.nativeElement.focus());
+      setTimeout(() => this.editor?.quillEditor?.focus());
     }
   }
 
@@ -142,7 +151,7 @@ export class ReplyThreadComponent implements OnInit, OnDestroy {
   }
 
   send(): void {
-    const html = this.editor.nativeElement.innerHTML.trim();
+    const html = this.content.trim();
     if (!html && this.attachments.length === 0) {
       this.message = 'Conteúdo vazio.';
       return;
@@ -153,7 +162,7 @@ export class ReplyThreadComponent implements OnInit, OnDestroy {
       .create(this.post.id, { content: sanitized, attachments: this.attachments.map((a) => a.file) })
       .subscribe({
         next: () => {
-          this.editor.nativeElement.innerHTML = '';
+          this.content = '';
           this.attachments = [];
           this.showForm = false;
           this.sending = false;
