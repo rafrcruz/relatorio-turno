@@ -17,7 +17,7 @@ export class ReportComponent {
   otherContext?: ReportContext;
   private areas: Area[] = [];
 
-  constructor(private appState: AppStateService, private posts: PostsService, private areasService: AreasService) {
+  constructor(private appState: AppStateService, private posts: PostsService, private readonly areasService: AreasService) {
     this.areasService.getAreasWithIds().subscribe((areas) => {
       this.areas = areas;
       this.checkDeepLink();
