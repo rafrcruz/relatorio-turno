@@ -9,9 +9,13 @@
     class="flex border border-aluminium rounded overflow-hidden divide-x divide-aluminium text-sm"
   >
     <label
-      class="px-3 py-1 cursor-pointer hover:bg-light-gray focus-within:ring-2 focus-within:ring-hydro-light-blue flex-1 text-center"
+      class="px-3 py-1 cursor-pointer focus-within:ring-2 focus-within:ring-hydro-light-blue flex-1 text-center"
       [class.bg-hydro-blue]="type === 'ANNOTATION'"
       [class.text-white]="type === 'ANNOTATION'"
+      [ngClass]="{
+        'hover:bg-hydro-dark-blue': type === 'ANNOTATION',
+        'hover:bg-light-gray': type !== 'ANNOTATION'
+      }"
     >
       <input
         class="sr-only"
@@ -24,9 +28,13 @@
       Anotação
     </label>
     <label
-      class="px-3 py-1 cursor-pointer hover:bg-light-gray focus-within:ring-2 focus-within:ring-hydro-light-blue flex-1 text-center"
+      class="px-3 py-1 cursor-pointer focus-within:ring-2 focus-within:ring-hydro-light-blue flex-1 text-center"
       [class.bg-hydro-blue]="type === 'URGENCY'"
       [class.text-white]="type === 'URGENCY'"
+      [ngClass]="{
+        'hover:bg-hydro-dark-blue': type === 'URGENCY',
+        'hover:bg-light-gray': type !== 'URGENCY'
+      }"
     >
       <input
         class="sr-only"
@@ -39,9 +47,13 @@
       Urgência
     </label>
     <label
-      class="px-3 py-1 cursor-pointer hover:bg-light-gray focus-within:ring-2 focus-within:ring-hydro-light-blue flex-1 text-center"
+      class="px-3 py-1 cursor-pointer focus-within:ring-2 focus-within:ring-hydro-light-blue flex-1 text-center"
       [class.bg-hydro-blue]="type === 'PENDENCY'"
       [class.text-white]="type === 'PENDENCY'"
+      [ngClass]="{
+        'hover:bg-hydro-dark-blue': type === 'PENDENCY',
+        'hover:bg-light-gray': type !== 'PENDENCY'
+      }"
     >
       <input
         class="sr-only"
