@@ -1,14 +1,7 @@
-<div class="min-h-screen bg-gray-50 flex flex-col">
-  <header class="bg-gradient-to-r from-primary-600 to-secondary-600 text-white text-center py-8 px-4 shadow-lg">
-    <h1 class="text-4xl font-bold mb-2">{{ title }}</h1>
-    <p class="text-lg opacity-90">Frontend Angular + Backend Node.js + Express</p>
-  </header>
-
-  <main class="flex-1 py-8 px-4 max-w-6xl mx-auto w-full">
-    <app-hello></app-hello>
+<div class="min-h-screen flex flex-col bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
+  <app-header></app-header>
+  <main id="main-content" class="flex-1 overflow-y-auto">
+    <router-outlet></router-outlet>
   </main>
-
-  <footer class="bg-gray-800 text-white text-center py-6 px-4">
-    <p>&copy; 2025 - Aplicação de Relatório de Turno</p>
-  </footer>
+  <app-footer></app-footer>
 </div>
