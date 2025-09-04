@@ -84,6 +84,13 @@ export class PostComposerComponent implements OnInit {
         this.message = `Tipo de arquivo não suportado: ${file.name}`;
         continue;
       }
+      const exists = this.attachments.some(
+        (a) => a.file.name === file.name && a.file.size === file.size
+      );
+      if (exists) {
+        this.message = `Arquivo duplicado ignorado: ${file.name}`;
+        continue;
+      }
       const view: AttachmentView = { file };
       if (file.type.startsWith('image/')) {
         view.url = URL.createObjectURL(file);
