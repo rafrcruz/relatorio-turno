@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, Subject } from 'rxjs';
 import { tap } from 'rxjs/operators';
+import { environment } from '../../environments/environment';
 
 export type PostType = 'ANNOTATION' | 'URGENCY' | 'PENDENCY';
 
@@ -55,7 +56,7 @@ export class PostsService {
     for (const file of payload.attachments) {
       form.append('attachments', file);
     }
-    return this.http.post<any>('/api/posts', form).pipe(
+    return this.http.post<any>(`${environment.apiUrl}/api/posts`, form).pipe(
       tap((post) => this.createdSource.next(post))
     );
   }
@@ -69,7 +70,7 @@ export class PostsService {
       .set('type', type)
       .set('page', String(page))
       .set('pageSize', String(pageSize));
-    return this.http.get<Post[]>('/api/posts', { params });
+    return this.http.get<Post[]>(`${environment.apiUrl}/api/posts`, { params });
   }
 
   /** Returns post counts grouped by type for the context. */
@@ -78,11 +79,11 @@ export class PostsService {
       .set('areaId', String(areaId))
       .set('date', date)
       .set('shift', String(shift));
-    return this.http.get<any[]>('/api/summary', { params });
+    return this.http.get<any[]>(`${environment.apiUrl}/api/summary`, { params });
   }
 
   /** Retrieves a single post by id. */
   get(id: number): Observable<Post> {
-    return this.http.get<Post>(`/api/posts/${id}`);
+    return this.http.get<Post>(`${environment.apiUrl}/api/posts/${id}`);
   }
 }
