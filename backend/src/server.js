@@ -234,6 +234,7 @@ app.post('/api/posts/:id/replies', upload.array('attachments'), async (req, res)
     });
     res.status(201).json(fullReply);
   } catch (error) {
+    console.error('Failed to create reply', error);
     res.status(400).json({ error: 'Failed to create reply' });
   }
 });
