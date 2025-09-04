@@ -86,4 +86,9 @@ export class PostsService {
   get(id: number): Observable<Post> {
     return this.http.get<Post>(`${environment.apiUrl}/api/posts/${id}`);
   }
+
+  /** Deletes a post by id. */
+  delete(id: number): Observable<void> {
+    return this.http.delete<void>(`${environment.apiUrl}/api/posts/${id}`);
+  }
 }

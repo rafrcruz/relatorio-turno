@@ -84,6 +84,18 @@ export class ReplyThreadComponent implements OnInit, OnDestroy {
     this.modalImageUrl = undefined;
   }
 
+  deleteReply(r: Reply): void {
+    if (!confirm('Excluir esta resposta?')) return;
+    this.repliesService.delete(this.post.id, r.id).subscribe({
+      next: () => {
+        this.replies = this.replies.filter((rr) => rr.id !== r.id);
+        this.post._count.replies--;
+        this.total--;
+      },
+      error: () => alert('Falha ao excluir resposta.'),
+    });
+  }
+
   onFileInput(event: Event): void {
     const input = event.target as HTMLInputElement;
     if (input.files) this.addFiles(Array.from(input.files));

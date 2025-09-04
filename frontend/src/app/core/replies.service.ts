@@ -48,4 +48,8 @@ export class RepliesService {
       .post<Reply>(`${environment.apiUrl}/api/posts/${postId}/replies`, form)
       .pipe(tap((r) => this.createdSource.next(r)));
   }
+
+  delete(postId: number, id: number): Observable<void> {
+    return this.http.delete<void>(`${environment.apiUrl}/api/posts/${postId}/replies/${id}`);
+  }
 }

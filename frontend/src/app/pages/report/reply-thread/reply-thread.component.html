@@ -23,6 +23,9 @@
           </a>
         </ng-container>
       </div>
+      <div class="mt-1">
+        <button class="text-sm text-bauxite hover:underline" (click)="deleteReply(r)">Excluir</button>
+      </div>
     </article>
   </ng-container>
   <button *ngIf="replies.length < total && !loading" (click)="loadMore()" class="text-sm text-hydro-blue underline">Ver mais respostas</button>
