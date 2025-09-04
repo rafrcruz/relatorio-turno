@@ -40,12 +40,71 @@ export class PostComposerComponent implements OnInit {
   }
 
   format(cmd: string): void {
-    document.execCommand(cmd, false);
+    const selection = window.getSelection();
+    if (!selection || selection.rangeCount === 0) return;
+    const range = selection.getRangeAt(0);
+    if (!this.editor.nativeElement.contains(range.commonAncestorContainer)) return;
+
+    switch (cmd) {
+      case 'bold':
+        this.wrapSelection('b', range, selection);
+        break;
+      case 'italic':
+        this.wrapSelection('i', range, selection);
+        break;
+      case 'insertUnorderedList':
+        this.wrapSelectionInList('ul', range, selection);
+        break;
+      case 'insertOrderedList':
+        this.wrapSelectionInList('ol', range, selection);
+        break;
+      default:
+        return;
+    }
+
+    this.saveDraft();
+  }
+
+  private wrapSelection(
+    tag: keyof HTMLElementTagNameMap,
+    range: Range,
+    selection: Selection
+  ): void {
+    const el = document.createElement(tag);
+    el.appendChild(range.extractContents());
+    range.insertNode(el);
+    selection.removeAllRanges();
+    selection.selectAllChildren(el);
+  }
+
+  private wrapSelectionInList(
+    tag: 'ul' | 'ol',
+    range: Range,
+    selection: Selection
+  ): void {
+    const list = document.createElement(tag);
+    const li = document.createElement('li');
+    li.appendChild(range.extractContents());
+    list.appendChild(li);
+    range.insertNode(list);
+    selection.removeAllRanges();
+    selection.selectAllChildren(li);
   }
 
   formatLink(): void {
     const url = prompt('URL');
-    if (url) document.execCommand('createLink', false, url);
+    if (!url) return;
+    const selection = window.getSelection();
+    if (!selection || selection.rangeCount === 0) return;
+    const range = selection.getRangeAt(0);
+    if (!this.editor.nativeElement.contains(range.commonAncestorContainer)) return;
+    const a = document.createElement('a');
+    a.href = url;
+    a.appendChild(range.extractContents());
+    range.insertNode(a);
+    selection.removeAllRanges();
+    selection.selectAllChildren(a);
+    this.saveDraft();
   }
 
   onFileInput(event: Event): void {
