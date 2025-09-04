@@ -74,10 +74,33 @@ async function ensureUser(id) {
   });
 }
 
+const defaultAreas = [
+  { name: 'Recebimento de Bauxita' },
+  { name: 'Digestão' },
+  { name: 'Clarificação' },
+  { name: 'Filtro Prensa' },
+  { name: 'Precipitação' },
+  { name: 'Calcinação' },
+  { name: 'Vapor e Utilidades' },
+  { name: 'Águas e Efluentes' },
+  { name: 'Automação e Energia' },
+  { name: 'Porto' },
+  { name: 'Meio Ambiente' },
+];
+
+async function seedAreas() {
+  const count = await prisma.area.count();
+  if (count === 0) {
+    await prisma.area.createMany({ data: defaultAreas });
+    console.log('🌱 Áreas padrão inseridas');
+  }
+}
+
 (async () => {
   try {
     await prisma.$connect();
     console.log('✅ Conexão com banco de dados estabelecida');
+    await seedAreas();
   } catch (error) {
     console.error('❌ Erro ao conectar ao banco de dados', error);
     process.exit(1);
