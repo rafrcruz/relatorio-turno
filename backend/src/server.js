@@ -172,7 +172,7 @@ app.post('/api/posts', upload.array('attachments'), async (req, res) => {
       include: {
         attachments: true,
         author: true,
-        _count: { replies: true },
+        _count: { select: { replies: true } },
       },
     });
     res.status(201).json(fullPost);
@@ -197,7 +197,7 @@ app.get('/api/posts', async (req, res) => {
     include: {
       attachments: true,
       author: true,
-      _count: { replies: true },
+      _count: { select: { replies: true } },
     },
   });
   res.json(posts);
@@ -211,7 +211,7 @@ app.get('/api/posts/:id', async (req, res) => {
       attachments: true,
       author: true,
       replies: { include: { attachments: true, author: true } },
-      _count: { replies: true },
+      _count: { select: { replies: true } },
     },
   });
   if (!post) return res.status(404).json({ error: 'Post not found' });
