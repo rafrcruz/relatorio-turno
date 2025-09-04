@@ -1,8 +1,21 @@
+require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
+const { PrismaClient } = require('@prisma/client');
 
+const prisma = new PrismaClient();
 const app = express();
 const PORT = process.env.PORT || 3000;
+
+(async () => {
+  try {
+    await prisma.$connect();
+    console.log('✅ Conexão com banco de dados estabelecida');
+  } catch (error) {
+    console.error('❌ Erro ao conectar ao banco de dados', error);
+    process.exit(1);
+  }
+})();
 
 // Middleware
 app.use(cors({
@@ -23,6 +36,16 @@ app.get('/api/hello', (req, res) => {
     timestamp: new Date().toISOString(),
     backend: 'Node.js + Express'
   });
+});
+
+// Rota para listar relatórios
+app.get('/api/reports', async (req, res) => {
+  try {
+    const reports = await prisma.report.findMany();
+    res.json(reports);
+  } catch (error) {
+    res.status(500).json({ error: 'Erro ao buscar relatórios' });
+  }
 });
 
 // Iniciar servidor
