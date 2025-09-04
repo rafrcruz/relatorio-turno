@@ -104,6 +104,17 @@ export class PostListComponent implements OnDestroy, OnChanges {
     navigator.clipboard.writeText(url);
   }
 
+  deletePost(post: Post): void {
+    if (!confirm('Excluir este post?')) return;
+    this.postsService.delete(post.id).subscribe({
+      next: () => {
+        this.posts = this.posts.filter((p) => p.id !== post.id);
+        this.count--;
+      },
+      error: () => alert('Falha ao excluir post.'),
+    });
+  }
+
   openImage(url: string): void {
     this.modalImageUrl = url;
   }

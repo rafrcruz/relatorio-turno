@@ -41,6 +41,7 @@
     <div class="mt-2 flex items-center gap-4 text-sm text-aluminium">
       <button class="text-hydro-blue hover:underline" (click)="thread.toggleComposer()">Responder</button>
       <button class="text-hydro-blue hover:underline" (click)="copyLink(post)">Copiar link</button>
+      <button class="text-bauxite hover:underline" (click)="deletePost(post)">Excluir</button>
       <span>{{ post._count.replies }} respostas</span>
       <span>Atualizado {{ post.updatedAt | date:'dd/MM HH:mm' }}</span>
     </div>

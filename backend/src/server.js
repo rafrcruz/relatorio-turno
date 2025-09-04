@@ -282,6 +282,52 @@ app.get('/api/posts/:id', async (req, res) => {
   res.json(post);
 });
 
+app.delete('/api/posts/:id', async (req, res) => {
+  const id = parseNumberParam(req.params.id);
+  if (id === undefined) {
+    return res.status(400).json({ error: 'Invalid post id' });
+  }
+  const post = await prisma.post.findUnique({
+    where: { id },
+    include: {
+      attachments: true,
+      replies: { include: { attachments: true } },
+    },
+  });
+  if (!post) return res.status(404).json({ error: 'Post not found' });
+
+  const userId = parseNumberParam(req.header('x-user-id')) || 1;
+  const user = await ensureUser(userId);
+
+  const allAttachments = [
+    ...post.attachments,
+    ...post.replies.flatMap((r) => r.attachments),
+  ];
+  for (const att of allAttachments) {
+    const filePath = path.join(uploadDir, path.basename(att.url));
+    fs.unlink(filePath, () => {});
+  }
+
+  await prisma.attachment.deleteMany({
+    where: {
+      OR: [{ postId: id }, { reply: { postId: id } }],
+    },
+  });
+  await prisma.reply.deleteMany({ where: { postId: id } });
+  await prisma.post.delete({ where: { id } });
+
+  await prisma.auditLog.create({
+    data: {
+      userId: user.id,
+      action: 'DELETE_POST',
+      targetType: 'Post',
+      targetId: id,
+    },
+  });
+
+  res.json({ success: true });
+});
+
 // ----- Replies -----
 app.post('/api/posts/:id/replies', upload.array('attachments'), async (req, res) => {
   try {
@@ -361,6 +407,43 @@ app.get('/api/posts/:id/replies', async (req, res) => {
   ]);
 
   res.json({ replies, total });
+});
+
+app.delete('/api/posts/:postId/replies/:id', async (req, res) => {
+  const postId = parseNumberParam(req.params.postId);
+  const id = parseNumberParam(req.params.id);
+  if (postId === undefined || id === undefined) {
+    return res.status(400).json({ error: 'Invalid ids' });
+  }
+  const reply = await prisma.reply.findUnique({
+    where: { id },
+    include: { attachments: true },
+  });
+  if (!reply || reply.postId !== postId) {
+    return res.status(404).json({ error: 'Reply not found' });
+  }
+
+  const userId = parseNumberParam(req.header('x-user-id')) || 1;
+  const user = await ensureUser(userId);
+
+  for (const att of reply.attachments) {
+    const filePath = path.join(uploadDir, path.basename(att.url));
+    fs.unlink(filePath, () => {});
+  }
+
+  await prisma.attachment.deleteMany({ where: { replyId: id } });
+  await prisma.reply.delete({ where: { id } });
+
+  await prisma.auditLog.create({
+    data: {
+      userId: user.id,
+      action: 'DELETE_REPLY',
+      targetType: 'Reply',
+      targetId: id,
+    },
+  });
+
+  res.json({ success: true });
 });
 
 // ----- Indicators -----
