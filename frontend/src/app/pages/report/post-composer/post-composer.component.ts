@@ -16,7 +16,7 @@ interface AttachmentView {
   styleUrls: ['./post-composer.component.css']
 })
 export class PostComposerComponent implements OnInit {
-  @ViewChild('editor') editor!: ElementRef<HTMLDivElement>;
+  @ViewChild('editor') editor!: ElementRef<HTMLTextAreaElement>;
 
   ctx!: ReportContext;
   areas: Area[] = [];
@@ -40,41 +40,36 @@ export class PostComposerComponent implements OnInit {
   }
 
   format(cmd: string): void {
-    const selection = document.getSelection();
-    if (!selection || selection.rangeCount === 0) {
-      return;
-    }
-    const range = selection.getRangeAt(0);
     const editorEl = this.editor.nativeElement;
-    if (!editorEl.contains(range.commonAncestorContainer)) {
+    const start = editorEl.selectionStart;
+    const end = editorEl.selectionEnd;
+    if (start == null || end == null) {
       return;
     }
+    const before = editorEl.value.substring(0, start);
+    const selected = editorEl.value.substring(start, end);
+    const after = editorEl.value.substring(end);
+    let wrapped = '';
     switch (cmd) {
       case 'bold':
-      case 'italic': {
-        const tag = cmd === 'bold' ? 'b' : 'i';
-        const wrapper = document.createElement(tag);
-        wrapper.appendChild(range.extractContents());
-        range.insertNode(wrapper);
-        selection.removeAllRanges();
-        selection.selectAllChildren(wrapper);
+        wrapped = `<b>${selected}</b>`;
         break;
-      }
+      case 'italic':
+        wrapped = `<i>${selected}</i>`;
+        break;
       case 'insertUnorderedList':
-      case 'insertOrderedList': {
-        const listTag = cmd === 'insertUnorderedList' ? 'ul' : 'ol';
-        const list = document.createElement(listTag);
-        const li = document.createElement('li');
-        li.appendChild(range.extractContents());
-        list.appendChild(li);
-        range.insertNode(list);
-        selection.removeAllRanges();
-        selection.selectAllChildren(li);
+        wrapped = `<ul><li>${selected}</li></ul>`;
         break;
-      }
+      case 'insertOrderedList':
+        wrapped = `<ol><li>${selected}</li></ol>`;
+        break;
       default:
         return;
     }
+    editorEl.value = before + wrapped + after;
+    const cursor = before.length;
+    editorEl.selectionStart = cursor;
+    editorEl.selectionEnd = cursor + wrapped.length;
     this.saveDraft();
   }
 
@@ -83,21 +78,20 @@ export class PostComposerComponent implements OnInit {
     if (!url) {
       return;
     }
-    const selection = document.getSelection();
-    if (!selection || selection.rangeCount === 0) {
-      return;
-    }
-    const range = selection.getRangeAt(0);
     const editorEl = this.editor.nativeElement;
-    if (!editorEl.contains(range.commonAncestorContainer)) {
+    const start = editorEl.selectionStart;
+    const end = editorEl.selectionEnd;
+    if (start == null || end == null) {
       return;
     }
-    const anchor = document.createElement('a');
-    anchor.href = url;
-    anchor.appendChild(range.extractContents());
-    range.insertNode(anchor);
-    selection.removeAllRanges();
-    selection.selectAllChildren(anchor);
+    const before = editorEl.value.substring(0, start);
+    const selected = editorEl.value.substring(start, end);
+    const after = editorEl.value.substring(end);
+    const anchor = `<a href="${url}">${selected}</a>`;
+    editorEl.value = before + anchor + after;
+    const cursor = before.length;
+    editorEl.selectionStart = cursor;
+    editorEl.selectionEnd = cursor + anchor.length;
     this.saveDraft();
   }
 
@@ -166,7 +160,7 @@ export class PostComposerComponent implements OnInit {
       this.message = 'Área inválida.';
       return;
     }
-    const html = this.editor.nativeElement.innerHTML.trim();
+    const html = this.editor.nativeElement.value.trim();
     if (!html) {
       this.message = 'Conteúdo vazio.';
       return;
@@ -187,7 +181,7 @@ export class PostComposerComponent implements OnInit {
       .subscribe({
         next: () => {
           this.message = 'Publicação criada.';
-          this.editor.nativeElement.innerHTML = '';
+          this.editor.nativeElement.value = '';
           this.type = 'ANNOTATION';
           this.attachments = [];
           this.clearDraft();
@@ -201,7 +195,7 @@ export class PostComposerComponent implements OnInit {
   }
 
   saveDraft(): void {
-    const html = this.editor?.nativeElement?.innerHTML || '';
+    const html = this.editor?.nativeElement?.value || '';
     const draft = { type: this.type, content: html };
     localStorage.setItem(this.draftKey, JSON.stringify(draft));
   }
@@ -213,7 +207,7 @@ export class PostComposerComponent implements OnInit {
         const draft = JSON.parse(raw);
         this.type = draft.type || 'ANNOTATION';
         setTimeout(() => {
-          if (this.editor) this.editor.nativeElement.innerHTML = draft.content || '';
+          if (this.editor) this.editor.nativeElement.value = draft.content || '';
         });
       } catch {
         /* ignore */
