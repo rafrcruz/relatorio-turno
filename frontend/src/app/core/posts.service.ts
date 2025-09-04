@@ -38,7 +38,7 @@ export interface PostCreate {
 
 @Injectable({ providedIn: 'root' })
 export class PostsService {
-  private createdSource = new Subject<any>();
+  private readonly createdSource = new Subject<any>();
   /** Emits newly created posts so that lists can refresh. */
   readonly created$ = this.createdSource.asObservable();
 
