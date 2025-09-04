@@ -35,26 +35,18 @@
       />
 
       <!-- Shift selector -->
-      <div
-        role="radiogroup"
-        aria-label="Turno"
-        class="flex border border-aluminium rounded overflow-hidden divide-x divide-aluminium"
-      >
-        <label
-          *ngFor="let s of [1,2,3]"
-          class="px-3 py-1 cursor-pointer hover:bg-light-gray focus-within:ring-2 focus-within:ring-hydro-light-blue"
-          [class.bg-hydro-blue]="(context$ | async)?.shift === s"
-          [class.text-white]="(context$ | async)?.shift === s"
-        >
-          <input
-            class="sr-only"
-            type="radio"
-            name="shift"
-            [value]="s"
-            [checked]="(context$ | async)?.shift === s"
-            (change)="onShiftChange(s)"
-          />
-          Turno {{ s }}
+      <div role="radiogroup" aria-label="Tipo" class="flex border border-aluminium rounded overflow-hidden divide-x divide-aluminium text-sm">
+        <label class="px-3 py-1 cursor-pointer hover:bg-light-gray focus-within:ring-2 focus-within:ring-hydro-light-blue bg-hydro-blue text-white flex-1 text-center">
+          <input type="radio" name="type" value="ANNOTATION" class="sr-only">
+          Anotação
+        </label>
+        <label class="px-3 py-1 cursor-pointer hover:bg-light-gray focus-within:ring-2 focus-within:ring-hydro-light-blue flex-1 text-center">
+          <input type="radio" name="type" value="URGENCY" class="sr-only">
+          Urgência
+        </label>
+        <label class="px-3 py-1 cursor-pointer hover:bg-light-gray focus-within:ring-2 focus-within:ring-hydro-light-blue flex-1 text-center">
+          <input type="radio" name="type" value="PENDENCY" class="sr-only">
+          Pendência
         </label>
       </div>
 
