@@ -1,9 +1,60 @@
 <header class="sticky top-0 z-10 bg-white dark:bg-gray-800 shadow-sm" role="banner">
-  <div class="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
+  <div class="max-w-7xl mx-auto px-4 py-4 flex flex-wrap items-center gap-4">
     <h1 class="text-xl font-semibold">Relatório de Turno</h1>
-    <div class="flex items-center space-x-4 text-gray-500 dark:text-gray-400" aria-label="Espaço para controles futuros">
-      <div class="h-8 w-8 rounded-full bg-gray-200 dark:bg-gray-700" aria-hidden="true"></div>
-      <span class="hidden sm:inline">Controles</span>
+    <div class="flex flex-wrap items-center gap-2 ml-auto text-sm">
+      <!-- Area selector -->
+      <label for="area" class="sr-only">Área</label>
+      <select
+        id="area"
+        class="border rounded px-2 py-1 bg-white dark:bg-gray-700"
+        [ngModel]="(context$ | async)?.area"
+        (ngModelChange)="onAreaChange($event)"
+      >
+        <option *ngFor="let area of areas" [value]="area">{{ area }}</option>
+      </select>
+
+      <!-- Date selector -->
+      <label for="date" class="sr-only">Data</label>
+      <input
+        id="date"
+        type="date"
+        class="border rounded px-2 py-1 bg-white dark:bg-gray-700"
+        [ngModel]="(context$ | async)?.date"
+        (ngModelChange)="onDateChange($event)"
+      />
+
+      <!-- Shift selector -->
+      <div role="group" aria-label="Turno" class="flex border rounded overflow-hidden">
+        <button
+          *ngFor="let s of [1,2,3]"
+          type="button"
+          (click)="onShiftChange(s)"
+          [class.bg-blue-600]="(context$ | async)?.shift === s"
+          [class.text-white]="(context$ | async)?.shift === s"
+          class="px-2 py-1 focus:outline-none focus:ring"
+        >
+          {{ s }}
+        </button>
+      </div>
+
+      <!-- Export PDF -->
+      <button
+        type="button"
+        (click)="exportPdf()"
+        class="px-3 py-1 border rounded hover:bg-gray-100 focus:outline-none focus:ring"
+        aria-label="Exportar PDF"
+      >
+        Exportar PDF
+      </button>
+
+      <!-- User placeholder -->
+      <div
+        class="w-8 h-8 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center text-gray-600"
+        aria-label="Usuário"
+      >
+        <span class="text-sm">U</span>
+      </div>
     </div>
   </div>
+  <div *ngIf="exportMessage" class="text-center text-sm text-gray-600 py-1">{{ exportMessage }}</div>
 </header>
