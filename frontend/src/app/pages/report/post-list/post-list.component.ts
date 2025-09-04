@@ -99,10 +99,6 @@ export class PostListComponent implements OnDestroy, OnChanges {
     navigator.clipboard.writeText(url);
   }
 
-  reply(post: Post): void {
-    window.location.hash = `post-${post.id}-reply`;
-  }
-
   trackById(_: number, item: Post): number {
     return item.id;
   }

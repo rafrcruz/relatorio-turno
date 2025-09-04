@@ -22,11 +22,12 @@
       </ng-container>
     </div>
     <div class="mt-2 flex items-center gap-4 text-sm text-gray-600">
-      <button class="text-blue-600 hover:underline" (click)="reply(post)">Responder</button>
+      <button class="text-blue-600 hover:underline" (click)="thread.toggleComposer()">Responder</button>
       <button class="text-blue-600 hover:underline" (click)="copyLink(post)">Copiar link</button>
       <span>{{ post._count.replies }} respostas</span>
       <span>Atualizado {{ post.updatedAt | date:'dd/MM HH:mm' }}</span>
     </div>
+    <app-reply-thread #thread [post]="post"></app-reply-thread>
   </article>
   <div *ngIf="!loading && posts.length < count" class="text-center mt-4">
     <button (click)="loadMore()" class="px-4 py-2 bg-gray-200 dark:bg-gray-700 rounded">Carregar mais</button>
