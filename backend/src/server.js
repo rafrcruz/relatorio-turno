@@ -1,4 +1,6 @@
 require('dotenv').config();
+require('express-async-errors'); // Captura erros de rotas assíncronas automaticamente
+
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
@@ -6,6 +8,10 @@ const fs = require('fs');
 const multer = require('multer');
 const sanitizeHtml = require('sanitize-html');
 const PDFDocument = require('pdfkit');
+const compression = require('compression');
+const errorhandler = require('errorhandler');
+const swaggerJsdoc = require('swagger-jsdoc');
+const swaggerUi = require('swagger-ui-express');
 const { PrismaClient, PostType } = require('@prisma/client');
 
 const prisma = new PrismaClient();
@@ -108,6 +114,7 @@ async function seedAreas() {
 })();
 
 // Configuração de middlewares
+app.use(compression()); // Reduz o tamanho das respostas (gzip)
 app.use(cors({
   origin: 'http://localhost:4200',
   credentials: true
@@ -115,12 +122,48 @@ app.use(cors({
 app.use(express.json());
 app.use('/uploads', express.static(uploadDir));
 
+// Configuração do Swagger
+const swaggerOptions = {
+  definition: {
+    openapi: '3.0.0',
+    info: {
+      title: 'Relatório de Turno API',
+      version: '1.0.0',
+    },
+  },
+  apis: [path.join(__dirname, '*.js')], // Caminho para as anotações
+};
+const swaggerSpec = swaggerJsdoc(swaggerOptions);
+app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+
 // Rota raiz
 app.get('/', (req, res) => {
   res.json({ message: 'Backend Node.js + Express funcionando!' });
 });
 
 // Endpoint que retorna a mensagem "Hello World"
+/**
+ * @openapi
+ * /api/hello:
+ *   get:
+ *     summary: Retorna uma saudação de teste
+ *     responses:
+ *       200:
+ *         description: Mensagem de saudação
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Hello World
+ *                 timestamp:
+ *                   type: string
+ *                   format: date-time
+ *                 backend:
+ *                   type: string
+ */
 app.get('/api/hello', (req, res) => {
   res.json({
     message: 'Hello World',
@@ -639,6 +682,30 @@ app.post('/api/export', async (req, res) => {
     console.error('export_pdf_error', { userId, areaId: area, date: d, shift: s, error: error.message });
     res.status(500).json({ error: 'Failed to export PDF' });
   }
+});
+
+// Middleware de tratamento de erros
+if (process.env.NODE_ENV !== 'production') {
+  // Em desenvolvimento, utiliza o errorhandler para uma resposta amigável
+  app.use(errorhandler());
+}
+
+// Middleware global que retorna erros em formato JSON
+// eslint-disable-next-line no-unused-vars
+app.use((err, req, res, next) => {
+  const status = err.status || 500;
+  const response = {
+    error: {
+      message: err.message,
+    },
+  };
+
+  // Inclui stack trace apenas em desenvolvimento
+  if (process.env.NODE_ENV !== 'production') {
+    response.error.stack = err.stack;
+  }
+
+  res.status(status).json(response);
 });
 
 // Inicializa o servidor
