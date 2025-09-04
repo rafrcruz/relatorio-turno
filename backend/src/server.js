@@ -6,7 +6,7 @@ const fs = require('fs');
 const multer = require('multer');
 const sanitizeHtml = require('sanitize-html');
 const PDFDocument = require('pdfkit');
-const { PrismaClient } = require('@prisma/client');
+const { PrismaClient, PostType } = require('@prisma/client');
 
 const prisma = new PrismaClient();
 const app = express();
@@ -33,6 +33,27 @@ const upload = multer({
 
 function parseDate(dateStr) {
   return new Date(`${dateStr}T00:00:00-03:00`);
+}
+
+function isValidParam(value) {
+  return value !== undefined && value !== null && value !== '' && value !== 'undefined' && value !== 'null';
+}
+
+function parseNumberParam(value) {
+  if (!isValidParam(value)) return undefined;
+  const num = Number(value);
+  return Number.isFinite(num) ? num : undefined;
+}
+
+function parseDateParam(value) {
+  if (!isValidParam(value)) return undefined;
+  const date = parseDate(value);
+  return isNaN(date.getTime()) ? undefined : date;
+}
+
+function parsePostType(value) {
+  if (!isValidParam(value)) return undefined;
+  return Object.values(PostType).includes(value) ? value : undefined;
 }
 
 // Replace potentially dangerous characters from original file names.
@@ -110,7 +131,7 @@ app.get('/api/areas', async (req, res) => {
 // ----- Profile -----
 app.get('/api/me', async (req, res) => {
   try {
-    const userId = Number(req.header('x-user-id')) || 1;
+    const userId = parseNumberParam(req.header('x-user-id')) || 1;
     const user = await ensureUser(userId);
     res.json({ id: user.id, name: user.name, avatar: user.avatar, role: user.role });
   } catch (error) {
@@ -122,16 +143,23 @@ app.get('/api/me', async (req, res) => {
 // ----- Posts -----
 app.post('/api/posts', upload.array('attachments'), async (req, res) => {
   try {
-    const userId = Number(req.header('x-user-id')) || 1;
+    const userId = parseNumberParam(req.header('x-user-id')) || 1;
     const user = await ensureUser(userId);
     const { areaId, date, shift, type, content } = req.body;
+    const area = parseNumberParam(areaId);
+    const d = parseDateParam(date);
+    const s = parseNumberParam(shift);
+    const t = parsePostType(type);
+    if (area === undefined || !d || s === undefined || !t) {
+      return res.status(400).json({ error: 'Invalid post parameters' });
+    }
     const sanitized = sanitizeHtml(content || '');
     const post = await prisma.post.create({
       data: {
-        areaId: Number(areaId),
-        date: parseDate(date),
-        shift: Number(shift),
-        type,
+        areaId: area,
+        date: d,
+        shift: s,
+        type: t,
         content: sanitized,
         authorId: user.id,
       },
@@ -183,17 +211,23 @@ app.post('/api/posts', upload.array('attachments'), async (req, res) => {
 });
 
 app.get('/api/posts', async (req, res) => {
-  const { areaId, date, shift, type, page = 1, pageSize = 10 } = req.query;
+  const { areaId, date, shift, type, page, pageSize } = req.query;
   const filters = {};
-  if (areaId) filters.areaId = Number(areaId);
-  if (date) filters.date = parseDate(date);
-  if (shift) filters.shift = Number(shift);
-  if (type) filters.type = type;
+  const area = parseNumberParam(areaId);
+  if (area !== undefined) filters.areaId = area;
+  const d = parseDateParam(date);
+  if (d) filters.date = d;
+  const s = parseNumberParam(shift);
+  if (s !== undefined) filters.shift = s;
+  const t = parsePostType(type);
+  if (t) filters.type = t;
+  const pageNum = parseNumberParam(page) ?? 1;
+  const pageSizeNum = parseNumberParam(pageSize) ?? 10;
   const posts = await prisma.post.findMany({
     where: filters,
     orderBy: { createdAt: 'desc' },
-    skip: (Number(page) - 1) * Number(pageSize),
-    take: Number(pageSize),
+    skip: (pageNum - 1) * pageSizeNum,
+    take: pageSizeNum,
     include: {
       attachments: true,
       author: true,
@@ -204,7 +238,10 @@ app.get('/api/posts', async (req, res) => {
 });
 
 app.get('/api/posts/:id', async (req, res) => {
-  const id = Number(req.params.id);
+  const id = parseNumberParam(req.params.id);
+  if (id === undefined) {
+    return res.status(400).json({ error: 'Invalid post id' });
+  }
   const post = await prisma.post.findUnique({
     where: { id },
     include: {
@@ -221,8 +258,11 @@ app.get('/api/posts/:id', async (req, res) => {
 // ----- Replies -----
 app.post('/api/posts/:id/replies', upload.array('attachments'), async (req, res) => {
   try {
-    const postId = Number(req.params.id);
-    const userId = Number(req.header('x-user-id')) || 1;
+    const postId = parseNumberParam(req.params.id);
+    if (postId === undefined) {
+      return res.status(400).json({ error: 'Invalid post id' });
+    }
+    const userId = parseNumberParam(req.header('x-user-id')) || 1;
     const user = await ensureUser(userId);
     const sanitized = sanitizeHtml(req.body.content || '');
     const reply = await prisma.reply.create({
@@ -273,16 +313,21 @@ app.post('/api/posts/:id/replies', upload.array('attachments'), async (req, res)
 });
 
 app.get('/api/posts/:id/replies', async (req, res) => {
-  const postId = Number(req.params.id);
-  const { page = 1, pageSize = 10 } = req.query;
-  const skip = (Number(page) - 1) * Number(pageSize);
+  const postId = parseNumberParam(req.params.id);
+  if (postId === undefined) {
+    return res.status(400).json({ error: 'Invalid post id' });
+  }
+  const { page, pageSize } = req.query;
+  const pageNum = parseNumberParam(page) ?? 1;
+  const pageSizeNum = parseNumberParam(pageSize) ?? 10;
+  const skip = (pageNum - 1) * pageSizeNum;
 
   const [replies, total] = await Promise.all([
     prisma.reply.findMany({
       where: { postId },
       orderBy: { createdAt: 'asc' },
       skip,
-      take: Number(pageSize),
+      take: pageSizeNum,
       include: { attachments: true, author: true },
     }),
     prisma.reply.count({ where: { postId } }),
@@ -293,16 +338,22 @@ app.get('/api/posts/:id/replies', async (req, res) => {
 
 // ----- Indicators -----
 app.get('/api/areas/:areaId/indicators', async (req, res) => {
-  const areaId = Number(req.params.areaId);
+  const areaId = parseNumberParam(req.params.areaId);
+  if (areaId === undefined) {
+    return res.status(400).json({ error: 'Invalid area id' });
+  }
   const indicators = await prisma.indicator.findMany({ where: { areaId } });
   res.json(indicators);
 });
 
 app.get('/api/indicator-values', async (req, res) => {
   const { areaId, date, shift } = req.query;
-  const area = Number(areaId);
-  const d = parseDate(date);
-  const s = Number(shift);
+  const area = parseNumberParam(areaId);
+  const d = parseDateParam(date);
+  const s = parseNumberParam(shift);
+  if (area === undefined || !d || s === undefined) {
+    return res.status(400).json({ error: 'Invalid parameters' });
+  }
   const values = await prisma.indicatorValue.findMany({
     where: { areaId: area, date: d, shift: s },
     include: { indicator: true },
@@ -322,9 +373,12 @@ app.get('/api/indicator-values', async (req, res) => {
 // ----- Summary -----
 app.get('/api/summary', async (req, res) => {
   const { areaId, date, shift } = req.query;
-  const area = Number(areaId);
-  const d = parseDate(date);
-  const s = Number(shift);
+  const area = parseNumberParam(areaId);
+  const d = parseDateParam(date);
+  const s = parseNumberParam(shift);
+  if (area === undefined || !d || s === undefined) {
+    return res.json([]);
+  }
   const counts = await prisma.post.groupBy({
     where: { areaId: area, date: d, shift: s },
     by: ['type'],
@@ -336,17 +390,23 @@ app.get('/api/summary', async (req, res) => {
 // ----- Export -----
 app.post('/api/export', async (req, res) => {
   const { areaId, date, shift } = req.body;
-  const userId = Number(req.header('x-user-id')) || 1;
+  const userId = parseNumberParam(req.header('x-user-id')) || 1;
+  const area = parseNumberParam(areaId);
+  const d = parseDateParam(date);
+  const s = parseNumberParam(shift);
+  if (area === undefined || !d || s === undefined) {
+    return res.status(400).json({ error: 'Invalid parameters' });
+  }
   try {
     const user = await ensureUser(userId);
-    const area = await prisma.area.findUnique({ where: { id: Number(areaId) } });
-    const indicators = await prisma.indicator.findMany({ where: { areaId: Number(areaId) } });
+    const areaInfo = await prisma.area.findUnique({ where: { id: area } });
+    const indicators = await prisma.indicator.findMany({ where: { areaId: area } });
     const indicatorValues = await prisma.indicatorValue.findMany({
-      where: { areaId: Number(areaId), date: parseDate(date), shift: Number(shift) },
+      where: { areaId: area, date: d, shift: s },
       include: { indicator: true },
     });
     const posts = await prisma.post.findMany({
-      where: { areaId: Number(areaId), date: parseDate(date), shift: Number(shift) },
+      where: { areaId: area, date: d, shift: s },
       orderBy: { createdAt: 'asc' },
       include: {
         attachments: true,
@@ -363,7 +423,7 @@ app.post('/api/export', async (req, res) => {
 
     const formattedDate = new Intl.DateTimeFormat('pt-BR', {
       timeZone: 'America/Sao_Paulo',
-    }).format(parseDate(date));
+    }).format(d);
     const timestamp = new Intl.DateTimeFormat('pt-BR', {
       timeZone: 'America/Sao_Paulo',
       dateStyle: 'short',
@@ -372,9 +432,9 @@ app.post('/api/export', async (req, res) => {
 
     doc.fontSize(18).text('Relatório de Turno', { align: 'center' });
     doc.moveDown();
-    doc.fontSize(12).text(`Área: ${area ? area.name : 'N/A'}`);
+    doc.fontSize(12).text(`Área: ${areaInfo ? areaInfo.name : 'N/A'}`);
     doc.text(`Data: ${formattedDate}`);
-    doc.text(`Turno: ${shift}`);
+    doc.text(`Turno: ${s}`);
     doc.text(`Gerado por: ${user.name} em ${timestamp}`);
     doc.moveDown();
 
@@ -461,12 +521,12 @@ app.post('/api/export', async (req, res) => {
         userId: user.id,
         action: 'EXPORT_PDF',
         targetType: 'Report',
-        targetId: Number(areaId),
+        targetId: area,
       },
     });
-    console.log('export_pdf_success', { userId: user.id, areaId, date, shift });
+    console.log('export_pdf_success', { userId: user.id, areaId: area, date: d, shift: s });
   } catch (error) {
-    console.error('export_pdf_error', { userId, areaId, date, shift, error: error.message });
+    console.error('export_pdf_error', { userId, areaId: area, date: d, shift: s, error: error.message });
     res.status(500).json({ error: 'Failed to export PDF' });
   }
 });
