@@ -154,3 +154,4 @@ public/uploads/
 .env.test
 .env.staging
 .env.production
+backend/.env
