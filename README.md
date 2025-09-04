@@ -40,7 +40,7 @@ relatorio-turno/
 ## 🎯 Funcionalidades
 
 - ✅ **Página inicial** com design moderno
-- ✅ **Endpoint `/api/hello`** que retorna "Olá Rafael"
+- ✅ **Endpoint `/api/hello`** que retorna "Hello World"
 - ✅ **Comunicação frontend-backend** via HTTP REST
 - ✅ **Hot reload** para desenvolvimento
 - ✅ **Interface responsiva** e amigável
@@ -82,7 +82,7 @@ Retorna uma mensagem de saudação personalizada.
 **Resposta:**
 ```json
 {
-  "message": "Olá Rafael",
+  "message": "Hello World",
   "timestamp": "2025-09-03T22:00:00.000Z",
   "backend": "Node.js + Express"
 }
