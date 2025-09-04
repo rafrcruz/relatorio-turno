@@ -40,12 +40,65 @@ export class PostComposerComponent implements OnInit {
   }
 
   format(cmd: string): void {
-    document.execCommand(cmd, false);
+    const selection = document.getSelection();
+    if (!selection || selection.rangeCount === 0) {
+      return;
+    }
+    const range = selection.getRangeAt(0);
+    const editorEl = this.editor.nativeElement;
+    if (!editorEl.contains(range.commonAncestorContainer)) {
+      return;
+    }
+    switch (cmd) {
+      case 'bold':
+      case 'italic': {
+        const tag = cmd === 'bold' ? 'b' : 'i';
+        const wrapper = document.createElement(tag);
+        wrapper.appendChild(range.extractContents());
+        range.insertNode(wrapper);
+        selection.removeAllRanges();
+        selection.selectAllChildren(wrapper);
+        break;
+      }
+      case 'insertUnorderedList':
+      case 'insertOrderedList': {
+        const listTag = cmd === 'insertUnorderedList' ? 'ul' : 'ol';
+        const list = document.createElement(listTag);
+        const li = document.createElement('li');
+        li.appendChild(range.extractContents());
+        list.appendChild(li);
+        range.insertNode(list);
+        selection.removeAllRanges();
+        selection.selectAllChildren(li);
+        break;
+      }
+      default:
+        return;
+    }
+    this.saveDraft();
   }
 
   formatLink(): void {
     const url = prompt('URL');
-    if (url) document.execCommand('createLink', false, url);
+    if (!url) {
+      return;
+    }
+    const selection = document.getSelection();
+    if (!selection || selection.rangeCount === 0) {
+      return;
+    }
+    const range = selection.getRangeAt(0);
+    const editorEl = this.editor.nativeElement;
+    if (!editorEl.contains(range.commonAncestorContainer)) {
+      return;
+    }
+    const anchor = document.createElement('a');
+    anchor.href = url;
+    anchor.appendChild(range.extractContents());
+    range.insertNode(anchor);
+    selection.removeAllRanges();
+    selection.selectAllChildren(anchor);
+    this.saveDraft();
   }
 
   onFileInput(event: Event): void {
