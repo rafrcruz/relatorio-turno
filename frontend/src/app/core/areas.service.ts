@@ -33,7 +33,7 @@ export class AreasService {
   /** Returns areas with id and name, using fallback data when API fails. */
   getAreasWithIds(): Observable<Area[]> {
     return this.http.get<Area[]>('/api/areas').pipe(
-      map((areas) => (areas && areas.length ? areas : this.fallbackAreas)),
+      map((areas) => (areas?.length ? areas : this.fallbackAreas)),
       catchError(() => of(this.fallbackAreas))
     );
   }
