@@ -18,10 +18,13 @@ export class AppStateService {
 
   constructor() {
     const params = new URLSearchParams(window.location.search);
+    const today = this.todayIso();
+    const date = params.get('date') || today;
+    const shiftParam = params.get('shift');
     const initial: ReportContext = {
       area: params.get('area') || 'Recebimento de Bauxita',
-      date: params.get('date') || this.todayIso(),
-      shift: this.parseShift(params.get('shift'))
+      date,
+      shift: shiftParam ? this.parseShift(shiftParam) : (date === today ? this.currentShift() : 1)
     };
     this.contextSubject = new BehaviorSubject<ReportContext>(initial);
     this.context$ = this.contextSubject.asObservable();
@@ -61,6 +64,19 @@ export class AppStateService {
 
   private todayIso(): string {
     return new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Sao_Paulo' }).format(new Date());
+  }
+
+  private currentShift(): number {
+    const hour = Number(
+      new Intl.DateTimeFormat('en-GB', {
+        timeZone: 'America/Sao_Paulo',
+        hour: '2-digit',
+        hour12: false,
+      }).format(new Date())
+    );
+    if (hour >= 6 && hour < 14) return 1;
+    if (hour >= 14 && hour < 22) return 2;
+    return 3;
   }
 
   private parseShift(value: string | null): number {

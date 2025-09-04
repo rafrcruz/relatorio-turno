@@ -35,18 +35,59 @@
       />
 
       <!-- Shift selector -->
-      <div role="radiogroup" aria-label="Tipo" class="flex border border-aluminium rounded overflow-hidden divide-x divide-aluminium text-sm">
-        <label class="px-3 py-1 cursor-pointer hover:bg-hydro-dark-blue focus-within:ring-2 focus-within:ring-hydro-light-blue bg-hydro-blue text-white flex-1 text-center">
-          <input type="radio" name="type" value="ANNOTATION" class="sr-only">
-          Anotação
+      <div
+        role="radiogroup"
+        aria-label="Turno"
+        class="flex border border-aluminium rounded overflow-hidden divide-x divide-aluminium text-sm"
+        *ngIf="context$ | async as ctx"
+      >
+        <label
+          class="px-3 py-1 cursor-pointer flex-1 text-center focus-within:ring-2 focus-within:ring-hydro-light-blue"
+          [ngClass]="ctx.shift === 1 ? 'bg-hydro-blue text-white hover:bg-hydro-dark-blue' : 'hover:bg-light-gray'"
+        >
+          <input
+            type="radio"
+            name="shift"
+            class="sr-only"
+            [value]="1"
+            [checked]="ctx.shift === 1"
+            (change)="onShiftChange(1)"
+            [disabled]="!ctx.date"
+            [attr.title]="ctx.date ? undefined : 'Selecione uma data'"
+          />
+          Turno 1
         </label>
-        <label class="px-3 py-1 cursor-pointer hover:bg-light-gray focus-within:ring-2 focus-within:ring-hydro-light-blue flex-1 text-center">
-          <input type="radio" name="type" value="URGENCY" class="sr-only">
-          Urgência
+        <label
+          class="px-3 py-1 cursor-pointer flex-1 text-center focus-within:ring-2 focus-within:ring-hydro-light-blue"
+          [ngClass]="ctx.shift === 2 ? 'bg-hydro-blue text-white hover:bg-hydro-dark-blue' : 'hover:bg-light-gray'"
+        >
+          <input
+            type="radio"
+            name="shift"
+            class="sr-only"
+            [value]="2"
+            [checked]="ctx.shift === 2"
+            (change)="onShiftChange(2)"
+            [disabled]="!ctx.date"
+            [attr.title]="ctx.date ? undefined : 'Selecione uma data'"
+          />
+          Turno 2
         </label>
-        <label class="px-3 py-1 cursor-pointer hover:bg-light-gray focus-within:ring-2 focus-within:ring-hydro-light-blue flex-1 text-center">
-          <input type="radio" name="type" value="PENDENCY" class="sr-only">
-          Pendência
+        <label
+          class="px-3 py-1 cursor-pointer flex-1 text-center focus-within:ring-2 focus-within:ring-hydro-light-blue"
+          [ngClass]="ctx.shift === 3 ? 'bg-hydro-blue text-white hover:bg-hydro-dark-blue' : 'hover:bg-light-gray'"
+        >
+          <input
+            type="radio"
+            name="shift"
+            class="sr-only"
+            [value]="3"
+            [checked]="ctx.shift === 3"
+            (change)="onShiftChange(3)"
+            [disabled]="!ctx.date"
+            [attr.title]="ctx.date ? undefined : 'Selecione uma data'"
+          />
+          Turno 3
         </label>
       </div>
 
