@@ -1,4 +1,4 @@
-<div class="mt-2 border-l border-light-gray pl-4">
+<div class="mt-1 border-l border-light-gray pl-3">
   <div *ngIf="loading" class="text-mid-gray">Carregando respostas...</div>
   <div *ngIf="error" class="text-bauxite">
     Falha ao carregar respostas.
@@ -6,10 +6,10 @@
   </div>
   <div *ngIf="!loading && !error && replies.length === 0" class="text-mid-gray">Nenhuma resposta para este post.</div>
   <ng-container *ngFor="let r of replies">
-    <article class="mb-2">
+    <article class="mb-1">
       <div class="text-xs text-mid-gray">{{ r.author.name }} — {{ r.createdAt | date:'dd/MM/yyyy HH:mm' }}</div>
       <div class="prose prose-sm max-w-none" [innerHTML]="r.content" (click)="onContentClick($event)"></div>
-      <div *ngIf="r.attachments.length" class="mt-1 flex flex-col gap-2">
+      <div *ngIf="r.attachments.length" class="mt-1 flex flex-col gap-1">
         <ng-container *ngFor="let att of r.attachments">
           <img
             *ngIf="att.mimeType.startsWith('image/')"
@@ -29,7 +29,7 @@
     </article>
   </ng-container>
   <button *ngIf="replies.length < total && !loading" (click)="loadMore()" class="text-sm text-hydro-blue underline">Ver mais respostas</button>
-  <div *ngIf="showForm" class="mt-2">
+  <div *ngIf="showForm" class="mt-1">
     <div class="border border-light-gray rounded" (drop)="onDrop($event)" (dragover)="$event.preventDefault()" (paste)="onPaste($event)">
       <quill-editor
         #editor
@@ -37,22 +37,22 @@
         [modules]="modules"
         format="html"
         placeholder="Escreva uma resposta..."
-        class="min-h-[80px]"
+        class="min-h-[60px]"
       ></quill-editor>
     </div>
-    <input type="file" multiple (change)="onFileInput($event)" class="mt-2" />
-    <div *ngIf="attachments.length" class="mt-2 flex flex-wrap gap-2">
+    <input type="file" multiple (change)="onFileInput($event)" class="mt-1" />
+    <div *ngIf="attachments.length" class="mt-1 flex flex-wrap gap-1">
       <ng-container *ngFor="let att of attachments">
         <div class="relative">
-          <img *ngIf="att.url" [src]="att.url" [alt]="att.file.name" class="w-16 h-16 object-cover border border-light-gray" />
+          <img *ngIf="att.url" [src]="att.url" [alt]="att.file.name" class="w-14 h-14 object-cover border border-light-gray" />
           <span *ngIf="!att.url" class="text-xs">{{ att.file.name }}</span>
           <button (click)="removeAttachment(att)" aria-label="Remover" class="absolute top-0 right-0 text-hydro-blue bg-white">✕</button>
         </div>
       </ng-container>
     </div>
-    <div class="mt-2 flex items-center gap-2">
-      <button (click)="send()" [disabled]="sending" class="px-3 py-1 bg-hydro-blue hover:bg-hydro-dark-blue text-white rounded">Enviar</button>
-      <button (click)="toggleComposer()" class="px-3 py-1">Cancelar</button>
+    <div class="mt-1 flex items-center gap-1">
+      <button (click)="send()" [disabled]="sending" class="px-2 py-1 bg-hydro-blue hover:bg-hydro-dark-blue text-white rounded">Enviar</button>
+      <button (click)="toggleComposer()" class="px-2 py-1">Cancelar</button>
       <span class="text-sm text-aluminium" *ngIf="message">{{ message }}</span>
     </div>
   </div>

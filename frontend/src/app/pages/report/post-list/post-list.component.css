@@ -3,8 +3,8 @@
   @apply max-w-full max-h-96 object-contain border cursor-pointer;
 }
 :host ::ng-deep .prose pre {
-  @apply bg-light-gray p-2 rounded overflow-x-auto;
+  @apply bg-light-gray p-1 rounded overflow-x-auto;
 }
 :host ::ng-deep .prose blockquote {
-  @apply pl-4 border-l-4 border-light-gray text-mid-gray;
+  @apply pl-3 border-l-2 border-light-gray text-mid-gray;
 }
