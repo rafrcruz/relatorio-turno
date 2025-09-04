@@ -21,10 +21,18 @@ export class AppStateService {
     const today = this.todayIso();
     const date = params.get('date') || today;
     const shiftParam = params.get('shift');
+    let shift: number;
+    if (shiftParam) {
+      shift = this.parseShift(shiftParam);
+    } else if (date === today) {
+      shift = this.currentShift();
+    } else {
+      shift = 1;
+    }
     const initial: ReportContext = {
       area: params.get('area') || 'Recebimento de Bauxita',
       date,
-      shift: shiftParam ? this.parseShift(shiftParam) : (date === today ? this.currentShift() : 1)
+      shift
     };
     this.contextSubject = new BehaviorSubject<ReportContext>(initial);
     this.context$ = this.contextSubject.asObservable();
