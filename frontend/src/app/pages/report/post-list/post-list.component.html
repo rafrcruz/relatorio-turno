@@ -1,9 +1,9 @@
-<section class="mt-8 p-6 bg-white border border-light-gray rounded space-y-4">
+<section class="card mt-8 p-6 space-y-4">
   <h2 class="text-xl font-display">{{ title }} ({{ count }})</h2>
   <div *ngIf="loading" class="text-aluminium">Carregando...</div>
   <div *ngIf="error" class="text-bauxite">
     Erro ao carregar.
-    <button (click)="retry()" class="text-hydro-blue underline">Tentar novamente</button>
+    <button (click)="retry()" class="btn btn-secondary mt-2">Tentar novamente</button>
   </div>
   <div *ngIf="!loading && !error && posts.length === 0" class="text-aluminium">
     Sem {{ title.toLowerCase() }} para este turno.
@@ -11,7 +11,7 @@
   <article
     *ngFor="let post of posts; trackBy: trackById"
     [attr.id]="'post-' + post.id"
-    class="p-4 border border-light-gray rounded" [class.bg-warm]="post.id === highlightId"
+    class="p-4 border border-light-gray rounded-lg shadow-sm" [class.bg-warm]="post.id === highlightId"
     [class.mt-4]="post !== posts[0]"
   >
     <div class="flex justify-between items-start">
@@ -48,7 +48,7 @@
     <app-reply-thread #thread [post]="post"></app-reply-thread>
   </article>
   <div *ngIf="!loading && posts.length < count" class="text-center mt-4">
-    <button (click)="loadMore()" class="px-4 py-2 bg-light-gray rounded">Carregar mais</button>
+    <button (click)="loadMore()" class="btn bg-light-gray hover:bg-light-gray/80">Carregar mais</button>
   </div>
 </section>
 <div
