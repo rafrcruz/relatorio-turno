@@ -25,7 +25,7 @@ export class ReportComponent {
   }
 
   private checkDeepLink(): void {
-    const match = window.location.hash.match(/post-(\d+)/);
+    const match = /post-(\d+)/.exec(window.location.hash);
     if (!match) return;
     const id = Number(match[1]);
     this.posts.get(id).subscribe({
