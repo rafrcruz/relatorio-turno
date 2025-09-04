@@ -70,7 +70,7 @@
   }
 
   .btn-primary {
-    @apply bg-hydro-blue text-white hover:bg-hydro-light-blue focus:ring-hydro-light-blue;
+    @apply bg-hydro-blue text-white hover:bg-hydro-dark-blue focus:ring-hydro-light-blue;
   }
 
   .btn-secondary {

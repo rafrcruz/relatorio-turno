@@ -8,6 +8,7 @@ module.exports = {
       colors: {
         'hydro-blue': '#444D55',
         'hydro-light-blue': '#768692',
+        'hydro-dark-blue': '#333940',
         'aluminium': '#8C8C8C',
         'white': '#FFFFFF',
         'black': '#000000',
