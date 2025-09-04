@@ -1,9 +1,31 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, Subject } from 'rxjs';
 import { tap } from 'rxjs/operators';
 
 export type PostType = 'ANNOTATION' | 'URGENCY' | 'PENDENCY';
+
+export interface Attachment {
+  id: number;
+  filename: string;
+  mimeType: string;
+  size: number;
+  url: string;
+}
+
+export interface Post {
+  id: number;
+  areaId: number;
+  date: string;
+  shift: number;
+  type: PostType;
+  content: string;
+  author: { id: number; name: string };
+  createdAt: string;
+  updatedAt: string;
+  attachments: Attachment[];
+  _count: { replies: number };
+}
 
 export interface PostCreate {
   areaId: number;
@@ -36,5 +58,31 @@ export class PostsService {
     return this.http.post<any>('/api/posts', form).pipe(
       tap((post) => this.createdSource.next(post))
     );
+  }
+
+  /** Retrieves posts for the given context and type. */
+  list(areaId: number, date: string, shift: number, type: PostType, page = 1, pageSize = 10): Observable<Post[]> {
+    const params = new HttpParams()
+      .set('areaId', String(areaId))
+      .set('date', date)
+      .set('shift', String(shift))
+      .set('type', type)
+      .set('page', String(page))
+      .set('pageSize', String(pageSize));
+    return this.http.get<Post[]>('/api/posts', { params });
+  }
+
+  /** Returns post counts grouped by type for the context. */
+  summary(areaId: number, date: string, shift: number): Observable<any[]> {
+    const params = new HttpParams()
+      .set('areaId', String(areaId))
+      .set('date', date)
+      .set('shift', String(shift));
+    return this.http.get<any[]>('/api/summary', { params });
+  }
+
+  /** Retrieves a single post by id. */
+  get(id: number): Observable<Post> {
+    return this.http.get<Post>(`/api/posts/${id}`);
   }
 }

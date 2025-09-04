@@ -144,7 +144,11 @@ app.post('/api/posts', upload.array('attachments'), async (req, res) => {
 
     const fullPost = await prisma.post.findUnique({
       where: { id: post.id },
-      include: { attachments: true },
+      include: {
+        attachments: true,
+        author: true,
+        _count: { replies: true },
+      },
     });
     res.status(201).json(fullPost);
   } catch (error) {
@@ -164,7 +168,11 @@ app.get('/api/posts', async (req, res) => {
     orderBy: { createdAt: 'desc' },
     skip: (Number(page) - 1) * Number(pageSize),
     take: Number(pageSize),
-    include: { attachments: true },
+    include: {
+      attachments: true,
+      author: true,
+      _count: { replies: true },
+    },
   });
   res.json(posts);
 });
@@ -173,7 +181,12 @@ app.get('/api/posts/:id', async (req, res) => {
   const id = Number(req.params.id);
   const post = await prisma.post.findUnique({
     where: { id },
-    include: { attachments: true, replies: { include: { attachments: true } } },
+    include: {
+      attachments: true,
+      author: true,
+      replies: { include: { attachments: true, author: true } },
+      _count: { replies: true },
+    },
   });
   if (!post) return res.status(404).json({ error: 'Post not found' });
   res.json(post);
