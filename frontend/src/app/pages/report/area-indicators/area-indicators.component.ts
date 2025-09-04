@@ -15,7 +15,7 @@ export class AreaIndicatorsComponent implements OnDestroy {
   error = false;
   source = '';
 
-  private destroy$ = new Subject<void>();
+  private readonly destroy$ = new Subject<void>();
 
   constructor(private appState: AppStateService, private readonly indicators: IndicatorsService) {
     this.indicators$ = this.appState.context$.pipe(
