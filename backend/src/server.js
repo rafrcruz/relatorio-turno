@@ -17,19 +17,19 @@ const PORT = process.env.PORT || 3000;
   }
 })();
 
-// Middleware
+// Configuração de middlewares
 app.use(cors({
   origin: 'http://localhost:4200',
   credentials: true
 }));
 app.use(express.json());
 
-// Rota principal
+// Rota raiz
 app.get('/', (req, res) => {
   res.json({ message: 'Backend Node.js + Express funcionando!' });
 });
 
-// Endpoint que retorna "Hello World"
+// Endpoint que retorna a mensagem "Hello World"
 app.get('/api/hello', (req, res) => {
   res.json({
     message: 'Hello World',
@@ -38,7 +38,7 @@ app.get('/api/hello', (req, res) => {
   });
 });
 
-// Rota para listar relatórios
+// Rota que lista relatórios
 app.get('/api/reports', async (req, res) => {
   try {
     const reports = await prisma.report.findMany();
@@ -48,7 +48,7 @@ app.get('/api/reports', async (req, res) => {
   }
 });
 
-// Iniciar servidor
+// Inicializa o servidor
 app.listen(PORT, () => {
   console.log(`🚀 Backend rodando na porta ${PORT}`);
   console.log(`🌐 CORS habilitado para: http://localhost:4200`);
