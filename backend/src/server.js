@@ -24,7 +24,7 @@ async function seedAreas() {
   const count = await prisma.area.count();
   if (count === 0) {
     await prisma.area.createMany({ data: defaultAreas });
-    console.log('🌱 Áreas padrão inseridas');
+    console.log('🌱 Áreas padrão inseridas.');
   }
 }
 
