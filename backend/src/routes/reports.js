@@ -48,19 +48,24 @@ router.get('/indicator-values', async (req, res) => {
 
 // Post type summary
 router.get('/summary', async (req, res) => {
-  const { areaId, date, shift } = req.query;
-  const area = parseNumberParam(areaId);
-  const d = parseDateParam(date);
-  const s = parseNumberParam(shift);
-  if (area === undefined || !d || s === undefined) {
-    return res.json([]);
+  try {
+    const { areaId, date, shift } = req.query;
+    const area = parseNumberParam(areaId);
+    const d = parseDateParam(date);
+    const s = parseNumberParam(shift);
+    if (area === undefined || !d || s === undefined) {
+      return res.json([]);
+    }
+    const counts = await prisma.post.groupBy({
+      where: { areaId: area, date: d, shift: s },
+      by: ['type'],
+      _count: { _all: true },
+    });
+    res.json(counts);
+  } catch (error) {
+    console.error('Erro ao gerar resumo', error);
+    res.json([]);
   }
-  const counts = await prisma.post.groupBy({
-    where: { areaId: area, date: d, shift: s },
-    by: ['type'],
-    _count: { _all: true },
-  });
-  res.json(counts);
 });
 
 // Export PDF (reads attachments from DB)
@@ -217,4 +222,3 @@ router.post('/export', async (req, res) => {
 });
 
 module.exports = router;
-

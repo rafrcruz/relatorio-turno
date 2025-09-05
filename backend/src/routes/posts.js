@@ -251,35 +251,40 @@ router.post('/', upload.array('attachments'), async (req, res) => {
 
 // List posts
 router.get('/', async (req, res) => {
-  const { areaId, date, shift, type, page, pageSize } = req.query;
-  const filters = {};
-  const area = parseNumberParam(areaId);
-  if (area !== undefined) filters.areaId = area;
-  const d = parseDateParam(date);
-  if (d) filters.date = d;
-  const s = parseNumberParam(shift);
-  if (s !== undefined) filters.shift = s;
-  const t = parsePostType(type, PostType);
-  if (t) filters.type = t;
-  const pageNum = parseNumberParam(page) ?? 1;
-  const pageSizeNum = parseNumberParam(pageSize) ?? 10;
-  const posts = await prisma.post.findMany({
-    where: filters,
-    orderBy: { createdAt: 'desc' },
-    skip: (pageNum - 1) * pageSizeNum,
-    take: pageSizeNum,
-    include: {
-      attachments: true,
-      author: true,
-      _count: { select: { replies: true } },
-    },
-  });
-  const baseUrl = buildBaseUrl(req);
-  const mapped = posts.map((p) => ({
-    ...p,
-    attachments: mapAttachmentUrls(baseUrl, p.attachments),
-  }));
-  res.json(mapped);
+  try {
+    const { areaId, date, shift, type, page, pageSize } = req.query;
+    const filters = {};
+    const area = parseNumberParam(areaId);
+    if (area !== undefined) filters.areaId = area;
+    const d = parseDateParam(date);
+    if (d) filters.date = d;
+    const s = parseNumberParam(shift);
+    if (s !== undefined) filters.shift = s;
+    const t = parsePostType(type, PostType);
+    if (t) filters.type = t;
+    const pageNum = parseNumberParam(page) ?? 1;
+    const pageSizeNum = parseNumberParam(pageSize) ?? 10;
+    const posts = await prisma.post.findMany({
+      where: filters,
+      orderBy: { createdAt: 'desc' },
+      skip: (pageNum - 1) * pageSizeNum,
+      take: pageSizeNum,
+      include: {
+        attachments: true,
+        author: true,
+        _count: { select: { replies: true } },
+      },
+    });
+    const baseUrl = buildBaseUrl(req);
+    const mapped = posts.map((p) => ({
+      ...p,
+      attachments: mapAttachmentUrls(baseUrl, p.attachments),
+    }));
+    res.json(mapped);
+  } catch (error) {
+    console.error('Erro ao listar posts', error);
+    res.json([]);
+  }
 });
 
 // Get single post

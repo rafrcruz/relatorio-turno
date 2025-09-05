@@ -4,44 +4,37 @@ const { parseNumberParam } = require('../utils');
 
 const router = express.Router();
 
-/**
- * @swagger
- * /api/areas:
- *   get:
- *     summary: Lista todas as áreas disponíveis
- *     tags: [Áreas]
- *     responses:
- *       200:
- *         description: Lista de áreas
- */
+const DEFAULT_AREAS = [
+  { name: 'Recebimento de Bauxita' },
+  { name: 'Digestão' },
+  { name: 'Clarificação' },
+  { name: 'Filtro Prensa' },
+  { name: 'Precipitação' },
+  { name: 'Calcinação' },
+  { name: 'Vapor e Utilidades' },
+  { name: 'Águas e Efluentes' },
+  { name: 'Automação e Energia' },
+  { name: 'Porto' },
+  { name: 'Meio Ambiente' },
+];
+
+// GET /api/areas
 router.get('/', async (req, res) => {
   try {
+    const count = await prisma.area.count();
+    if (count === 0) {
+      await prisma.area.createMany({ data: DEFAULT_AREAS });
+    }
     const areas = await prisma.area.findMany();
     res.json(areas);
   } catch (error) {
     console.error('Erro ao buscar áreas', error);
-    res.status(500).json({ error: 'Erro ao buscar áreas' });
+    // Fallback para manter o frontend funcionando caso o DB esteja indisponível
+    res.json(DEFAULT_AREAS.map((a, i) => ({ id: i + 1, ...a })));
   }
 });
 
-/**
- * @swagger
- * /api/areas/{areaId}/indicators:
- *   get:
- *     summary: Obtém os indicadores de uma área específica
- *     tags: [Áreas]
- *     parameters:
- *       - in: path
- *         name: areaId
- *         required: true
- *         schema:
- *           type: integer
- *     responses:
- *       200:
- *         description: Lista de indicadores
- *       400:
- *         description: Invalid area id
- */
+// GET /api/areas/:areaId/indicators
 router.get('/:areaId/indicators', async (req, res) => {
   const areaId = parseNumberParam(req.params.areaId);
   if (areaId === undefined) {
@@ -52,3 +45,4 @@ router.get('/:areaId/indicators', async (req, res) => {
 });
 
 module.exports = router;
+
