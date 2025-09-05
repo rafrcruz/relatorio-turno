@@ -30,11 +30,11 @@
         <img
           *ngIf="att.mimeType.startsWith('image/')"
           [src]="att.url"
-          [alt]="att.filename"
+          [alt]="sanitizeAlt(att.filename)"
           class="max-w-full max-h-96 object-contain border cursor-pointer"
-          (click)="openImage(att.url, att.filename)"
+          (click)="openImage(att.url, sanitizeAlt(att.filename))"
           tabindex="0"
-          (keydown.enter)="openImage(att.url, att.filename)"
+          (keydown.enter)="openImage(att.url, sanitizeAlt(att.filename))"
         />
         <a
           *ngIf="att.mimeType === 'application/pdf'"
@@ -64,6 +64,7 @@
   class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50"
   (click)="closeImage()"
   tabindex="0"
+  role="button"
   (keydown)="onModalKeydown($event)"
 >
   <img
@@ -71,5 +72,7 @@
     [alt]="modalImageAlt"
     class="max-w-[90vw] max-h-[90vh] object-contain"
     (click)="$event.stopPropagation()"
+    tabindex="0"
+    (keydown.enter)="$event.stopPropagation()"
   />
 </div>

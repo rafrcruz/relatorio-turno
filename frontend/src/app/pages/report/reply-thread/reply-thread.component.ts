@@ -88,7 +88,7 @@ export class ReplyThreadComponent implements OnInit, OnDestroy {
 
   openImage(url: string, alt: string): void {
     this.modalImageUrl = url;
-    this.modalImageAlt = alt;
+    this.modalImageAlt = this.sanitizeAlt(alt);
   }
 
   closeImage(): void {
@@ -99,8 +99,24 @@ export class ReplyThreadComponent implements OnInit, OnDestroy {
   onContentClick(event: Event): void {
     const target = event.target as HTMLElement;
     if (target instanceof HTMLImageElement) {
-      this.openImage(target.src, target.alt);
+      this.openImage(target.src, this.sanitizeAlt(target.alt));
     }
+  }
+
+  onContentKeydown(event: KeyboardEvent): void {
+    if (event.key === 'Enter' || event.key === ' ') {
+      this.onContentClick(event);
+    }
+  }
+
+  onModalKeydown(event: KeyboardEvent): void {
+    if (event.key === 'Escape') {
+      this.closeImage();
+    }
+  }
+
+  sanitizeAlt(text: string): string {
+    return text.replace(/\b(?:image|imagem)\b/gi, '').trim();
   }
 
   deleteReply(r: Reply): void {
