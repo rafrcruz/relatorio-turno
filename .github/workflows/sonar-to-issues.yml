@@ -1,12 +1,3 @@
-      - name: Sanity: can create an issue?
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          curl -sS -X POST \
-            -H "Authorization: Bearer $GITHUB_TOKEN" \
-            -H "Accept: application/vnd.github+json" \
-            -d '{"title":"[SANITY] Teste criação de issue via Actions","body":"Se você vê esta issue, as permissões estão OK."}' \
-            https://api.github.com/repos/${{ github.repository }}/issues
 
 
 name: Sonar → GitHub Issues (digest)
