@@ -159,11 +159,12 @@ router.post('/export', async (req, res) => {
         for (const att of post.attachments) {
           if (att.mimeType.startsWith('image/')) {
             if (att.data) {
-              try {
-                doc.image(att.data, { width: 200 });
-              } catch (e) {
-                doc.text(`(imagem indisponível: ${att.filename})`);
-              }
+                try {
+                  doc.image(att.data, { width: 200 });
+                } catch (e) {
+                  console.error('embed_image_error', e);
+                  doc.text(`(imagem indisponível: ${att.filename})`);
+                }
             } else {
               doc.text(`(imagem indisponível: ${att.filename})`);
             }
@@ -186,11 +187,12 @@ router.post('/export', async (req, res) => {
           for (const rAtt of reply.attachments) {
             if (rAtt.mimeType.startsWith('image/')) {
               if (rAtt.data) {
-                try {
-                  doc.image(rAtt.data, { width: 150, continued: false });
-                } catch (e) {
-                  doc.fontSize(10).text(`(imagem indisponível: ${rAtt.filename})`, { indent: 20 });
-                }
+                  try {
+                    doc.image(rAtt.data, { width: 150, continued: false });
+                  } catch (e) {
+                    console.error('embed_reply_image_error', e);
+                    doc.fontSize(10).text(`(imagem indisponível: ${rAtt.filename})`, { indent: 20 });
+                  }
               } else {
                 doc.fontSize(10).text(`(imagem indisponível: ${rAtt.filename})`, { indent: 20 });
               }

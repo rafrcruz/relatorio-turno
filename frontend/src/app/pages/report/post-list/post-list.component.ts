@@ -20,8 +20,8 @@ export class PostListComponent implements OnDestroy, OnChanges {
   count = 0;
   loading = true;
   error = false;
-  modalImageUrl?: string;
-  modalImageAlt?: string;
+    modalImageUrl?: string;
+    modalAlt?: string;
   private page = 1;
   private ctx!: ReportContext;
   private readonly areaMap = new Map<string, number>();
@@ -121,15 +121,15 @@ export class PostListComponent implements OnDestroy, OnChanges {
     });
   }
 
-  openImage(url: string, alt: string): void {
-    this.modalImageUrl = url;
-    this.modalImageAlt = this.sanitizeAlt(alt);
-  }
+    openImage(url: string, alt: string): void {
+      this.modalImageUrl = url;
+      this.modalAlt = this.sanitizeAlt(alt);
+    }
 
-  closeImage(): void {
-    this.modalImageUrl = undefined;
-    this.modalImageAlt = undefined;
-  }
+    closeImage(): void {
+      this.modalImageUrl = undefined;
+      this.modalAlt = undefined;
+    }
 
   onContentClick(event: Event): void {
     const target = event.target as HTMLElement;
