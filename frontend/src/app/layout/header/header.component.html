@@ -39,15 +39,16 @@
           *ngIf="areaDropdownOpen"
           class="absolute left-0 mt-1 w-full max-h-60 overflow-auto bg-white border border-aluminium rounded-lg shadow-lg z-20"
         >
-          <li
-            *ngFor="let area of areas"
-            (click)="selectArea(area.name)"
-            (keydown)="onAreaKeydown($event, area.name)"
-            tabindex="0"
-            class="px-3 py-1.5 cursor-pointer transition-colors hover:bg-hydro-light-blue hover:text-white"
-            [ngClass]="{ 'bg-hydro-blue text-white hover:bg-hydro-dark-blue': ctx.area === area.name }"
-          >
-            {{ area.name }}
+          <li *ngFor="let area of areas">
+            <button
+              type="button"
+              (click)="selectArea(area.name)"
+              (keydown)="onAreaKeydown($event, area.name)"
+              class="w-full text-left px-3 py-1.5 cursor-pointer transition-colors hover:bg-hydro-light-blue hover:text-white"
+              [ngClass]="{ 'bg-hydro-blue text-white hover:bg-hydro-dark-blue': ctx.area === area.name }"
+            >
+              {{ area.name }}
+            </button>
           </li>
         </ul>
       </div>

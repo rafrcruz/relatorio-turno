@@ -138,12 +138,6 @@ export class PostListComponent implements OnDestroy, OnChanges {
     }
   }
 
-  onContentKeydown(event: KeyboardEvent): void {
-    if (event.key === 'Enter' || event.key === ' ') {
-      this.onContentClick(event);
-    }
-  }
-
   onModalKeydown(event: KeyboardEvent): void {
     if (event.key === 'Escape') {
       this.closeImage();
