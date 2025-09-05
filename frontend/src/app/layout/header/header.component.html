@@ -42,7 +42,7 @@
           <li
             *ngFor="let area of areas"
             (click)="selectArea(area.name)"
-            (keydown.enter)="selectArea(area.name)"
+            (keydown)="onAreaKeydown($event, area.name)"
             tabindex="0"
             class="px-3 py-1.5 cursor-pointer transition-colors hover:bg-hydro-light-blue hover:text-white"
             [ngClass]="{ 'bg-hydro-blue text-white hover:bg-hydro-dark-blue': ctx.area === area.name }"

@@ -46,6 +46,13 @@ export class HeaderComponent implements OnInit {
     this.areaDropdownOpen = false;
   }
 
+  onAreaKeydown(event: KeyboardEvent, area: string): void {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      this.selectArea(area);
+    }
+  }
+
   @HostListener('document:click', ['$event'])
   onDocumentClick(event: Event): void {
     const target = event.target as HTMLElement;
