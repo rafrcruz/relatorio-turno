@@ -81,6 +81,7 @@ model Attachment {
   mimeType  String
   size      Int
   url       String
+  data      Bytes?
 }
 
 model Indicator {

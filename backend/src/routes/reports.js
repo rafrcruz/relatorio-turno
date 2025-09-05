@@ -1,10 +1,7 @@
 const express = require('express');
-const fs = require('fs');
-const path = require('path');
 const sanitizeHtml = require('sanitize-html');
 const PDFDocument = require('pdfkit');
 const { prisma } = require('../prisma');
-const { uploadDir } = require('../middleware/upload');
 const {
   parseNumberParam,
   parseDateParam,
@@ -13,25 +10,7 @@ const {
 
 const router = express.Router();
 
-/**
- * @swagger
- * tags:
- *   name: Relatórios
- *   description: Geração e consulta de relatórios
- */
-
-/**
- * @swagger
- * /api/reports:
- *   get:
- *     summary: Lista relatórios salvos
- *     tags: [Relatórios]
- *     responses:
- *       200:
- *         description: Lista de relatórios
- *       500:
- *         description: Erro ao buscar relatórios
- */
+// List saved reports (placeholder/simple example)
 router.get('/reports', async (req, res) => {
   try {
     const reports = await prisma.report.findMany();
@@ -42,32 +21,7 @@ router.get('/reports', async (req, res) => {
   }
 });
 
-/**
- * @swagger
- * /api/indicator-values:
- *   get:
- *     summary: Busca valores de indicadores
- *     tags: [Relatórios]
- *     parameters:
- *       - in: query
- *         name: areaId
- *         schema:
- *           type: integer
- *       - in: query
- *         name: date
- *         schema:
- *           type: string
- *           format: date
- *       - in: query
- *         name: shift
- *         schema:
- *           type: integer
- *     responses:
- *       200:
- *         description: Valores encontrados
- *       400:
- *         description: Parâmetros inválidos
- */
+// Indicator values
 router.get('/indicator-values', async (req, res) => {
   const { areaId, date, shift } = req.query;
   const area = parseNumberParam(areaId);
@@ -92,30 +46,7 @@ router.get('/indicator-values', async (req, res) => {
   res.json(values);
 });
 
-/**
- * @swagger
- * /api/summary:
- *   get:
- *     summary: Resumo de posts por tipo
- *     tags: [Relatórios]
- *     parameters:
- *       - in: query
- *         name: areaId
- *         schema:
- *           type: integer
- *       - in: query
- *         name: date
- *         schema:
- *           type: string
- *           format: date
- *       - in: query
- *         name: shift
- *         schema:
- *           type: integer
- *     responses:
- *       200:
- *         description: Resumo retornado
- */
+// Post type summary
 router.get('/summary', async (req, res) => {
   const { areaId, date, shift } = req.query;
   const area = parseNumberParam(areaId);
@@ -132,20 +63,7 @@ router.get('/summary', async (req, res) => {
   res.json(counts);
 });
 
-/**
- * @swagger
- * /api/export:
- *   post:
- *     summary: Gera um relatório em PDF
- *     tags: [Relatórios]
- *     responses:
- *       200:
- *         description: PDF gerado
- *       400:
- *         description: Parâmetros inválidos
- *       500:
- *         description: Falha ao gerar PDF
- */
+// Export PDF (reads attachments from DB)
 router.post('/export', async (req, res) => {
   const { areaId, date, shift } = req.body;
   const userId = parseNumberParam(req.header('x-user-id')) || 1;
@@ -215,6 +133,7 @@ router.post('/export', async (req, res) => {
       { key: 'ANNOTATION', label: 'Anotações' },
     ];
 
+    const baseUrl = `${req.protocol}://${req.get('host')}`;
     types.forEach(({ key, label }, idx) => {
       if (idx > 0) doc.addPage();
       doc.fontSize(16).text(label, { underline: true });
@@ -234,14 +153,18 @@ router.post('/export', async (req, res) => {
         doc.text(plain);
         for (const att of post.attachments) {
           if (att.mimeType.startsWith('image/')) {
-            const filePath = path.join(uploadDir, path.basename(att.url));
-            if (fs.existsSync(filePath)) {
-              doc.image(filePath, { width: 200 });
+            if (att.data) {
+              try {
+                doc.image(att.data, { width: 200 });
+              } catch (e) {
+                doc.text(`(imagem indisponível: ${att.filename})`);
+              }
             } else {
               doc.text(`(imagem indisponível: ${att.filename})`);
             }
           } else {
-            doc.fillColor('blue').text(att.filename, { link: att.url, underline: true });
+            const attUrl = `${baseUrl}/api/attachments/${att.id}`;
+            doc.fillColor('blue').text(att.filename, { link: attUrl, underline: true });
             doc.fillColor('black');
           }
         }
@@ -257,14 +180,18 @@ router.post('/export', async (req, res) => {
           doc.fontSize(11).text(replyPlain, { indent: 20 });
           for (const rAtt of reply.attachments) {
             if (rAtt.mimeType.startsWith('image/')) {
-              const filePath = path.join(uploadDir, path.basename(rAtt.url));
-              if (fs.existsSync(filePath)) {
-                doc.image(filePath, { width: 150, continued: false });
+              if (rAtt.data) {
+                try {
+                  doc.image(rAtt.data, { width: 150, continued: false });
+                } catch (e) {
+                  doc.fontSize(10).text(`(imagem indisponível: ${rAtt.filename})`, { indent: 20 });
+                }
               } else {
                 doc.fontSize(10).text(`(imagem indisponível: ${rAtt.filename})`, { indent: 20 });
               }
             } else {
-              doc.fillColor('blue').fontSize(10).text(rAtt.filename, { link: rAtt.url, underline: true, indent: 20 });
+              const rAttUrl = `${baseUrl}/api/attachments/${rAtt.id}`;
+              doc.fillColor('blue').fontSize(10).text(rAtt.filename, { link: rAttUrl, underline: true, indent: 20 });
               doc.fillColor('black').fontSize(11);
             }
           }
@@ -290,3 +217,4 @@ router.post('/export', async (req, res) => {
 });
 
 module.exports = router;
+

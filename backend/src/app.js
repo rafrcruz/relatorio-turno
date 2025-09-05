@@ -11,12 +11,33 @@ const areasRouter = require('./routes/areas');
 const postsRouter = require('./routes/posts');
 const profileRouter = require('./routes/profile');
 const reportsRouter = require('./routes/reports');
+const attachmentsRouter = require('./routes/attachments');
 
 const app = express();
 
+// Build allowed origins from env and sensible defaults
+function buildAllowedOrigins() {
+  const defaults = ['http://localhost:4200'];
+  const envList = (process.env.CORS_ORIGINS || '')
+    .split(',')
+    .map((s) => s.trim())
+    .filter(Boolean);
+  const single = process.env.FRONTEND_URL ? [process.env.FRONTEND_URL.trim()] : [];
+  const vercel = process.env.VERCEL_URL ? [`https://${process.env.VERCEL_URL}`] : [];
+  const normalized = [...defaults, ...envList, ...single, ...vercel].map((o) => o.replace(/\/$/, ''));
+  return Array.from(new Set(normalized));
+}
+
+const allowedOrigins = buildAllowedOrigins();
+
 app.use(compression());
 app.use(cors({
-  origin: 'http://localhost:4200',
+  origin: (origin, callback) => {
+    if (!origin) return callback(null, true);
+    const normalized = origin.replace(/\/$/, '');
+    if (allowedOrigins.includes(normalized)) return callback(null, true);
+    return callback(new Error(`Not allowed by CORS: ${origin}`));
+  },
   credentials: true,
 }));
 app.use(express.json());
@@ -31,7 +52,7 @@ const swaggerOptions = {
     },
     servers: [
       {
-        url: 'http://localhost:3000',
+        url: process.env.PUBLIC_BASE_URL || (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : `http://localhost:${process.env.PORT || 3000}`),
       },
     ],
   },
@@ -53,6 +74,7 @@ app.use('/api/areas', areasRouter);
 app.use('/api/posts', postsRouter);
 app.use('/api', profileRouter);
 app.use('/api', reportsRouter);
+app.use('/api', attachmentsRouter);
 
 if (process.env.NODE_ENV !== 'production') {
   app.use(errorhandler());

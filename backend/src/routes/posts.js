@@ -1,9 +1,8 @@
 const express = require('express');
-const fs = require('fs');
 const path = require('path');
 const sanitizeHtml = require('sanitize-html');
 const { prisma, PostType } = require('../prisma');
-const { upload, uploadDir } = require('../middleware/upload');
+const { upload } = require('../middleware/upload');
 const {
   parseNumberParam,
   parseDateParam,
@@ -162,6 +161,17 @@ const router = express.Router();
  *         description: Resposta não encontrada
  */
 
+function buildBaseUrl(req) {
+  return `${req.protocol}://${req.get('host')}`;
+}
+
+function mapAttachmentUrls(baseUrl, attachments) {
+  return attachments.map((a) => ({
+    ...a,
+    url: `${baseUrl}/api/attachments/${a.id}`,
+  }));
+}
+
 // Create post
 router.post('/', upload.array('attachments'), async (req, res) => {
   try {
@@ -194,9 +204,6 @@ router.post('/', upload.array('attachments'), async (req, res) => {
     if (req.files && req.files.length) {
       const totalSize = req.files.reduce((sum, f) => sum + f.size, 0);
       if (totalSize > 50 * 1024 * 1024) {
-        for (const f of req.files) {
-          fs.unlink(f.path, () => {});
-        }
         return res.status(400).json({ error: 'Total attachments size exceeds 50MB' });
       }
 
@@ -205,7 +212,9 @@ router.post('/', upload.array('attachments'), async (req, res) => {
         filename: sanitizeFilename(f.originalname),
         mimeType: f.mimetype,
         size: f.size,
-        url: `${req.protocol}://${req.get('host')}/uploads/${f.filename}`,
+        // url will be computed dynamically; keeping field for backward comp.
+        url: `${buildBaseUrl(req)}/api/attachments/temp`,
+        data: f.buffer,
       }));
       await prisma.attachment.createMany({ data: attachmentsData });
     }
@@ -219,7 +228,7 @@ router.post('/', upload.array('attachments'), async (req, res) => {
       },
     });
 
-    const fullPost = await prisma.post.findUnique({
+    let fullPost = await prisma.post.findUnique({
       where: { id: post.id },
       include: {
         attachments: true,
@@ -227,6 +236,12 @@ router.post('/', upload.array('attachments'), async (req, res) => {
         _count: { select: { replies: true } },
       },
     });
+    // Map URLs to attachment download endpoints
+    const baseUrl = buildBaseUrl(req);
+    fullPost = {
+      ...fullPost,
+      attachments: mapAttachmentUrls(baseUrl, fullPost.attachments),
+    };
     res.status(201).json(fullPost);
   } catch (error) {
     console.error('Failed to create post', error);
@@ -259,7 +274,12 @@ router.get('/', async (req, res) => {
       _count: { select: { replies: true } },
     },
   });
-  res.json(posts);
+  const baseUrl = buildBaseUrl(req);
+  const mapped = posts.map((p) => ({
+    ...p,
+    attachments: mapAttachmentUrls(baseUrl, p.attachments),
+  }));
+  res.json(mapped);
 });
 
 // Get single post
@@ -268,7 +288,7 @@ router.get('/:id', async (req, res) => {
   if (id === undefined) {
     return res.status(400).json({ error: 'Invalid post id' });
   }
-  const post = await prisma.post.findUnique({
+  let post = await prisma.post.findUnique({
     where: { id },
     include: {
       attachments: true,
@@ -278,6 +298,15 @@ router.get('/:id', async (req, res) => {
     },
   });
   if (!post) return res.status(404).json({ error: 'Post not found' });
+  const baseUrl = buildBaseUrl(req);
+  post = {
+    ...post,
+    attachments: mapAttachmentUrls(baseUrl, post.attachments),
+    replies: post.replies.map((r) => ({
+      ...r,
+      attachments: mapAttachmentUrls(baseUrl, r.attachments),
+    })),
+  };
   res.json(post);
 });
 
@@ -298,15 +327,6 @@ router.delete('/:id', async (req, res) => {
 
   const userId = parseNumberParam(req.header('x-user-id')) || 1;
   const user = await ensureUser(userId);
-
-  const allAttachments = [
-    ...post.attachments,
-    ...post.replies.flatMap((r) => r.attachments),
-  ];
-  for (const att of allAttachments) {
-    const filePath = path.join(uploadDir, path.basename(att.url));
-    fs.unlink(filePath, () => {});
-  }
 
   await prisma.attachment.deleteMany({
     where: {
@@ -349,9 +369,6 @@ router.post('/:id/replies', upload.array('attachments'), async (req, res) => {
     if (req.files && req.files.length) {
       const totalSize = req.files.reduce((sum, f) => sum + f.size, 0);
       if (totalSize > 50 * 1024 * 1024) {
-        for (const f of req.files) {
-          fs.unlink(f.path, () => {});
-        }
         return res.status(400).json({ error: 'Total attachments size exceeds 50MB' });
       }
 
@@ -360,7 +377,8 @@ router.post('/:id/replies', upload.array('attachments'), async (req, res) => {
         filename: sanitizeFilename(f.originalname),
         mimeType: f.mimetype,
         size: f.size,
-        url: `${req.protocol}://${req.get('host')}/uploads/${f.filename}`,
+        url: `${buildBaseUrl(req)}/api/attachments/temp`,
+        data: f.buffer,
       }));
       await prisma.attachment.createMany({ data: attData });
     }
@@ -374,10 +392,15 @@ router.post('/:id/replies', upload.array('attachments'), async (req, res) => {
       },
     });
 
-    const fullReply = await prisma.reply.findUnique({
+    let fullReply = await prisma.reply.findUnique({
       where: { id: reply.id },
       include: { attachments: true },
     });
+    const baseUrl = buildBaseUrl(req);
+    fullReply = {
+      ...fullReply,
+      attachments: mapAttachmentUrls(baseUrl, fullReply.attachments),
+    };
     res.status(201).json(fullReply);
   } catch (error) {
     console.error('Failed to create reply', error);
@@ -406,7 +429,12 @@ router.get('/:id/replies', async (req, res) => {
     prisma.reply.count({ where: { postId } }),
   ]);
 
-  res.json({ replies, total });
+  const baseUrl = buildBaseUrl(req);
+  const mappedReplies = replies.map((r) => ({
+    ...r,
+    attachments: mapAttachmentUrls(baseUrl, r.attachments),
+  }));
+  res.json({ replies: mappedReplies, total });
 });
 
 router.delete('/:postId/replies/:id', async (req, res) => {
@@ -425,11 +453,6 @@ router.delete('/:postId/replies/:id', async (req, res) => {
 
   const userId = parseNumberParam(req.header('x-user-id')) || 1;
   const user = await ensureUser(userId);
-
-  for (const att of reply.attachments) {
-    const filePath = path.join(uploadDir, path.basename(att.url));
-    fs.unlink(filePath, () => {});
-  }
 
   await prisma.attachment.deleteMany({ where: { replyId: id } });
   await prisma.reply.delete({ where: { id } });
