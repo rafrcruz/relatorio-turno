@@ -135,8 +135,8 @@ jobs:
             console.log(`Report generated with ${issues.length} issues`);
           })().catch(err => { console.error(err); process.exit(1); });
           EOF
+          node .github/scripts/sonar-digest.mjs
       - uses: actions/upload-artifact@v4
         with:
           name: sonarcloud-report
           path: sonarcloud-report.md
-
