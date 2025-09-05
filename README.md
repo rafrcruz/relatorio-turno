@@ -119,6 +119,33 @@ Para verificar se tudo está funcionando:
 2. **Frontend**: Acesse http://localhost:4200
 3. **Console do navegador**: Verifique se há erros de conexão
 
+## 🗂 Organização do Repositório
+
+Este projeto é mantido na branch principal `main` e utiliza uma estrutura de monorepositório:
+
+- `frontend/` – aplicação Angular.
+- `backend/` – API Node.js + Express.
+
+Utilize **Issues** e **Pull Requests** para relatar problemas ou propor melhorias.
+
+## 🤝 Contribuindo
+
+Contribuições são bem-vindas! Para colaborar:
+
+1. Faça um fork do repositório
+2. Crie uma branch (`git checkout -b feature/minha-feature`)
+3. Faça commit das alterações (`git commit -m 'feat: minha nova feature'`)
+4. Faça push para a branch (`git push origin feature/minha-feature`)
+5. Abra um Pull Request
+
+## 📄 Licença
+
+Este projeto está licenciado sob a **MIT License**. Consulte o arquivo [LICENSE](LICENSE) para mais detalhes.
+
+## 📫 Contato
+
+Para dúvidas ou sugestões, abra uma issue no repositório.
+
 ## 📝 Próximos Passos
 
 - [ ] Adicionar autenticação
