@@ -2,7 +2,7 @@
   "rewrites": [
     { "source": "/", "destination": "/api/index.js" },
     { "source": "/docs", "destination": "/api/index.js" },
-    { "source": "/docs/(.*)", "destination": "/api/index.js" }
+    { "source": "/swagger.json", "destination": "/api/index.js" }
   ]
 }
 
