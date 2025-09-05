@@ -40,6 +40,16 @@ app.use(cors({
   },
   credentials: true,
 }));
+// Handle preflight for all routes using same config
+app.options('*', cors({
+  origin: (origin, callback) => {
+    if (!origin) return callback(null, true);
+    const normalized = origin.replace(/\/$/, '');
+    if (allowedOrigins.includes(normalized)) return callback(null, true);
+    return callback(new Error(`Not allowed by CORS: ${origin}`));
+  },
+  credentials: true,
+}));
 app.use(express.json());
 app.use('/uploads', express.static(uploadDir));
 
