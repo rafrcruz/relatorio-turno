@@ -108,20 +108,22 @@ export class PostListComponent implements OnDestroy, OnChanges {
   }
 
   deletePost(post: Post): void {
-    if (!confirm('Excluir este post?')) return;
-      this.postsService.delete(post.id).subscribe({
-        next: () => {
-          this.posts = this.posts.filter((p) => p.id !== post.id);
-          this.count--;
-          this.notify.success('Post excluído.');
-        },
-        error: () => this.notify.error('Falha ao excluir post.'),
-      });
+    if (!confirm('Excluir este post?')) {
+      return;
     }
+    this.postsService.delete(post.id).subscribe({
+      next: () => {
+        this.posts = this.posts.filter((p) => p.id !== post.id);
+        this.count--;
+        this.notify.success('Post excluído.');
+      },
+      error: () => this.notify.error('Falha ao excluir post.'),
+    });
+  }
 
   openImage(url: string, alt: string): void {
     this.modalImageUrl = url;
-    this.modalImageAlt = alt;
+    this.modalImageAlt = this.sanitizeAlt(alt);
   }
 
   closeImage(): void {
@@ -132,7 +134,7 @@ export class PostListComponent implements OnDestroy, OnChanges {
   onContentClick(event: Event): void {
     const target = event.target as HTMLElement;
     if (target instanceof HTMLImageElement) {
-      this.openImage(target.src, target.alt);
+      this.openImage(target.src, this.sanitizeAlt(target.alt));
     }
   }
 
@@ -146,6 +148,10 @@ export class PostListComponent implements OnDestroy, OnChanges {
     if (event.key === 'Escape') {
       this.closeImage();
     }
+  }
+
+  sanitizeAlt(text: string): string {
+    return text.replace(/\b(?:image|imagem)\b/gi, '').trim();
   }
 
   trackById(_: number, item: Post): number {
