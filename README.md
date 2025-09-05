@@ -1,22 +1,136 @@
 # 📊 Relatório de Turno
 
-Aplicação web completa com **frontend Angular** e **backend Node.js + Express**.
+Sistema de gestão de relatórios de turno desenvolvido para facilitar a comunicação entre equipes e o registro de ocorrências durante os turnos de trabalho.
 
-## 🚀 Tecnologias Utilizadas
+<div align="center">
+  <img src="https://img.shields.io/badge/angular-%23DD0031.svg?style=for-the-badge&logo=angular&logoColor=white" alt="Angular">
+  <img src="https://img.shields.io/badge/node.js-6DA55F?style=for-the-badge&logo=node.js&logoColor=white" alt="Node.js">
+  <img src="https://img.shields.io/badge/typescript-%23007ACC.svg?style=for-the-badge&logo=typescript&logoColor=white" alt="TypeScript">
+  <img src="https://img.shields.io/badge/express.js-%23404d59.svg?style=for-the-badge&logo=express&logoColor=%2361DAFB" alt="Express.js">
+  <img src="https://img.shields.io/badge/Prisma-3982CE?style=for-the-badge&logo=Prisma&logoColor=white" alt="Prisma">
+</div>
+
+## 🚀 Recursos Principais
+
+- **Registro de Ocorrências**: Crie e gerencie ocorrências por turno
+- **Categorização**: Classifique as ocorrências em Anotações, Urgências ou Pendências
+- **Anexos**: Adicione arquivos às ocorrências
+- **Relatórios em PDF**: Exporte relatórios completos
+- **Interface Responsiva**: Acessível em diferentes dispositivos
+- **Gestão de Áreas**: Organize por diferentes áreas da empresa
+
+## 🛠️ Tecnologias Utilizadas
 
 ### Frontend
-- **Angular 16** - Framework frontend
-- **TypeScript** - Linguagem de programação
-- **CSS3** - Estilização moderna e responsiva
+- **Angular 16+** - Framework frontend
+- **TypeScript** - Linguagem de programação tipada
+- **Tailwind CSS** - Framework CSS utilitário
+- **RxJS** - Para programação reativa
+- **NGX-Quill** - Editor de texto rico
+- **Date-fns** - Manipulação de datas
 
 ### Backend
 - **Node.js** - Runtime JavaScript
 - **Express** - Framework web
-- **CORS** - Middleware para comunicação cross-origin
+- **Prisma** - ORM para banco de dados
+- **JWT** - Autenticação
+- **Multer** - Upload de arquivos
+- **PDFKit** - Geração de relatórios em PDF
 
-## 📁 Estrutura do Projeto
+## 📦 Estrutura do Projeto
 
 ```
+relatorio-turno/
+├── backend/               # Código do servidor
+│   ├── prisma/           # Schema e migrações do banco de dados
+│   ├── src/
+│   │   ├── routes/       # Rotas da API
+│   │   ├── middleware/   # Middlewares do Express
+│   │   └── server.js     # Ponto de entrada do servidor
+│   └── .env.example      # Variáveis de ambiente de exemplo
+│
+├── frontend/             # Aplicação Angular
+│   ├── src/
+│   │   ├── app/
+│   │   │   ├── core/     # Serviços e modelos
+│   │   │   ├── layout/   # Componentes de layout
+│   │   │   └── pages/    # Páginas da aplicação
+│   │   └── assets/       # Recursos estáticos
+│   └── angular.json      # Configuração do Angular
+│
+├── .gitignore
+├── package.json          # Scripts e dependências raiz
+└── README.md             # Este arquivo
+```
+
+## 🚀 Começando
+
+### Pré-requisitos
+
+- Node.js 16+
+- npm 8+
+- Banco de dados (PostgreSQL/MySQL/SQLite)
+
+### Instalação
+
+1. **Clonar o repositório**
+   ```bash
+   git clone [URL_DO_REPOSITORIO]
+   cd relatorio-turno
+   ```
+
+2. **Instalar dependências**
+   ```bash
+   # Instalar dependências do projeto raiz
+   npm install
+   
+   # Instalar dependências do frontend e backend
+   npm run install:all
+   ```
+
+3. **Configurar ambiente**
+   - Copiar `.env.example` para `.env` no diretório backend
+   - Configurar as variáveis de ambiente necessárias
+
+4. **Iniciar o servidor de desenvolvimento**
+   ```bash
+   # Iniciar frontend e backend em modo de desenvolvimento
+   npm run dev
+   ```
+
+   O frontend estará disponível em `http://localhost:4200`
+   O backend estará disponível em `http://localhost:3000`
+
+## 🏗️ Build para Produção
+
+```bash
+# Build para produção
+npm run build
+
+# Iniciar servidor em produção
+npm start
+```
+
+## 🤝 Contribuição
+
+Contribuições são bem-vindas! Siga estes passos:
+
+1. Faça um Fork do projeto
+2. Crie uma Branch para sua Feature (`git checkout -b feature/AmazingFeature`)
+3. Adicione suas mudanças (`git add .`)
+4. Comite suas mudanças (`git commit -m 'Add some AmazingFeature'`)
+5. Faça o Push da Branch (`git push origin feature/AmazingFeature`)
+6. Abra um Pull Request
+
+## 📄 Licença
+
+Distribuído sob a licença MIT. Veja `LICENSE` para mais informações.
+
+## ✉️ Contato
+
+Equipe de Desenvolvimento - [seu-email@exemplo.com]
+
+Link do Projeto: [https://github.com/seu-usuario/relatorio-turno](https://github.com/seu-usuario/relatorio-turno)
 relatorio-turno/
 ├── backend/                 # Backend Node.js + Express
 │   ├── src/
