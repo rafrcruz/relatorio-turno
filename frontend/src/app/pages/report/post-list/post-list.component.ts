@@ -21,6 +21,7 @@ export class PostListComponent implements OnDestroy, OnChanges {
   loading = true;
   error = false;
   modalImageUrl?: string;
+  modalImageAlt?: string;
   private page = 1;
   private ctx!: ReportContext;
   private readonly areaMap = new Map<string, number>();
@@ -118,18 +119,20 @@ export class PostListComponent implements OnDestroy, OnChanges {
       });
     }
 
-  openImage(url: string): void {
+  openImage(url: string, alt: string): void {
     this.modalImageUrl = url;
+    this.modalImageAlt = alt;
   }
 
   closeImage(): void {
     this.modalImageUrl = undefined;
+    this.modalImageAlt = undefined;
   }
 
   onContentClick(event: Event): void {
     const target = event.target as HTMLElement;
     if (target instanceof HTMLImageElement) {
-      this.openImage(target.src);
+      this.openImage(target.src, target.alt);
     }
   }
 
