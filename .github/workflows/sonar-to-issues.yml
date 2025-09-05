@@ -2,8 +2,6 @@ name: Sonar → GitHub Issues (digest)
 
 on:
   workflow_dispatch: {}
-  schedule:
-    - cron: '30 5 * * 1-5'   # dias úteis às 05:30 UTC
 
 permissions:
   contents: read
