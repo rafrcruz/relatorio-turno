@@ -1,11 +1,9 @@
-
-
 name: Sonar → GitHub Issues (digest)
 
 on:
   workflow_dispatch: {}
   schedule:
-    - cron: '30 5 * * 1-5'   # roda dias úteis às 05:30 UTC
+    - cron: '30 5 * * 1-5'   # dias úteis às 05:30 UTC
 
 permissions:
   contents: read
@@ -23,12 +21,13 @@ jobs:
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_PROJECT_KEY: ${{ vars.SONAR_PROJECT_KEY }}
-          SONAR_BRANCH: ${{ vars.SONAR_BRANCH || 'main' }}   # opcional: crie vars.SONAR_BRANCH se quiser
+          SONAR_BRANCH: ${{ vars.SONAR_BRANCH }}   # opcional; script usa 'main' se vazio
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           mkdir -p .github/scripts
           cat > .github/scripts/sonar-digest.mjs <<'EOF'
           import fs from 'node:fs/promises';
+          import { Buffer } from 'node:buffer';
 
           const SONAR_TOKEN = process.env.SONAR_TOKEN;
           const PROJECT = process.env.SONAR_PROJECT_KEY;
@@ -40,11 +39,18 @@ jobs:
           const title = `📋 SonarCloud – Backlog de issues abertas (branch: ${BRANCH})`;
           const sevOrder = { BLOCKER: 0, CRITICAL: 1, MAJOR: 2, MINOR: 3, INFO: 4 };
 
+          function assertEnv(name, val) {
+            if (!val) throw new Error(`Missing required env: ${name}`);
+          }
+
           async function fetchAllIssues() {
+            assertEnv('SONAR_TOKEN', SONAR_TOKEN);
+            assertEnv('SONAR_PROJECT_KEY', PROJECT);
             let p = 1, all = [];
+            const auth = 'Basic ' + Buffer.from(`${SONAR_TOKEN}:`).toString('base64');
             while (true) {
               const url = `${SONAR_API}/issues/search?projects=${encodeURIComponent(PROJECT)}&branch=${encodeURIComponent(BRANCH)}&resolved=false&types=BUG,VULNERABILITY,CODE_SMELL&ps=500&p=${p}`;
-              const res = await fetch(url, { headers: { Authorization: `Bearer ${SONAR_TOKEN}` }});
+              const res = await fetch(url, { headers: { Authorization: auth, Accept: 'application/json' } });
               if (!res.ok) throw new Error(`Sonar API error ${res.status}: ${await res.text()}`);
               const data = await res.json();
               all = all.concat(data.issues || []);
@@ -94,11 +100,13 @@ jobs:
           }
 
           async function upsertIssue(title, body) {
+            assertEnv('GITHUB_TOKEN', GH_TOKEN);
+            assertEnv('GITHUB_REPOSITORY', process.env.GITHUB_REPOSITORY);
             const q = encodeURIComponent(`repo:${owner}/${repo} in:title "${title}" state:open`);
             const searchRes = await fetch(`https://api.github.com/search/issues?q=${q}`, {
               headers: { 'Authorization': `Bearer ${GH_TOKEN}`, 'Accept': 'application/vnd.github+json' }
             });
-            if (!searchRes.ok) throw new Error(`GitHub search error ${await searchRes.status}: ${await searchRes.text()}`);
+            if (!searchRes.ok) throw new Error(`GitHub search error ${searchRes.status}: ${await searchRes.text()}`);
             const search = await searchRes.json();
             if (search.total_count > 0) {
               const number = search.items[0].number;
