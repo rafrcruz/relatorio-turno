@@ -21,21 +21,23 @@
     <div
       class="mt-1 prose prose-sm max-w-none"
       [innerHTML]="post.content"
-      tabindex="0"
       (click)="onContentClick($event)"
-      (keydown.enter)="onContentClick($event)"
     ></div>
     <div *ngIf="post.attachments.length" class="mt-1 flex flex-col gap-1">
       <ng-container *ngFor="let att of post.attachments">
-        <img
+        <button
           *ngIf="att.mimeType.startsWith('image/')"
-          [src]="att.url"
-          [alt]="sanitizeAlt(att.filename)"
-          class="max-w-full max-h-96 object-contain border cursor-pointer"
-          tabindex="0"
+          type="button"
+          class="p-0 bg-transparent border-0 inline-block text-left"
+          [attr.aria-label]="sanitizeAlt(att.filename)"
           (click)="openImage(att.url, sanitizeAlt(att.filename))"
-          (keydown.enter)="openImage(att.url, sanitizeAlt(att.filename))"
-        />
+        >
+          <img
+            [src]="att.url"
+            [alt]="sanitizeAlt(att.filename)"
+            class="max-w-full max-h-96 object-contain border cursor-pointer"
+          />
+        </button>
         <a
           *ngIf="att.mimeType === 'application/pdf'"
           [href]="att.url"
@@ -70,8 +72,6 @@
     [src]="modalImageUrl"
     [alt]="modalAlt"
     class="max-w-[90vw] max-h-[90vh] object-contain"
-    tabindex="0"
     (click)="$event.stopPropagation()"
-    (keydown.enter)="$event.stopPropagation()"
   />
 </button>
