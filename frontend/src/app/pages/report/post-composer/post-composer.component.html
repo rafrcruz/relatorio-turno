@@ -67,7 +67,7 @@
     </label>
   </div>
 
-  <div class="border border-light-gray rounded-lg shadow-sm" (paste)="onPaste($event)">
+  <div class="w-full border border-light-gray rounded-lg shadow-sm" (paste)="onPaste($event)">
     <quill-editor
       #editor
       [(ngModel)]="content"
@@ -75,7 +75,7 @@
       format="html"
       (ngModelChange)="saveDraft()"
       placeholder="Escreva uma atualização do turno… Ex.: status de produção, ocorrências, apontamentos"
-      class="min-h-[100px]"
+      class="min-h-[100px] w-full"
     ></quill-editor>
   </div>
 

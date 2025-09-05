@@ -30,14 +30,14 @@
   </ng-container>
   <button *ngIf="replies.length < total && !loading" (click)="loadMore()" class="text-sm text-hydro-blue underline">Ver mais respostas</button>
   <div *ngIf="showForm" class="mt-1">
-    <div class="border border-light-gray rounded" (drop)="onDrop($event)" (dragover)="$event.preventDefault()" (paste)="onPaste($event)">
+    <div class="w-full border border-light-gray rounded" (drop)="onDrop($event)" (dragover)="$event.preventDefault()" (paste)="onPaste($event)">
       <quill-editor
         #editor
         [(ngModel)]="content"
         [modules]="modules"
         format="html"
         placeholder="Escreva uma resposta..."
-        class="min-h-[60px]"
+        class="min-h-[60px] w-full"
       ></quill-editor>
     </div>
     <input type="file" multiple (change)="onFileInput($event)" class="mt-1" />
