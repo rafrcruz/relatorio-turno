@@ -17,7 +17,7 @@ const app = express();
 
 // Build allowed origins from env and sensible defaults
 function buildAllowedOrigins() {
-  const defaults = ['http://localhost:4200'];
+  const defaults = ['http://localhost:4200', 'https://relatorio-turno-frontend.vercel.app'];
   const envList = (process.env.CORS_ORIGINS || '')
     .split(',')
     .map((s) => s.trim())
