@@ -12,8 +12,6 @@
         class="prose prose-sm max-w-none"
         [innerHTML]="r.content"
         (click)="onContentClick($event)"
-        tabindex="0"
-        (keydown)="onContentKeydown($event)"
       ></div>
       <div *ngIf="r.attachments.length" class="mt-1 flex flex-col gap-1">
         <ng-container *ngFor="let att of r.attachments">
@@ -23,8 +21,6 @@
             [alt]="sanitizeAlt(att.filename)"
             class="max-w-full max-h-96 object-contain border cursor-pointer"
             (click)="openImage(att.url, sanitizeAlt(att.filename))"
-            tabindex="0"
-            (keydown.enter)="openImage(att.url, sanitizeAlt(att.filename))"
           />
           <a *ngIf="att.mimeType === 'application/pdf'" [href]="att.url" target="_blank" class="flex items-center text-hydro-blue text-sm underline">
             📄 {{ att.filename }}
@@ -52,7 +48,12 @@
     <div *ngIf="attachments.length" class="mt-1 flex flex-wrap gap-1">
       <ng-container *ngFor="let att of attachments">
         <div class="relative">
-          <img *ngIf="att.url" [src]="att.url" [alt]="att.file.name" class="w-14 h-14 object-cover border border-light-gray" />
+          <img
+            *ngIf="att.url"
+            [src]="att.url"
+            [alt]="sanitizeAlt(att.file.name)"
+            class="w-14 h-14 object-cover border border-light-gray"
+          />
           <span *ngIf="!att.url" class="text-xs">{{ att.file.name }}</span>
           <button (click)="removeAttachment(att)" aria-label="Remover" class="absolute top-0 right-0 text-hydro-blue bg-white">✕</button>
         </div>
@@ -64,11 +65,11 @@
     </div>
   </div>
 </div>
-<div
+<button
   *ngIf="modalImageUrl"
+  type="button"
   class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50"
   (click)="closeImage()"
-  tabindex="0"
   (keydown)="onModalKeydown($event)"
 >
   <img
@@ -76,7 +77,5 @@
     [alt]="modalImageAlt"
     class="max-w-[90vw] max-h-[90vh] object-contain"
     (click)="$event.stopPropagation()"
-    tabindex="0"
-    (keydown.enter)="$event.stopPropagation()"
   />
-</div>
+</button>

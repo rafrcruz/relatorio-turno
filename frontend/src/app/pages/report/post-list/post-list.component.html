@@ -22,8 +22,6 @@
       class="mt-1 prose prose-sm max-w-none"
       [innerHTML]="post.content"
       (click)="onContentClick($event)"
-      tabindex="0"
-      (keydown)="onContentKeydown($event)"
     ></div>
     <div *ngIf="post.attachments.length" class="mt-1 flex flex-col gap-1">
       <ng-container *ngFor="let att of post.attachments">
@@ -33,8 +31,6 @@
           [alt]="sanitizeAlt(att.filename)"
           class="max-w-full max-h-96 object-contain border cursor-pointer"
           (click)="openImage(att.url, sanitizeAlt(att.filename))"
-          tabindex="0"
-          (keydown.enter)="openImage(att.url, sanitizeAlt(att.filename))"
         />
         <a
           *ngIf="att.mimeType === 'application/pdf'"
@@ -59,12 +55,11 @@
     <button (click)="loadMore()" class="btn bg-light-gray hover:bg-light-gray/80">Carregar mais</button>
   </div>
 </section>
-<div
+<button
   *ngIf="modalImageUrl"
+  type="button"
   class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50"
   (click)="closeImage()"
-  tabindex="0"
-  role="button"
   (keydown)="onModalKeydown($event)"
 >
   <img
@@ -72,7 +67,5 @@
     [alt]="modalImageAlt"
     class="max-w-[90vw] max-h-[90vh] object-contain"
     (click)="$event.stopPropagation()"
-    tabindex="0"
-    (keydown.enter)="$event.stopPropagation()"
   />
-</div>
+</button>
