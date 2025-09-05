@@ -15,7 +15,8 @@ router.get('/attachments/:id', async (req, res) => {
   // For non-images, suggest download; for images, show inline
   const disposition = att.mimeType && att.mimeType.startsWith('image/') ? 'inline' : 'attachment';
   res.setHeader('Content-Disposition', `${disposition}; filename="${att.filename}"`);
-  res.send(att.data);
+  // Ensure the response sends a Node.js Buffer
+  res.send(Buffer.from(att.data));
 });
 
 module.exports = router;
