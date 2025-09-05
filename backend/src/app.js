@@ -29,8 +29,18 @@ const swaggerOptions = {
       title: 'Relatório de Turno API',
       version: '1.0.0',
     },
+    servers: [
+      {
+        url: 'http://localhost:3000',
+      },
+    ],
   },
-  apis: [path.join(__dirname, '*.js')],
+  // Include all route files so swagger-jsdoc can parse the annotations and
+  // generate the OpenAPI specification automatically.
+  apis: [
+    path.join(__dirname, '*.js'),
+    path.join(__dirname, 'routes', '*.js'),
+  ],
 };
 const swaggerSpec = swaggerJsdoc(swaggerOptions);
 app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));

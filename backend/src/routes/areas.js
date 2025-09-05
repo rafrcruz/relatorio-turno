@@ -4,6 +4,16 @@ const { parseNumberParam } = require('../utils');
 
 const router = express.Router();
 
+/**
+ * @swagger
+ * /api/areas:
+ *   get:
+ *     summary: Lista todas as áreas disponíveis
+ *     tags: [Áreas]
+ *     responses:
+ *       200:
+ *         description: Lista de áreas
+ */
 router.get('/', async (req, res) => {
   try {
     const areas = await prisma.area.findMany();
@@ -14,6 +24,24 @@ router.get('/', async (req, res) => {
   }
 });
 
+/**
+ * @swagger
+ * /api/areas/{areaId}/indicators:
+ *   get:
+ *     summary: Obtém os indicadores de uma área específica
+ *     tags: [Áreas]
+ *     parameters:
+ *       - in: path
+ *         name: areaId
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Lista de indicadores
+ *       400:
+ *         description: Invalid area id
+ */
 router.get('/:areaId/indicators', async (req, res) => {
   const areaId = parseNumberParam(req.params.areaId);
   if (areaId === undefined) {

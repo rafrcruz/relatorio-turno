@@ -13,6 +13,25 @@ const {
 
 const router = express.Router();
 
+/**
+ * @swagger
+ * tags:
+ *   name: Relatórios
+ *   description: Geração e consulta de relatórios
+ */
+
+/**
+ * @swagger
+ * /api/reports:
+ *   get:
+ *     summary: Lista relatórios salvos
+ *     tags: [Relatórios]
+ *     responses:
+ *       200:
+ *         description: Lista de relatórios
+ *       500:
+ *         description: Erro ao buscar relatórios
+ */
 router.get('/reports', async (req, res) => {
   try {
     const reports = await prisma.report.findMany();
@@ -23,6 +42,32 @@ router.get('/reports', async (req, res) => {
   }
 });
 
+/**
+ * @swagger
+ * /api/indicator-values:
+ *   get:
+ *     summary: Busca valores de indicadores
+ *     tags: [Relatórios]
+ *     parameters:
+ *       - in: query
+ *         name: areaId
+ *         schema:
+ *           type: integer
+ *       - in: query
+ *         name: date
+ *         schema:
+ *           type: string
+ *           format: date
+ *       - in: query
+ *         name: shift
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Valores encontrados
+ *       400:
+ *         description: Parâmetros inválidos
+ */
 router.get('/indicator-values', async (req, res) => {
   const { areaId, date, shift } = req.query;
   const area = parseNumberParam(areaId);
@@ -47,6 +92,30 @@ router.get('/indicator-values', async (req, res) => {
   res.json(values);
 });
 
+/**
+ * @swagger
+ * /api/summary:
+ *   get:
+ *     summary: Resumo de posts por tipo
+ *     tags: [Relatórios]
+ *     parameters:
+ *       - in: query
+ *         name: areaId
+ *         schema:
+ *           type: integer
+ *       - in: query
+ *         name: date
+ *         schema:
+ *           type: string
+ *           format: date
+ *       - in: query
+ *         name: shift
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Resumo retornado
+ */
 router.get('/summary', async (req, res) => {
   const { areaId, date, shift } = req.query;
   const area = parseNumberParam(areaId);
@@ -63,6 +132,20 @@ router.get('/summary', async (req, res) => {
   res.json(counts);
 });
 
+/**
+ * @swagger
+ * /api/export:
+ *   post:
+ *     summary: Gera um relatório em PDF
+ *     tags: [Relatórios]
+ *     responses:
+ *       200:
+ *         description: PDF gerado
+ *       400:
+ *         description: Parâmetros inválidos
+ *       500:
+ *         description: Falha ao gerar PDF
+ */
 router.post('/export', async (req, res) => {
   const { areaId, date, shift } = req.body;
   const userId = parseNumberParam(req.header('x-user-id')) || 1;

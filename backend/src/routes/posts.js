@@ -14,6 +14,154 @@ const {
 
 const router = express.Router();
 
+/**
+ * @swagger
+ * tags:
+ *   name: Posts
+ *   description: Endpoints de gerenciamento de posts e respostas
+ */
+
+/**
+ * @swagger
+ * /api/posts:
+ *   post:
+ *     summary: Cria um novo post
+ *     tags: [Posts]
+ *     responses:
+ *       201:
+ *         description: Post criado com sucesso
+ *       400:
+ *         description: Parâmetros inválidos
+ *   get:
+ *     summary: Lista posts
+ *     tags: [Posts]
+ *     parameters:
+ *       - in: query
+ *         name: areaId
+ *         schema:
+ *           type: integer
+ *       - in: query
+ *         name: date
+ *         schema:
+ *           type: string
+ *           format: date
+ *       - in: query
+ *         name: shift
+ *         schema:
+ *           type: integer
+ *       - in: query
+ *         name: type
+ *         schema:
+ *           type: string
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *       - in: query
+ *         name: pageSize
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Lista de posts
+ */
+
+/**
+ * @swagger
+ * /api/posts/{id}:
+ *   get:
+ *     summary: Obtém um post específico
+ *     tags: [Posts]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Post encontrado
+ *       404:
+ *         description: Post não encontrado
+ *   delete:
+ *     summary: Remove um post
+ *     tags: [Posts]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Post removido
+ *       404:
+ *         description: Post não encontrado
+ */
+
+/**
+ * @swagger
+ * /api/posts/{id}/replies:
+ *   post:
+ *     summary: Adiciona uma resposta a um post
+ *     tags: [Posts]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       201:
+ *         description: Resposta criada
+ *       400:
+ *         description: Parâmetros inválidos
+ *   get:
+ *     summary: Lista respostas de um post
+ *     tags: [Posts]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *       - in: query
+ *         name: pageSize
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Lista de respostas
+ */
+
+/**
+ * @swagger
+ * /api/posts/{postId}/replies/{id}:
+ *   delete:
+ *     summary: Remove uma resposta de um post
+ *     tags: [Posts]
+ *     parameters:
+ *       - in: path
+ *         name: postId
+ *         required: true
+ *         schema:
+ *           type: integer
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Resposta removida
+ *       404:
+ *         description: Resposta não encontrada
+ */
+
 // Create post
 router.post('/', upload.array('attachments'), async (req, res) => {
   try {
