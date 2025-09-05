@@ -16,7 +16,7 @@
             [src]="att.url"
             [alt]="att.filename"
             class="max-w-full max-h-96 object-contain border cursor-pointer"
-            (click)="openImage(att.url)"
+            (click)="openImage(att.url, att.filename)"
           />
           <a *ngIf="att.mimeType === 'application/pdf'" [href]="att.url" target="_blank" class="flex items-center text-hydro-blue text-sm underline">
             📄 {{ att.filename }}
@@ -63,7 +63,7 @@
 >
   <img
     [src]="modalImageUrl"
-    alt="Imagem ampliada"
+    [alt]="modalImageAlt"
     class="max-w-[90vw] max-h-[90vh] object-contain"
     (click)="$event.stopPropagation()"
   />

@@ -29,9 +29,10 @@ export class ReplyThreadComponent implements OnInit, OnDestroy {
   total = 0;
   showForm = false;
   sending = false;
-    attachments: AttachmentView[] = [];
-    modalImageUrl?: string;
-    content = '';
+  attachments: AttachmentView[] = [];
+  modalImageUrl?: string;
+  modalImageAlt?: string;
+  content = '';
     modules = {
     toolbar: [
       ['bold', 'italic', 'underline', 'strike'],
@@ -85,18 +86,20 @@ export class ReplyThreadComponent implements OnInit, OnDestroy {
     }
   }
 
-  openImage(url: string): void {
+  openImage(url: string, alt: string): void {
     this.modalImageUrl = url;
+    this.modalImageAlt = alt;
   }
 
   closeImage(): void {
     this.modalImageUrl = undefined;
+    this.modalImageAlt = undefined;
   }
 
   onContentClick(event: Event): void {
     const target = event.target as HTMLElement;
     if (target instanceof HTMLImageElement) {
-      this.openImage(target.src);
+      this.openImage(target.src, target.alt);
     }
   }
 
