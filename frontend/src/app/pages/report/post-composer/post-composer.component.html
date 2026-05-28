@@ -1,21 +1,18 @@
 <div
-  class="card p-4 space-y-2"
+  class="card p-4 space-y-3"
   (drop)="onDrop($event)"
   (dragover)="$event.preventDefault()"
 >
   <div
     role="radiogroup"
-    aria-label="Tipo"
-    class="flex border border-aluminium rounded-lg overflow-hidden divide-x divide-aluminium text-sm shadow-sm"
+    aria-label="Tipo de publicação"
+    class="flex border border-border rounded-lg overflow-hidden divide-x divide-border text-sm shadow-sm"
   >
     <label
-      class="px-2 py-1 cursor-pointer flex-1 text-center transition-colors focus-within:ring-2 focus-within:ring-hydro-light-blue"
-      [class.bg-hydro-blue]="type === 'ANNOTATION'"
-      [class.text-white]="type === 'ANNOTATION'"
-      [ngClass]="{
-        'hover:bg-hydro-dark-blue': type === 'ANNOTATION',
-        'hover:bg-light-gray': type !== 'ANNOTATION'
-      }"
+      class="px-3 py-1.5 cursor-pointer flex-1 text-center transition-colors duration-200 focus-within:ring-2 focus-within:ring-hydro-light-blue"
+      [ngClass]="type === 'ANNOTATION'
+        ? 'bg-hydro-blue text-white hover:bg-hydro-dark-blue'
+        : 'hover:bg-surface-alt'"
     >
       <input
         class="sr-only"
@@ -28,13 +25,10 @@
       Anotação
     </label>
     <label
-      class="px-2 py-1 cursor-pointer flex-1 text-center transition-colors focus-within:ring-2 focus-within:ring-hydro-light-blue"
-      [class.bg-hydro-blue]="type === 'URGENCY'"
-      [class.text-white]="type === 'URGENCY'"
-      [ngClass]="{
-        'hover:bg-hydro-dark-blue': type === 'URGENCY',
-        'hover:bg-light-gray': type !== 'URGENCY'
-      }"
+      class="px-3 py-1.5 cursor-pointer flex-1 text-center transition-colors duration-200 focus-within:ring-2 focus-within:ring-hydro-light-blue"
+      [ngClass]="type === 'URGENCY'
+        ? 'bg-bauxite text-white hover:opacity-90'
+        : 'hover:bg-surface-alt'"
     >
       <input
         class="sr-only"
@@ -47,13 +41,10 @@
       Urgência
     </label>
     <label
-      class="px-2 py-1 cursor-pointer flex-1 text-center transition-colors focus-within:ring-2 focus-within:ring-hydro-light-blue"
-      [class.bg-hydro-blue]="type === 'PENDENCY'"
-      [class.text-white]="type === 'PENDENCY'"
-      [ngClass]="{
-        'hover:bg-hydro-dark-blue': type === 'PENDENCY',
-        'hover:bg-light-gray': type !== 'PENDENCY'
-      }"
+      class="px-3 py-1.5 cursor-pointer flex-1 text-center transition-colors duration-200 focus-within:ring-2 focus-within:ring-hydro-light-blue"
+      [ngClass]="type === 'PENDENCY'
+        ? 'bg-warm text-black hover:opacity-90'
+        : 'hover:bg-surface-alt'"
     >
       <input
         class="sr-only"
@@ -67,7 +58,7 @@
     </label>
   </div>
 
-  <div class="w-full border border-light-gray rounded-lg shadow-sm" (paste)="onPaste($event)">
+  <div class="w-full border border-border rounded-lg shadow-sm" (paste)="onPaste($event)">
     <quill-editor
       #editor
       [(ngModel)]="content"
@@ -79,26 +70,27 @@
     ></quill-editor>
   </div>
 
-  <div *ngIf="attachments.length" class="space-y-1">
-    <div *ngFor="let att of attachments" class="flex items-center gap-1">
-      <img *ngIf="att.url" [src]="att.url" alt="Pré-visualização" class="w-14 h-14 object-cover rounded" />
-      <span class="text-sm">{{ att.file.name }} ({{ att.file.size / 1024 | number:'1.0-0' }} KB)</span>
-      <button type="button" (click)="removeAttachment(att)" class="text-hydro-blue text-sm underline">Remover</button>
+  <div *ngIf="attachments.length" class="space-y-1.5">
+    <div *ngFor="let att of attachments" class="flex items-center gap-2 p-1.5 rounded-lg border border-border bg-surface-alt">
+      <img *ngIf="att.url" [src]="att.url" alt="Pré-visualização" class="w-12 h-12 object-cover rounded" />
+      <lucide-icon *ngIf="!att.url" name="link" [size]="16" class="text-mid-gray flex-shrink-0"></lucide-icon>
+      <span class="text-sm text-aluminium truncate flex-1">{{ att.file.name }} <span class="text-mid-gray">({{ att.file.size / 1024 | number:'1.0-0' }} KB)</span></span>
+      <button type="button" (click)="removeAttachment(att)" class="btn-danger text-xs px-1.5 py-0.5">Remover</button>
     </div>
   </div>
 
   <div class="flex items-center gap-2">
-    <label class="cursor-pointer text-hydro-blue flex items-center gap-1 hover:underline">
+    <label class="btn-ghost cursor-pointer">
       <input type="file" multiple class="hidden" (change)="onFileInput($event)" />
-      <span>Anexar arquivos</span>
+      Anexar arquivos
     </label>
     <button
       type="button"
       (click)="publish()"
       [disabled]="sending"
-      class="btn btn-primary disabled:opacity-50"
-      >
+      class="btn btn-primary disabled:opacity-50 ml-auto"
+    >
       {{ sending ? 'Publicando…' : 'Publicar' }}
     </button>
-    </div>
   </div>
+</div>

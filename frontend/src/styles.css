@@ -80,7 +80,43 @@
   }
 
   .card {
-    @apply bg-white rounded-xl border border-light-gray shadow-sm overflow-hidden;
+    @apply bg-white rounded-xl border border-border shadow-sm overflow-hidden;
+  }
+
+  .card-body {
+    @apply p-4;
+  }
+
+  .btn-ghost {
+    @apply inline-flex items-center justify-center gap-1 bg-transparent text-hydro-blue hover:bg-surface-alt border border-transparent hover:border-border rounded-lg px-2 py-1 text-sm transition-colors duration-200;
+  }
+
+  .btn-danger {
+    @apply inline-flex items-center justify-center gap-1 bg-transparent text-bauxite hover:bg-bauxite hover:text-white border border-transparent hover:border-bauxite rounded-lg px-2 py-1 text-sm transition-colors duration-200;
+  }
+
+  .badge {
+    @apply inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold;
+  }
+
+  .badge-urgency {
+    @apply bg-bauxite text-white;
+  }
+
+  .badge-pendency {
+    @apply bg-warm text-black;
+  }
+
+  .badge-annotation {
+    @apply bg-hydro-blue text-white;
+  }
+
+  .skeleton {
+    @apply bg-light-gray animate-pulse rounded;
+  }
+
+  .empty-state {
+    @apply flex flex-col items-center justify-center gap-3 py-12 text-mid-gray;
   }
 
   .card-header {

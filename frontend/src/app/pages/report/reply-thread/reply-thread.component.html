@@ -1,89 +1,98 @@
-<div class="mt-1 border-l border-light-gray pl-3">
-  <div *ngIf="loading" class="text-mid-gray">Carregando respostas...</div>
-  <div *ngIf="error" class="text-bauxite">
-    Falha ao carregar respostas.
-    <button class="text-hydro-blue underline" (click)="load()">Tentar novamente</button>
+<div class="mt-2 border-l-2 border-border pl-3 space-y-2">
+  <div *ngIf="loading" class="flex items-center gap-2 text-mid-gray text-sm">
+    <div class="skeleton h-3 w-3 rounded-full"></div>
+    <span>Carregando respostas…</span>
   </div>
-  <div *ngIf="!loading && !error && replies.length === 0" class="text-mid-gray">Nenhuma resposta para este post.</div>
+
+  <div *ngIf="error && !loading" class="text-sm text-bauxite flex items-center gap-1">
+    Falha ao carregar respostas.
+    <button class="btn-ghost text-xs" (click)="load()">Tentar novamente</button>
+  </div>
+
   <ng-container *ngFor="let r of replies">
-    <article class="mb-1">
+    <article class="space-y-1">
       <div class="text-xs text-mid-gray">{{ r.author.name }} — {{ r.createdAt | date:'dd/MM/yyyy HH:mm' }}</div>
-        <div
-          class="prose prose-sm max-w-none"
-          [innerHTML]="r.content"
-          (click)="onContentClick($event)"
-          (keydown.enter)="onContentClick($event)"
-        ></div>
-      <div *ngIf="r.attachments.length" class="mt-1 flex flex-col gap-1">
+      <div
+        class="prose prose-sm max-w-none"
+        [innerHTML]="r.content"
+        (click)="onContentClick($event)"
+        (keydown.enter)="onContentClick($event)"
+      ></div>
+      <div *ngIf="r.attachments.length" class="flex flex-col gap-1">
         <ng-container *ngFor="let att of r.attachments">
-            <button
-              *ngIf="att.mimeType.startsWith('image/')"
-              type="button"
-              class="p-0 bg-transparent border-0 inline-block text-left"
-              [attr.aria-label]="sanitizeAlt(att.filename)"
-              (click)="openImage(att.url, sanitizeAlt(att.filename))"
-            >
-              <img
-                [src]="att.url"
-                [alt]="sanitizeAlt(att.filename)"
-                class="max-w-full max-h-96 object-contain border cursor-pointer"
-              />
-            </button>
-          <a *ngIf="att.mimeType === 'application/pdf'" [href]="att.url" target="_blank" class="flex items-center text-hydro-blue text-sm underline">
-            📄 {{ att.filename }}
+          <button
+            *ngIf="att.mimeType.startsWith('image/')"
+            type="button"
+            class="p-0 bg-transparent border-0 inline-block text-left"
+            [attr.aria-label]="sanitizeAlt(att.filename)"
+            (click)="openImage(att.url, sanitizeAlt(att.filename))"
+          >
+            <img
+              [src]="att.url"
+              [alt]="sanitizeAlt(att.filename)"
+              class="max-w-full max-h-48 object-contain border border-border rounded cursor-pointer"
+            />
+          </button>
+          <a *ngIf="att.mimeType === 'application/pdf'" [href]="att.url" target="_blank" class="flex items-center gap-1 text-hydro-blue text-sm hover:underline">
+            <lucide-icon name="link" [size]="12"></lucide-icon> {{ att.filename }}
           </a>
         </ng-container>
       </div>
-      <div class="mt-1">
-        <button class="text-sm text-bauxite hover:underline" (click)="deleteReply(r)">Excluir</button>
+      <div>
+        <button class="btn-danger text-xs" (click)="deleteReply(r)">Excluir</button>
       </div>
     </article>
   </ng-container>
-  <button *ngIf="replies.length < total && !loading" (click)="loadMore()" class="text-sm text-hydro-blue underline">Ver mais respostas</button>
-  <div *ngIf="showForm" class="mt-1">
-    <div class="w-full border border-light-gray rounded" (drop)="onDrop($event)" (dragover)="$event.preventDefault()" (paste)="onPaste($event)">
+
+  <button *ngIf="replies.length < total && !loading" (click)="loadMore()" class="btn-ghost text-xs">Ver mais respostas</button>
+
+  <div *ngIf="showForm" class="mt-2 space-y-2">
+    <div class="card p-2" (drop)="onDrop($event)" (dragover)="$event.preventDefault()" (paste)="onPaste($event)">
       <quill-editor
         #editor
         [(ngModel)]="content"
         [modules]="modules"
         format="html"
-        placeholder="Escreva uma resposta..."
+        placeholder="Escreva uma resposta…"
         class="min-h-[60px] w-full"
       ></quill-editor>
     </div>
-    <input type="file" multiple (change)="onFileInput($event)" class="mt-1" />
-    <div *ngIf="attachments.length" class="mt-1 flex flex-wrap gap-1">
+    <div *ngIf="attachments.length" class="flex flex-wrap gap-1">
       <ng-container *ngFor="let att of attachments">
-        <div class="relative">
+        <div class="relative border border-border rounded p-1">
           <img
             *ngIf="att.url"
             [src]="att.url"
             [alt]="sanitizeAlt(att.file.name)"
-            class="w-14 h-14 object-cover border border-light-gray"
+            class="w-12 h-12 object-cover rounded"
           />
-          <span *ngIf="!att.url" class="text-xs">{{ att.file.name }}</span>
-          <button (click)="removeAttachment(att)" aria-label="Remover" class="absolute top-0 right-0 text-hydro-blue bg-white">✕</button>
+          <span *ngIf="!att.url" class="text-xs text-aluminium px-1">{{ att.file.name }}</span>
+          <button (click)="removeAttachment(att)" aria-label="Remover" class="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-bauxite text-white text-xs flex items-center justify-center leading-none">✕</button>
         </div>
       </ng-container>
     </div>
-    <div class="mt-1 flex items-center gap-1">
-      <button (click)="send()" [disabled]="sending" class="px-2 py-1 bg-hydro-blue hover:bg-hydro-dark-blue text-white rounded">Enviar</button>
-      <button (click)="toggleComposer()" class="px-2 py-1">Cancelar</button>
+    <input type="file" multiple (change)="onFileInput($event)" class="text-sm text-aluminium" />
+    <div class="flex items-center gap-2">
+      <button (click)="send()" [disabled]="sending" class="btn btn-primary disabled:opacity-50">
+        {{ sending ? 'Enviando…' : 'Enviar' }}
+      </button>
+      <button (click)="toggleComposer()" class="btn-ghost">Cancelar</button>
     </div>
   </div>
 </div>
+
 <button
   *ngIf="modalImageUrl"
   type="button"
-  class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50"
+  class="fixed inset-0 bg-black/75 flex items-center justify-center z-50"
   (click)="closeImage()"
   (keydown)="onModalKeydown($event)"
 >
-    <img
-      [src]="modalImageUrl"
-      [alt]="modalAlt"
-      class="max-w-[90vw] max-h-[90vh] object-contain"
-      (click)="$event.stopPropagation()"
-      (keydown.enter)="$event.stopPropagation()"
-    />
-  </button>
+  <img
+    [src]="modalImageUrl"
+    [alt]="modalAlt"
+    class="max-w-[90vw] max-h-[90vh] object-contain rounded-lg shadow-2xl"
+    (click)="$event.stopPropagation()"
+    (keydown.enter)="$event.stopPropagation()"
+  />
+</button>
