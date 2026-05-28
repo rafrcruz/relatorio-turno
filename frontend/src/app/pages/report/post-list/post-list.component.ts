@@ -174,6 +174,28 @@ export class PostListComponent implements OnDestroy, OnChanges {
     }
   }
 
+  badgeClass(): string {
+    switch (this.type) {
+      case 'URGENCY':
+        return 'badge-urgency';
+      case 'PENDENCY':
+        return 'badge-pendency';
+      default:
+        return 'badge-annotation';
+    }
+  }
+
+  cardBorderClass(): string {
+    switch (this.type) {
+      case 'URGENCY':
+        return 'border-l-bauxite';
+      case 'PENDENCY':
+        return 'border-l-warm';
+      default:
+        return 'border-l-hydro-blue';
+    }
+  }
+
   private scrollToHighlight(): void {
     if (!this.highlightId) return;
     setTimeout(() => {

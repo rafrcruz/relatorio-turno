@@ -1,10 +1,22 @@
 import { NgModule, LOCALE_ID } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { HttpClientModule } from '@angular/common/http';
 import { registerLocaleData } from '@angular/common';
 import localePt from '@angular/common/locales/pt';
 import { FormsModule } from '@angular/forms';
 import { QuillModule } from 'ngx-quill';
+import {
+  LucideAngularModule,
+  Inbox,
+  CircleCheck,
+  CircleX,
+  Info,
+  Trash2,
+  Link,
+  MessageSquare,
+  Wrench,
+} from 'lucide-angular';
 
 import { AppComponent } from './app.component';
 import { HeaderComponent } from './layout/header/header.component';
@@ -37,9 +49,11 @@ registerLocaleData(localePt);
   ],
   imports: [
     BrowserModule,
+    BrowserAnimationsModule,
     HttpClientModule,
     FormsModule,
     QuillModule.forRoot(),
+    LucideAngularModule.pick({ Inbox, CircleCheck, CircleX, Info, Trash2, Link, MessageSquare, Wrench }),
     AppRoutingModule
   ],
   providers: [{ provide: LOCALE_ID, useValue: 'pt-BR' }],

@@ -5,6 +5,9 @@ module.exports = {
   ],
   theme: {
     extend: {
+      screens: {
+        '3xl': '2560px',
+      },
       colors: {
         'hydro-blue': '#444D55',
         'hydro-light-blue': '#768692',
@@ -18,6 +21,9 @@ module.exports = {
         'bauxite': '#B95946',
         'mid-gray': '#757575',
         'light-gray': '#F4F4F4',
+        'surface': '#FFFFFF',
+        'surface-alt': '#F9FAFB',
+        'border': '#E5E7EB',
       },
       fontFamily: {
         display: ['"Ivar Display"', 'serif'],
