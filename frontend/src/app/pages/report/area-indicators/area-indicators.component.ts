@@ -1,32 +1,44 @@
-import { Component, OnDestroy } from '@angular/core';
-import { AppStateService, ReportContext } from '../../../core/app-state.service';
-import { IndicatorsService, IndicatorData } from '../../../core/indicators.service';
-import { Observable, Subject } from 'rxjs';
-import { switchMap, takeUntil, tap } from 'rxjs/operators';
+import { Component, EventEmitter, OnDestroy, OnInit, Output } from '@angular/core';
+import { Subject, combineLatest } from 'rxjs';
+import { startWith, switchMap, takeUntil, tap } from 'rxjs/operators';
+import { AppStateService } from '../../../core/app-state.service';
+import { IndicatorNotesService, MergedIndicator } from '../../../core/indicator-notes.service';
+import { IndicatorStatus } from '../../../core/indicators.service';
 
+/**
+ * Resumo de passagem na visão principal: exibe apenas indicadores em Atenção,
+ * em Foco ou marcados manualmente para a passagem. Não lista todos os indicadores.
+ */
 @Component({
   selector: 'app-area-indicators',
   templateUrl: './area-indicators.component.html',
   styleUrls: ['./area-indicators.component.css']
 })
-export class AreaIndicatorsComponent implements OnDestroy {
-  indicators$: Observable<IndicatorData[]>;
+export class AreaIndicatorsComponent implements OnInit, OnDestroy {
+  @Output() openAll = new EventEmitter<void>();
+
+  handover: MergedIndicator[] = [];
   loading = true;
-  error = false;
-  source = '';
+  expandedCode: string | null = null;
 
   private readonly destroy$ = new Subject<void>();
 
-  constructor(private readonly appState: AppStateService, private readonly indicators: IndicatorsService) {
-    this.indicators$ = this.appState.context$.pipe(
-      tap(() => { this.loading = true; this.error = false; }),
-      switchMap((ctx: ReportContext) => this.indicators.getIndicators(ctx.area, ctx.date, ctx.shift)),
-      tap((list) => {
+  constructor(
+    private readonly appState: AppStateService,
+    private readonly notes: IndicatorNotesService
+  ) {}
+
+  ngOnInit(): void {
+    combineLatest([this.appState.context$, this.notes.changed$.pipe(startWith(undefined))])
+      .pipe(
+        tap(() => (this.loading = true)),
+        switchMap(([ctx]) => this.notes.observeMerged(ctx.area, ctx.date, ctx.shift)),
+        takeUntil(this.destroy$)
+      )
+      .subscribe((list) => {
+        this.handover = list.filter((i) => i.inHandover);
         this.loading = false;
-        this.source = list[0]?.source || '';
-      }),
-      takeUntil(this.destroy$)
-    );
+      });
   }
 
   ngOnDestroy(): void {
@@ -34,20 +46,25 @@ export class AreaIndicatorsComponent implements OnDestroy {
     this.destroy$.complete();
   }
 
-  retry(): void {
-    this.appState.setArea(this.appState.context.area);
+  toggleContent(i: MergedIndicator): void {
+    if (!i.note?.hasApontamento) return;
+    this.expandedCode = this.expandedCode === i.code ? null : i.code;
   }
 
-  statusLabel(ind: IndicatorData): string {
-    switch (ind.status) {
-      case 'good':
-        return 'Dentro da meta';
-      case 'warning':
+  statusLabel(status: IndicatorStatus): string {
+    switch (status) {
+      case 'na_meta':
+        return 'Na meta';
+      case 'atencao':
         return 'Atenção';
-      case 'critical':
-        return 'Crítico';
+      case 'foco':
+        return 'Foco';
       default:
-        return '';
+        return 'Sem valor';
     }
+  }
+
+  trackByCode(_: number, i: MergedIndicator): string {
+    return i.code;
   }
 }

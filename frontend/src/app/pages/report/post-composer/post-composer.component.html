@@ -1,64 +1,54 @@
 <div
-  class="card p-4 space-y-3"
+  class="card p-5 space-y-4"
   (drop)="onDrop($event)"
   (dragover)="$event.preventDefault()"
 >
+
+  <!-- Type selector -->
   <div
     role="radiogroup"
     aria-label="Tipo de publicação"
-    class="flex border border-border rounded-lg overflow-hidden divide-x divide-border text-sm shadow-sm"
+    class="flex rounded-xl overflow-hidden border border-border shadow-sm bg-surface-alt divide-x divide-border text-sm"
   >
     <label
-      class="px-3 py-1.5 cursor-pointer flex-1 text-center transition-colors duration-200 focus-within:ring-2 focus-within:ring-hydro-light-blue"
+      class="flex-1 px-3 py-2 cursor-pointer text-center font-arial font-medium transition-all duration-150 focus-within:ring-2 focus-within:ring-inset focus-within:ring-hydro-light-blue"
       [ngClass]="type === 'ANNOTATION'
-        ? 'bg-hydro-blue text-white hover:bg-hydro-dark-blue'
-        : 'hover:bg-surface-alt'"
+        ? 'bg-hydro-blue text-white shadow-inner'
+        : 'text-mid-gray hover:bg-surface-hover hover:text-[#1A1D21]'"
     >
-      <input
-        class="sr-only"
-        type="radio"
-        name="type"
-        [(ngModel)]="type"
-        value="ANNOTATION"
-        (ngModelChange)="saveDraft()"
-      />
+      <input class="sr-only" type="radio" name="type" [(ngModel)]="type" value="ANNOTATION" (ngModelChange)="saveDraft()" />
       Anotação
     </label>
     <label
-      class="px-3 py-1.5 cursor-pointer flex-1 text-center transition-colors duration-200 focus-within:ring-2 focus-within:ring-hydro-light-blue"
+      class="flex-1 px-3 py-2 cursor-pointer text-center font-arial font-medium transition-all duration-150 focus-within:ring-2 focus-within:ring-inset focus-within:ring-bauxite/50"
       [ngClass]="type === 'URGENCY'
-        ? 'bg-bauxite text-white hover:opacity-90'
-        : 'hover:bg-surface-alt'"
+        ? 'bg-bauxite text-white shadow-inner'
+        : 'text-mid-gray hover:bg-surface-hover hover:text-[#1A1D21]'"
     >
-      <input
-        class="sr-only"
-        type="radio"
-        name="type"
-        [(ngModel)]="type"
-        value="URGENCY"
-        (ngModelChange)="saveDraft()"
-      />
+      <input class="sr-only" type="radio" name="type" [(ngModel)]="type" value="URGENCY" (ngModelChange)="saveDraft()" />
       Urgência
     </label>
     <label
-      class="px-3 py-1.5 cursor-pointer flex-1 text-center transition-colors duration-200 focus-within:ring-2 focus-within:ring-hydro-light-blue"
+      class="flex-1 px-3 py-2 cursor-pointer text-center font-arial font-medium transition-all duration-150 focus-within:ring-2 focus-within:ring-inset focus-within:ring-warm-dark/50"
       [ngClass]="type === 'PENDENCY'
-        ? 'bg-warm text-black hover:opacity-90'
-        : 'hover:bg-surface-alt'"
+        ? 'bg-warm text-[#3D2F22] shadow-inner'
+        : 'text-mid-gray hover:bg-surface-hover hover:text-[#1A1D21]'"
     >
-      <input
-        class="sr-only"
-        type="radio"
-        name="type"
-        [(ngModel)]="type"
-        value="PENDENCY"
-        (ngModelChange)="saveDraft()"
-      />
+      <input class="sr-only" type="radio" name="type" [(ngModel)]="type" value="PENDENCY" (ngModelChange)="saveDraft()" />
       Pendência
     </label>
   </div>
 
-  <div class="w-full border border-border rounded-lg shadow-sm" (paste)="onPaste($event)">
+  <!-- Left accent bar on quill container when type is selected -->
+  <div
+    class="w-full border border-border rounded-xl overflow-hidden shadow-sm transition-all duration-200"
+    [ngClass]="{
+      'border-l-[3px] border-l-hydro-blue': type === 'ANNOTATION',
+      'border-l-[3px] border-l-bauxite': type === 'URGENCY',
+      'border-l-[3px] border-l-warm-dark': type === 'PENDENCY'
+    }"
+    (paste)="onPaste($event)"
+  >
     <quill-editor
       #editor
       [(ngModel)]="content"
@@ -66,23 +56,29 @@
       format="html"
       (ngModelChange)="saveDraft()"
       placeholder="Escreva uma atualização do turno… Ex.: status de produção, ocorrências, apontamentos"
-      class="min-h-[100px] w-full"
+      class="min-h-[110px] w-full block"
     ></quill-editor>
   </div>
 
+  <!-- Attachments preview -->
   <div *ngIf="attachments.length" class="space-y-1.5">
-    <div *ngFor="let att of attachments" class="flex items-center gap-2 p-1.5 rounded-lg border border-border bg-surface-alt">
-      <img *ngIf="att.url" [src]="att.url" alt="Pré-visualização" class="w-12 h-12 object-cover rounded" />
-      <lucide-icon *ngIf="!att.url" name="link" [size]="16" class="text-mid-gray flex-shrink-0"></lucide-icon>
-      <span class="text-sm text-aluminium truncate flex-1">{{ att.file.name }} <span class="text-mid-gray">({{ att.file.size / 1024 | number:'1.0-0' }} KB)</span></span>
-      <button type="button" (click)="removeAttachment(att)" class="btn-danger text-xs px-1.5 py-0.5">Remover</button>
+    <div *ngFor="let att of attachments" class="flex items-center gap-2.5 p-2 rounded-xl border border-border bg-surface-alt">
+      <img *ngIf="att.url" [src]="att.url" alt="Pré-visualização" class="w-10 h-10 object-cover rounded-lg flex-shrink-0 border border-border" />
+      <lucide-icon *ngIf="!att.url" name="paperclip" [size]="16" class="text-mid-gray flex-shrink-0"></lucide-icon>
+      <span class="text-sm font-arial text-aluminium truncate flex-1">
+        {{ att.file.name }}
+        <span class="text-mid-gray text-xs">({{ att.file.size / 1024 | number:'1.0-0' }} KB)</span>
+      </span>
+      <button type="button" (click)="removeAttachment(att)" class="btn-danger text-xs px-2 py-0.5 flex-shrink-0">Remover</button>
     </div>
   </div>
 
+  <!-- Footer actions -->
   <div class="flex items-center gap-2">
-    <label class="btn-ghost cursor-pointer">
+    <label class="btn-ghost cursor-pointer text-sm">
       <input type="file" multiple class="hidden" (change)="onFileInput($event)" />
-      Anexar arquivos
+      <lucide-icon name="paperclip" [size]="14"></lucide-icon>
+      Anexar
     </label>
     <button
       type="button"
@@ -93,4 +89,5 @@
       {{ sending ? 'Publicando…' : 'Publicar' }}
     </button>
   </div>
+
 </div>

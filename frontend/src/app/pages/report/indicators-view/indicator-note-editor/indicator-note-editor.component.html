@@ -1,0 +1,49 @@
+<div class="space-y-3" (drop)="onDrop($event)" (dragover)="$event.preventDefault()">
+
+  <div class="border border-border rounded-xl overflow-hidden shadow-sm" (paste)="onPaste($event)">
+    <quill-editor
+      [(ngModel)]="content"
+      [modules]="modules"
+      format="html"
+      placeholder="Apontamento: causa provável, observação, ação tomada, ação pendente, orientação para o próximo turno…"
+      class="min-h-[120px] w-full block"
+    ></quill-editor>
+  </div>
+
+  <!-- Existing attachments -->
+  <div *ngIf="existing.length" class="space-y-1.5">
+    <div *ngFor="let att of existing" class="flex items-center gap-2.5 p-2 rounded-xl border border-border bg-surface-alt">
+      <img *ngIf="att.mimeType?.startsWith('image/')" [src]="att.url" alt="Anexo" class="w-10 h-10 object-cover rounded-lg flex-shrink-0 border border-border" />
+      <lucide-icon *ngIf="!att.mimeType?.startsWith('image/')" name="paperclip" [size]="16" class="text-mid-gray flex-shrink-0"></lucide-icon>
+      <a [href]="att.url" target="_blank" rel="noopener" class="text-sm font-arial text-hydro-blue truncate flex-1 hover:underline">{{ att.filename }}</a>
+      <button type="button" (click)="removeExisting(att)" class="btn-danger text-xs px-2 py-0.5 flex-shrink-0">Remover</button>
+    </div>
+  </div>
+
+  <!-- New attachments preview -->
+  <div *ngIf="newAttachments.length" class="space-y-1.5">
+    <div *ngFor="let att of newAttachments" class="flex items-center gap-2.5 p-2 rounded-xl border border-border bg-surface-alt">
+      <img *ngIf="att.url" [src]="att.url" alt="Pré-visualização" class="w-10 h-10 object-cover rounded-lg flex-shrink-0 border border-border" />
+      <lucide-icon *ngIf="!att.url" name="paperclip" [size]="16" class="text-mid-gray flex-shrink-0"></lucide-icon>
+      <span class="text-sm font-arial text-aluminium truncate flex-1">
+        {{ att.file.name }}
+        <span class="text-mid-gray text-xs">({{ att.file.size / 1024 | number:'1.0-0' }} KB)</span>
+      </span>
+      <button type="button" (click)="removeNew(att)" class="btn-danger text-xs px-2 py-0.5 flex-shrink-0">Remover</button>
+    </div>
+  </div>
+
+  <!-- Actions -->
+  <div class="flex items-center gap-2">
+    <label class="btn-ghost cursor-pointer text-sm">
+      <input type="file" multiple class="hidden" (change)="onFileInput($event)" />
+      <lucide-icon name="paperclip" [size]="14"></lucide-icon>
+      Anexar
+    </label>
+    <button type="button" (click)="cancel()" class="btn-ghost text-sm ml-auto">Cancelar</button>
+    <button type="button" (click)="save()" [disabled]="sending" class="btn btn-primary disabled:opacity-50">
+      {{ sending ? 'Salvando…' : 'Salvar apontamento' }}
+    </button>
+  </div>
+
+</div>

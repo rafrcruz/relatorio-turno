@@ -4,6 +4,8 @@ import { Observable } from 'rxjs';
 import { PostsService, PostType } from '../../core/posts.service';
 import { AreasService, Area } from '../../core/areas.service';
 
+export type ReportTab = 'passagem' | 'indicadores';
+
 @Component({
   selector: 'app-report',
   templateUrl: './report.component.html',
@@ -12,16 +14,36 @@ import { AreasService, Area } from '../../core/areas.service';
 export class ReportComponent {
   readonly context$: Observable<ReportContext> = this.appState.context$;
 
+  activeTab: ReportTab = 'passagem';
+
   highlightId?: number;
   highlightType?: PostType;
   otherContext?: ReportContext;
   private areas: Area[] = [];
 
   constructor(private readonly appState: AppStateService, private readonly posts: PostsService, private readonly areasService: AreasService) {
+    this.activeTab = this.readTabFromUrl();
     this.areasService.getAreasWithIds().subscribe((areas) => {
       this.areas = areas;
       this.checkDeepLink();
     });
+  }
+
+  setTab(tab: ReportTab): void {
+    this.activeTab = tab;
+    const params = new URLSearchParams(window.location.search);
+    params.set('tab', tab);
+    window.history.replaceState({}, '', `${window.location.pathname}?${params.toString()}`);
+  }
+
+  private readTabFromUrl(): ReportTab {
+    const tab = new URLSearchParams(window.location.search).get('tab');
+    return tab === 'indicadores' ? 'indicadores' : 'passagem';
+  }
+
+  /** Called from the handover summary "Ver todos os indicadores" action. */
+  openIndicators(): void {
+    this.setTab('indicadores');
   }
 
   private checkDeepLink(): void {

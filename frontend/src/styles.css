@@ -44,59 +44,64 @@
   font-style: italic;
 }
 
-/* Estilos globais personalizados */
 @layer base {
   body {
-    @apply m-0 font-text text-aluminium bg-light-gray antialiased;
+    @apply m-0 font-arial text-[#1A1D21] bg-page-bg antialiased;
   }
 
-  h1,
-  h2,
-  h3 {
-    @apply font-display text-black;
-  }
-
-  .lead,
-  .subhead,
-  label,
-  caption,
-  small {
-    @apply font-arial;
+  h1, h2, h3 {
+    @apply font-display text-[#1A1D21];
   }
 }
 
-/* Componentes customizados com Tailwind */
 @layer components {
+  /* Buttons */
   .btn {
-    @apply inline-flex items-center justify-center gap-2 px-3 py-1.5 rounded-lg font-medium transition-colors duration-200 shadow-sm hover:shadow focus:outline-none focus:ring-2 focus:ring-offset-2;
+    @apply inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl font-medium font-arial text-sm
+           transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-offset-2 active:scale-[0.98];
   }
 
   .btn-primary {
-    @apply bg-hydro-blue text-white hover:bg-hydro-dark-blue focus:ring-hydro-light-blue;
+    @apply bg-hydro-blue text-white shadow-button
+           hover:bg-hydro-dark-blue hover:shadow-md
+           focus:ring-hydro-light-blue;
   }
 
   .btn-secondary {
-    @apply bg-green text-white hover:bg-hydro-light-blue focus:ring-green;
-  }
-
-  .card {
-    @apply bg-white rounded-xl border border-border shadow-sm overflow-hidden;
-  }
-
-  .card-body {
-    @apply p-4;
+    @apply bg-green text-white shadow-button
+           hover:bg-green-dark hover:shadow-md
+           focus:ring-green;
   }
 
   .btn-ghost {
-    @apply inline-flex items-center justify-center gap-1 bg-transparent text-hydro-blue hover:bg-surface-alt border border-transparent hover:border-border rounded-lg px-2 py-1 text-sm transition-colors duration-200;
+    @apply inline-flex items-center justify-center gap-1.5
+           bg-transparent text-hydro-blue
+           hover:bg-surface-hover border border-transparent hover:border-border
+           rounded-xl px-2.5 py-1 text-sm font-arial
+           transition-all duration-150;
   }
 
   .btn-danger {
-    @apply inline-flex items-center justify-center gap-1 bg-transparent text-bauxite hover:bg-bauxite hover:text-white border border-transparent hover:border-bauxite rounded-lg px-2 py-1 text-sm transition-colors duration-200;
+    @apply inline-flex items-center justify-center gap-1.5
+           bg-transparent text-bauxite
+           hover:bg-bauxite hover:text-white
+           border border-transparent hover:border-bauxite
+           rounded-xl px-2.5 py-1 text-sm font-arial
+           transition-all duration-150;
   }
 
+  /* Cards */
+  .card {
+    @apply bg-white rounded-2xl border border-border shadow-card overflow-hidden;
+  }
+
+  .card-body {
+    @apply p-5;
+  }
+
+  /* Badges — type indicators */
   .badge {
-    @apply inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold;
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold font-arial tracking-wide;
   }
 
   .badge-urgency {
@@ -104,26 +109,48 @@
   }
 
   .badge-pendency {
-    @apply bg-warm text-black;
+    @apply bg-warm text-[#3D2F22] border border-warm-dark/20;
   }
 
   .badge-annotation {
     @apply bg-hydro-blue text-white;
   }
 
+  /* Skeleton loading */
   .skeleton {
-    @apply bg-light-gray animate-pulse rounded;
+    @apply bg-border-light animate-pulse rounded-xl;
   }
 
+  /* Empty state */
   .empty-state {
-    @apply flex flex-col items-center justify-center gap-3 py-12 text-mid-gray;
+    @apply flex flex-col items-center justify-center gap-3 py-12 text-mid-gray font-arial;
   }
 
-  .card-header {
-    @apply bg-gradient-to-r from-hydro-blue to-hydro-light-blue text-white p-4 text-center;
-  }
-
+  /* Inputs */
   .input {
-    @apply w-full px-2 py-1.5 border border-aluminium rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-hydro-light-blue focus:border-transparent;
+    @apply w-full px-3 py-2 border border-border bg-white rounded-xl text-sm font-arial
+           shadow-sm transition-all duration-150
+           focus:outline-none focus:border-hydro-light-blue focus:shadow-input-focus;
+  }
+
+  /* Post article card */
+  .post-card {
+    @apply bg-white border border-border rounded-2xl shadow-sm overflow-hidden border-l-[3px]
+           transition-all duration-200
+           hover:shadow-card-hover hover:-translate-y-px;
+  }
+}
+
+/* Quill editor refinements */
+@layer utilities {
+  .ql-container.ql-snow {
+    border: none !important;
+    font-family: 'Ivar Text', serif;
+    font-size: 0.9rem;
+  }
+  .ql-toolbar.ql-snow {
+    border: none !important;
+    border-bottom: 1px solid #DDE1E7 !important;
+    padding: 6px 8px !important;
   }
 }

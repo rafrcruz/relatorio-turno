@@ -1,0 +1,182 @@
+<section class="card overflow-visible border-t-[3px] border-t-hydro-light-blue">
+  <!-- Header -->
+  <div class="px-5 py-3.5 border-b border-border flex items-center gap-3 bg-gradient-to-r from-hydro-blue/5 to-transparent">
+    <lucide-icon name="bar-chart-2" [size]="16" class="text-hydro-light-blue flex-shrink-0"></lucide-icon>
+    <h2 class="text-base font-display text-[#1A1D21]">Indicadores do Turno</h2>
+    <span class="text-xs font-arial text-mid-gray ml-auto">Revisão e fechamento</span>
+  </div>
+
+  <div class="p-5 space-y-4">
+
+    <!-- Pendency alert (US5) -->
+    <div
+      *ngIf="!loading && focoSemApontamento > 0"
+      class="flex items-start gap-3 p-3.5 rounded-xl border border-bauxite/40 bg-bauxite/5"
+      role="alert"
+    >
+      <lucide-icon name="alert-triangle" [size]="18" class="text-bauxite flex-shrink-0 mt-0.5"></lucide-icon>
+      <div class="text-sm font-arial">
+        <span class="font-semibold text-bauxite">{{ focoSemApontamento }}</span>
+        indicador(es) em <strong>Foco</strong> sem apontamento. Todo indicador em Foco exige apontamento antes do fechamento.
+        <button type="button" (click)="setFilter('pendencia')" class="text-bauxite underline ml-1">Ver pendências</button>
+      </div>
+    </div>
+
+    <!-- Counters / filters -->
+    <div class="flex flex-wrap items-center gap-2">
+      <button type="button" (click)="setFilter('todos')"
+        class="px-3 py-1.5 rounded-full text-xs font-arial font-medium border transition-all"
+        [ngClass]="activeFilter === 'todos' ? 'bg-hydro-blue text-white border-hydro-blue' : 'bg-white text-mid-gray border-border hover:bg-surface-hover'">
+        Todos <span class="font-display">{{ total }}</span>
+      </button>
+      <button type="button" (click)="setFilter('na_meta')"
+        class="px-3 py-1.5 rounded-full text-xs font-arial font-medium border transition-all"
+        [ngClass]="activeFilter === 'na_meta' ? 'bg-green text-white border-green' : 'bg-white text-green border-green/40 hover:bg-green/5'">
+        Na meta <span class="font-display">{{ countByStatus('na_meta') }}</span>
+      </button>
+      <button type="button" (click)="setFilter('atencao')"
+        class="px-3 py-1.5 rounded-full text-xs font-arial font-medium border transition-all"
+        [ngClass]="activeFilter === 'atencao' ? 'bg-warm-dark text-white border-warm-dark' : 'bg-white text-warm-dark border-warm-dark/40 hover:bg-warm/10'">
+        Atenção <span class="font-display">{{ countByStatus('atencao') }}</span>
+      </button>
+      <button type="button" (click)="setFilter('foco')"
+        class="px-3 py-1.5 rounded-full text-xs font-arial font-medium border transition-all"
+        [ngClass]="activeFilter === 'foco' ? 'bg-bauxite text-white border-bauxite' : 'bg-white text-bauxite border-bauxite/40 hover:bg-bauxite/5'">
+        Foco <span class="font-display">{{ countByStatus('foco') }}</span>
+      </button>
+      <button type="button" (click)="setFilter('pendencia')"
+        class="px-3 py-1.5 rounded-full text-xs font-arial font-medium border transition-all flex items-center gap-1"
+        [ngClass]="activeFilter === 'pendencia' ? 'bg-bauxite text-white border-bauxite' : 'bg-white text-bauxite border-bauxite/40 hover:bg-bauxite/5'">
+        <lucide-icon name="alert-triangle" [size]="12"></lucide-icon>
+        Foco sem apontamento <span class="font-display">{{ focoSemApontamento }}</span>
+      </button>
+      <button type="button" (click)="setFilter('passagem')"
+        class="px-3 py-1.5 rounded-full text-xs font-arial font-medium border transition-all"
+        [ngClass]="activeFilter === 'passagem' ? 'bg-hydro-blue text-white border-hydro-blue' : 'bg-white text-mid-gray border-border hover:bg-surface-hover'">
+        Na passagem <span class="font-display">{{ inHandoverCount }}</span>
+      </button>
+
+      <div class="ml-auto relative">
+        <input
+          type="text"
+          [(ngModel)]="searchTerm"
+          placeholder="Buscar indicador…"
+          class="pl-8 pr-3 py-1.5 rounded-full border border-border text-sm font-arial w-56 focus:outline-none focus:ring-2 focus:ring-hydro-light-blue/40"
+        />
+        <lucide-icon name="search" [size]="14" class="absolute left-2.5 top-1/2 -translate-y-1/2 text-mid-gray"></lucide-icon>
+      </div>
+    </div>
+
+    <!-- Loading -->
+    <div *ngIf="loading" class="grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-3 gap-3">
+      <div *ngFor="let i of [1,2,3,4,5,6]" class="skeleton h-28 w-full"></div>
+    </div>
+
+    <ng-container *ngIf="!loading">
+      <ng-container *ngIf="total; else noIndicators">
+        <ng-container *ngIf="filtered.length; else noResults">
+          <div class="grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-3 gap-3">
+            <div
+              *ngFor="let ind of filtered; trackBy: trackByCode"
+              class="relative bg-white border rounded-2xl p-4 shadow-sm border-l-[3px] transition-all duration-200"
+              [ngClass]="{
+                'border-l-green border-border': ind.status === 'na_meta',
+                'border-l-warm-dark border-border': ind.status === 'atencao',
+                'border-l-bauxite border-border': ind.status === 'foco' && !ind.focusWithoutNote,
+                'border-l-bauxite border-bauxite/50 ring-1 ring-bauxite/30': ind.focusWithoutNote,
+                'border-l-aluminium border-border': ind.status === 'unknown'
+              }"
+            >
+              <!-- Top row: name + status -->
+              <div class="flex items-start justify-between gap-2">
+                <div class="min-w-0">
+                  <div class="text-sm font-arial font-semibold text-[#1A1D21] truncate">{{ ind.name }}</div>
+                  <div class="text-2xl font-display mt-0.5 leading-none">
+                    {{ ind.value !== null ? (ind.value | number:'1.0-2':'pt-BR') : '—' }}
+                    <span class="text-xs font-arial text-aluminium">{{ ind.unit }}</span>
+                  </div>
+                </div>
+                <span
+                  class="px-2 py-0.5 rounded-full text-[11px] font-arial font-semibold whitespace-nowrap"
+                  [ngClass]="{
+                    'bg-green/10 text-green': ind.status === 'na_meta',
+                    'bg-warm/30 text-warm-dark': ind.status === 'atencao',
+                    'bg-bauxite/10 text-bauxite': ind.status === 'foco',
+                    'bg-aluminium/10 text-mid-gray': ind.status === 'unknown'
+                  }"
+                >{{ statusLabel(ind.status) }}</span>
+              </div>
+
+              <!-- Reference bands -->
+              <div class="mt-2.5 flex flex-wrap gap-1.5">
+                <span *ngFor="let b of describe(ind)"
+                  class="px-1.5 py-0.5 rounded text-[10px] font-arial border"
+                  [ngClass]="{
+                    'border-green/40 text-green': b.status === 'na_meta',
+                    'border-warm-dark/40 text-warm-dark': b.status === 'atencao',
+                    'border-bauxite/40 text-bauxite': b.status === 'foco'
+                  }"
+                  [title]="b.label + ': ' + b.range">
+                  {{ b.label }}: {{ b.range }}
+                </span>
+              </div>
+
+              <!-- Pendency badge -->
+              <div *ngIf="ind.focusWithoutNote" class="mt-2.5 flex items-center gap-1.5 text-xs font-arial font-semibold text-bauxite">
+                <lucide-icon name="alert-triangle" [size]="14"></lucide-icon>
+                Pendência: apontamento obrigatório
+              </div>
+
+              <!-- Note status + actions -->
+              <div class="mt-3 flex items-center gap-2 flex-wrap">
+                <button type="button" (click)="toggleEditor(ind)" class="btn-ghost text-xs">
+                  <lucide-icon name="message-square" [size]="13"></lucide-icon>
+                  {{ ind.note?.hasApontamento ? 'Editar apontamento' : 'Adicionar apontamento' }}
+                </button>
+                <span *ngIf="ind.note?.hasApontamento" class="text-[11px] font-arial text-green flex items-center gap-1">
+                  <lucide-icon name="circle-check" [size]="12"></lucide-icon> Com apontamento
+                </span>
+
+                <!-- Handover -->
+                <span *ngIf="isAutoHandover(ind)" class="ml-auto text-[11px] font-arial text-mid-gray">Na passagem (automático)</span>
+                <button *ngIf="!isAutoHandover(ind)" type="button" (click)="toggleHandover(ind)"
+                  class="ml-auto px-2.5 py-1 rounded-full text-[11px] font-arial font-medium border transition-all"
+                  [ngClass]="ind.note?.includedInHandover
+                    ? 'bg-hydro-blue text-white border-hydro-blue'
+                    : 'bg-white text-mid-gray border-border hover:bg-surface-hover'">
+                  {{ ind.note?.includedInHandover ? '✓ Na passagem' : 'Incluir na passagem' }}
+                </button>
+              </div>
+
+              <!-- Inline editor -->
+              <div *ngIf="expandedCode === ind.code" class="mt-3 pt-3 border-t border-border">
+                <app-indicator-note-editor
+                  [indicator]="ind"
+                  [areaId]="areaId!"
+                  (saved)="closeEditor()"
+                  (closed)="closeEditor()"
+                ></app-indicator-note-editor>
+              </div>
+            </div>
+          </div>
+        </ng-container>
+      </ng-container>
+    </ng-container>
+
+    <ng-template #noResults>
+      <div class="empty-state py-10 text-center">
+        <lucide-icon name="search" [size]="32" class="opacity-30"></lucide-icon>
+        <p class="text-sm mt-2">Nenhum indicador corresponde ao filtro/busca.</p>
+        <button *ngIf="hasSearchOrFilter" type="button" (click)="searchTerm=''; setFilter('todos')" class="text-hydro-blue underline text-sm mt-1">Limpar</button>
+      </div>
+    </ng-template>
+
+    <ng-template #noIndicators>
+      <div class="empty-state py-10 text-center">
+        <lucide-icon name="inbox" [size]="36" class="opacity-30"></lucide-icon>
+        <p class="text-sm mt-2">Sem indicadores configurados para esta área.</p>
+      </div>
+    </ng-template>
+
+  </div>
+</section>

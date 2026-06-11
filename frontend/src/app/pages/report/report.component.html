@@ -1,29 +1,61 @@
-<div class="max-w-[90rem] mx-auto px-2 sm:px-4 lg:px-6 py-4 3xl:max-w-none 3xl:px-12">
-  <div class="3xl:flex 3xl:gap-8 3xl:items-start">
+<div class="max-w-[90rem] mx-auto px-4 sm:px-6 lg:px-8 py-6 3xl:max-w-none 3xl:px-16">
 
-    <!-- Painel esquerdo: contexto + composer + indicadores (sidebar em 3xl) -->
-    <div class="space-y-4 3xl:w-[440px] 3xl:flex-shrink-0 3xl:sticky 3xl:top-20 3xl:max-h-[calc(100vh-5.5rem)] 3xl:overflow-y-auto 3xl:pb-4">
-      <div *ngIf="context$ | async as ctx">
-        <h1 class="text-2xl font-display text-black">Relatório de Turno</h1>
-        <p class="mt-1 text-aluminium font-arial">
-          {{ ctx.area }} — {{ ctx.date | date:'dd/MM/yyyy' }} — Turno {{ ctx.shift }}
-        </p>
-      </div>
+  <!-- Context banner -->
+  <div *ngIf="context$ | async as ctx" class="mb-5">
+    <h1 class="text-2xl font-display text-black leading-tight">Relatório de Turno</h1>
+    <p class="mt-1 text-sm text-mid-gray font-arial">
+      {{ ctx.area }} &mdash; {{ ctx.date | date:'dd/MM/yyyy' }} &mdash; Turno {{ ctx.shift }}
+    </p>
+  </div>
 
+  <!-- Tabs: Passagem / Indicadores -->
+  <div
+    role="tablist"
+    aria-label="Visões do relatório"
+    class="inline-flex rounded-xl overflow-hidden border border-border shadow-sm bg-surface-alt divide-x divide-border text-sm mb-6"
+  >
+    <button
+      type="button"
+      role="tab"
+      [attr.aria-selected]="activeTab === 'passagem'"
+      (click)="setTab('passagem')"
+      class="px-5 py-2 font-arial font-medium transition-all duration-150"
+      [ngClass]="activeTab === 'passagem'
+        ? 'bg-hydro-blue text-white shadow-inner'
+        : 'text-mid-gray hover:bg-surface-hover hover:text-[#1A1D21]'"
+    >
+      Passagem
+    </button>
+    <button
+      type="button"
+      role="tab"
+      [attr.aria-selected]="activeTab === 'indicadores'"
+      (click)="setTab('indicadores')"
+      class="px-5 py-2 font-arial font-medium transition-all duration-150"
+      [ngClass]="activeTab === 'indicadores'
+        ? 'bg-hydro-blue text-white shadow-inner'
+        : 'text-mid-gray hover:bg-surface-hover hover:text-[#1A1D21]'"
+    >
+      Indicadores
+    </button>
+  </div>
+
+  <!-- ===== Passagem tab ===== -->
+  <ng-container *ngIf="activeTab === 'passagem'">
+    <div class="space-y-5 mb-8">
       <section id="composer">
         <app-post-composer></app-post-composer>
       </section>
 
-      <app-area-indicators id="area-indicators"></app-area-indicators>
+      <app-area-indicators id="area-indicators" (openAll)="openIndicators()"></app-area-indicators>
 
-      <div *ngIf="otherContext" class="p-3 bg-warm/20 border border-warm rounded-xl text-sm">
+      <div *ngIf="otherContext" class="p-3 bg-warm/20 border border-warm/50 rounded-xl text-sm font-arial">
         Post pertencente a outro contexto.
         <button (click)="changeContext()" class="text-hydro-blue underline ml-1">Ajustar contexto</button>
       </div>
     </div>
 
-    <!-- Painel direito: listas de posts -->
-    <div class="space-y-4 mt-4 3xl:mt-0 3xl:flex-1 3xl:min-w-0">
+    <div class="space-y-5 3xl:space-y-0 3xl:grid 3xl:grid-cols-3 3xl:gap-6 3xl:items-start">
       <app-post-list
         id="urgencies"
         type="URGENCY"
@@ -45,6 +77,11 @@
         [highlightId]="highlightType === 'ANNOTATION' ? highlightId : undefined"
       ></app-post-list>
     </div>
+  </ng-container>
 
-  </div>
+  <!-- ===== Indicadores tab ===== -->
+  <ng-container *ngIf="activeTab === 'indicadores'">
+    <app-indicators-view></app-indicators-view>
+  </ng-container>
+
 </div>

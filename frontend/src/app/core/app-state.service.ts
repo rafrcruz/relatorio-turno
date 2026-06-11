@@ -62,7 +62,8 @@ export class AppStateService {
   }
 
   private persist(ctx: ReportContext): void {
-    const params = new URLSearchParams();
+    // Preserve params owned by other concerns (e.g. the active tab).
+    const params = new URLSearchParams(window.location.search);
     params.set('area', ctx.area);
     params.set('date', ctx.date);
     params.set('shift', String(ctx.shift));

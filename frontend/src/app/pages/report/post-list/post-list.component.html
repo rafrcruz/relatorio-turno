@@ -1,93 +1,151 @@
-<section class="card mt-4">
-  <div class="card-body space-y-3">
-    <h2 class="text-lg font-display">{{ title }} <span class="text-sm font-arial text-mid-gray font-normal">({{ count }})</span></h2>
+<section class="card overflow-visible"
+  [ngClass]="{
+    'border-t-[3px] border-t-bauxite': type === 'URGENCY',
+    'border-t-[3px] border-t-warm-dark': type === 'PENDENCY',
+    'border-t-[3px] border-t-hydro-blue': type === 'ANNOTATION'
+  }"
+>
+  <!-- Section header -->
+  <div class="px-5 py-3.5 border-b border-border flex items-center gap-3"
+    [ngClass]="{
+      'bg-gradient-to-r from-bauxite/5 to-transparent': type === 'URGENCY',
+      'bg-gradient-to-r from-warm/10 to-transparent': type === 'PENDENCY',
+      'bg-gradient-to-r from-hydro-blue/5 to-transparent': type === 'ANNOTATION'
+    }"
+  >
+    <span class="badge" [ngClass]="badgeClass()">{{ typeLabel() }}</span>
+    <h2 class="text-base font-display text-[#1A1D21]">{{ title }}</h2>
+    <span class="ml-auto text-xs font-arial text-mid-gray bg-surface-alt border border-border-light rounded-full px-2 py-0.5">{{ count }}</span>
+  </div>
 
+  <div class="p-5 space-y-3">
+
+    <!-- Loading skeletons -->
     <div *ngIf="loading" class="space-y-3">
-      <div class="skeleton h-24 w-full rounded-xl"></div>
-      <div class="skeleton h-24 w-full rounded-xl"></div>
-      <div class="skeleton h-20 w-full rounded-xl"></div>
+      <div class="skeleton h-24 w-full"></div>
+      <div class="skeleton h-20 w-full"></div>
+      <div class="skeleton h-16 w-full"></div>
     </div>
 
+    <!-- Error state -->
     <div *ngIf="error && !loading" class="empty-state">
       <lucide-icon name="circle-x" [size]="36" class="text-bauxite opacity-70"></lucide-icon>
       <p class="text-sm font-medium">Erro ao carregar.</p>
       <button (click)="retry()" class="btn btn-secondary mt-1">Tentar novamente</button>
     </div>
 
+    <!-- Empty state -->
     <div *ngIf="!loading && !error && posts.length === 0" class="empty-state">
-      <lucide-icon name="inbox" [size]="40" class="opacity-40"></lucide-icon>
-      <p class="text-sm font-medium">Sem {{ title.toLowerCase() }} para este turno.</p>
+      <lucide-icon name="inbox" [size]="40" class="opacity-30"></lucide-icon>
+      <p class="text-sm">Sem {{ title.toLowerCase() }} para este turno.</p>
     </div>
 
+    <!-- Post cards -->
     <article
       *ngFor="let post of posts; trackBy: trackById"
       [attr.id]="'post-' + post.id"
-      class="border border-border rounded-xl shadow-sm overflow-hidden border-l-4"
-      [ngClass]="[cardBorderClass(), post.id === highlightId ? 'bg-warm/30' : 'bg-white']"
+      class="post-card"
+      [ngClass]="[
+        cardBorderClass(),
+        post.id === highlightId ? 'ring-2 ring-hydro-light-blue/50' : ''
+      ]"
     >
-      <div class="p-3 space-y-2">
-        <div class="flex justify-between items-center gap-2">
+      <div class="p-4 space-y-2.5">
+
+        <!-- Post meta: badge + author/date -->
+        <div class="flex flex-wrap items-center gap-2">
           <span class="badge" [ngClass]="badgeClass()">{{ typeLabel() }}</span>
-          <span class="text-xs text-mid-gray">{{ post.author.name }} — {{ post.createdAt | date:'dd/MM/yyyy HH:mm' }}</span>
+          <span class="text-xs font-arial text-mid-gray ml-auto">
+            {{ post.author.name }}
+            <span class="text-border mx-1">·</span>
+            {{ post.createdAt | date:'dd/MM/yyyy HH:mm' }}
+          </span>
         </div>
+
+        <!-- Content -->
         <div
-          class="prose prose-sm max-w-none"
+          class="prose prose-sm max-w-none font-text text-[#1A1D21]"
           [innerHTML]="post.content"
           (click)="onContentClick($event)"
           (keydown.enter)="onContentClick($event)"
         ></div>
-        <div *ngIf="post.attachments.length" class="flex flex-col gap-1">
+
+        <!-- Attachments -->
+        <div *ngIf="post.attachments.length" class="flex flex-col gap-1.5">
           <ng-container *ngFor="let att of post.attachments">
             <button
               *ngIf="att.mimeType.startsWith('image/')"
               type="button"
-              class="p-0 bg-transparent border-0 inline-block text-left"
+              class="p-0 bg-transparent border-0 inline-block text-left rounded-lg overflow-hidden"
               [attr.aria-label]="sanitizeAlt(att.filename)"
               (click)="openImage(att.url, sanitizeAlt(att.filename))"
             >
               <img
                 [src]="att.url"
                 [alt]="sanitizeAlt(att.filename)"
-                class="max-w-full max-h-64 object-contain border border-border rounded cursor-pointer"
+                class="max-w-full max-h-64 object-contain border border-border rounded-xl cursor-pointer hover:opacity-90 transition-opacity"
               />
             </button>
             <a
               *ngIf="att.mimeType === 'application/pdf'"
               [href]="att.url"
               target="_blank"
-              class="flex items-center gap-1 text-hydro-blue text-sm hover:underline"
+              class="inline-flex items-center gap-1.5 text-hydro-blue text-sm font-arial hover:underline"
             >
-              <lucide-icon name="link" [size]="14"></lucide-icon> {{ att.filename }}
+              <lucide-icon name="link" [size]="13"></lucide-icon>
+              {{ att.filename }}
             </a>
           </ng-container>
         </div>
-        <div class="flex flex-wrap items-center gap-1 pt-1 border-t border-border">
-          <button class="btn-ghost" (click)="thread.toggleComposer()">Responder</button>
-          <button class="btn-ghost" (click)="copyLink(post)">Copiar link</button>
-          <span class="text-xs text-mid-gray ml-1">{{ post._count.replies }} respostas · {{ post.updatedAt | date:'dd/MM HH:mm' }}</span>
-          <button class="btn-danger ml-auto" (click)="deletePost(post)">Excluir</button>
+
+        <!-- Actions bar -->
+        <div class="flex flex-wrap items-center gap-1 pt-2 border-t border-border-light">
+          <button class="btn-ghost text-xs px-2 py-0.5" (click)="thread.toggleComposer()">
+            <lucide-icon name="message-circle" [size]="12"></lucide-icon>
+            Responder
+          </button>
+          <button class="btn-ghost text-xs px-2 py-0.5" (click)="copyLink(post)">
+            <lucide-icon name="link" [size]="12"></lucide-icon>
+            Copiar link
+          </button>
+          <span class="text-xs text-mid-gray font-arial ml-1">
+            {{ post._count.replies }} {{ post._count.replies === 1 ? 'resposta' : 'respostas' }}
+            <span class="text-border mx-1">·</span>
+            {{ post.updatedAt | date:'dd/MM HH:mm' }}
+          </span>
+          <button class="btn-danger text-xs px-2 py-0.5 ml-auto" (click)="deletePost(post)">
+            <lucide-icon name="trash-2" [size]="12"></lucide-icon>
+            Excluir
+          </button>
         </div>
       </div>
-      <app-reply-thread #thread [post]="post"></app-reply-thread>
+
+      <!-- Reply thread -->
+      <app-reply-thread #thread [post]="post" class="block border-t border-border-light bg-surface-alt px-4 py-1"></app-reply-thread>
     </article>
 
+    <!-- Load more -->
     <div *ngIf="!loading && posts.length < count" class="text-center pt-1">
-      <button (click)="loadMore()" class="btn btn-ghost border border-border">Carregar mais</button>
+      <button (click)="loadMore()" class="btn-ghost border border-border text-sm px-4 py-1.5">
+        Carregar mais
+      </button>
     </div>
+
   </div>
 </section>
 
+<!-- Image lightbox -->
 <button
   *ngIf="modalImageUrl"
   type="button"
-  class="fixed inset-0 bg-black/75 flex items-center justify-center z-50"
+  class="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50"
   (click)="closeImage()"
   (keydown)="onModalKeydown($event)"
 >
   <img
     [src]="modalImageUrl"
     [alt]="modalAlt"
-    class="max-w-[90vw] max-h-[90vh] object-contain rounded-lg shadow-2xl"
+    class="max-w-[90vw] max-h-[90vh] object-contain rounded-2xl shadow-2xl"
     (click)="$event.stopPropagation()"
     (keydown.enter)="$event.stopPropagation()"
   />

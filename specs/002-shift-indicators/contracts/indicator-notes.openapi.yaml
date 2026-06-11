@@ -1,0 +1,134 @@
+openapi: 3.0.3
+info:
+  title: Indicator Notes API — Gestão dedicada de indicadores do turno
+  version: 1.0.0
+  description: >
+    Apontamentos (texto rico + anexos) e marcação de passagem por indicador,
+    persistidos por contexto (área/data/turno). Indicadores são identificados
+    por `indicatorCode` (mock client-side); não há FK para a tabela Indicator.
+    Autenticação placeholder via header `x-user-id` (default 1), espelhando /api/posts.
+
+servers:
+  - url: /api
+
+paths:
+  /indicator-notes:
+    get:
+      summary: Lista apontamentos/marcações do contexto (área/data/turno)
+      description: >
+        Fonte única para o resumo de passagem e a visão dedicada fazerem o join
+        por `indicatorCode` com os status calculados no client.
+      parameters:
+        - { in: query, name: areaId, required: true, schema: { type: integer } }
+        - { in: query, name: date, required: true, schema: { type: string, format: date } }
+        - { in: query, name: shift, required: true, schema: { type: integer, enum: [1, 2, 3] } }
+      responses:
+        '200':
+          description: Lista de notas do contexto
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/IndicatorNote' }
+        '400': { description: Parâmetros inválidos }
+
+    post:
+      summary: Cria ou atualiza (upsert) o apontamento/marcação de um indicador no contexto
+      description: >
+        Upsert por (areaId, indicatorCode, date, shift). multipart/form-data para
+        suportar anexos, igual ao composer de posts. `content` é HTML sanitizado
+        no servidor. `includedInHandover` opcional. Anexos enviados são adicionados.
+        Regra de persistência única: se após a operação o registro ficar sem conteúdo,
+        sem anexos e com includedInHandover=false, ele é removido (retorna 200 sem corpo de nota).
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [areaId, indicatorCode, date, shift]
+              properties:
+                areaId: { type: integer }
+                indicatorCode: { type: string }
+                date: { type: string, format: date }
+                shift: { type: integer, enum: [1, 2, 3] }
+                content: { type: string, description: HTML do apontamento (pode ser vazio) }
+                includedInHandover: { type: boolean }
+                attachments:
+                  type: array
+                  items: { type: string, format: binary }
+      responses:
+        '200':
+          description: Nota criada/atualizada
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/IndicatorNote' }
+        '400': { description: Parâmetros inválidos ou anexos acima do limite (50MB total) }
+
+  /indicator-notes/{id}/handover:
+    patch:
+      summary: Alterna a marcação de passagem (includedInHandover) de uma nota existente
+      parameters:
+        - { in: path, name: id, required: true, schema: { type: integer } }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [includedInHandover]
+              properties:
+                includedInHandover: { type: boolean }
+      responses:
+        '200':
+          description: Nota atualizada
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/IndicatorNote' }
+        '404': { description: Nota não encontrada }
+
+  # GAP conhecido (tratar em /speckit-tasks): o POST de upsert só ADICIONA anexos.
+  # Para remover um anexo individual durante a edição do apontamento é necessário
+  # um endpoint de exclusão de anexo (reusar/estender /api/attachments/{id} DELETE).
+  /indicator-notes/{id}:
+    delete:
+      summary: Remove o apontamento/marcação (e seus anexos)
+      parameters:
+        - { in: path, name: id, required: true, schema: { type: integer } }
+      responses:
+        '200': { description: Removido com sucesso }
+        '404': { description: Nota não encontrada }
+
+components:
+  schemas:
+    Attachment:
+      type: object
+      properties:
+        id: { type: integer }
+        filename: { type: string }
+        mimeType: { type: string }
+        size: { type: integer }
+        url: { type: string, description: URL de download em /api/attachments/{id} }
+    IndicatorNote:
+      type: object
+      properties:
+        id: { type: integer }
+        areaId: { type: integer }
+        indicatorCode: { type: string }
+        date: { type: string, format: date }
+        shift: { type: integer, enum: [1, 2, 3] }
+        content: { type: string, description: HTML sanitizado (pode ser vazio) }
+        hasApontamento:
+          type: boolean
+          description: true se content tiver conteúdo não-vazio após strip de HTML
+        includedInHandover: { type: boolean }
+        author:
+          type: object
+          properties:
+            id: { type: integer }
+            name: { type: string }
+        attachments:
+          type: array
+          items: { $ref: '#/components/schemas/Attachment' }
+        createdAt: { type: string, format: date-time }
+        updatedAt: { type: string, format: date-time }
