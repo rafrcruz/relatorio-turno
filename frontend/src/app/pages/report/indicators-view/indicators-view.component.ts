@@ -15,7 +15,8 @@ type IndicatorFilter = 'todos' | 'na_meta' | 'atencao' | 'foco' | 'pendencia' | 
  */
 @Component({
   selector: 'app-indicators-view',
-  templateUrl: './indicators-view.component.html'
+  templateUrl: './indicators-view.component.html',
+  styleUrls: ['./indicators-view.component.css']
 })
 export class IndicatorsViewComponent implements OnInit, OnDestroy {
   all: MergedIndicator[] = [];
@@ -103,6 +104,11 @@ export class IndicatorsViewComponent implements OnInit, OnDestroy {
     this.activeFilter = f;
   }
 
+  clearSearchAndFilter(): void {
+    this.searchTerm = '';
+    this.setFilter('todos');
+  }
+
   get hasSearchOrFilter(): boolean {
     return this.activeFilter !== 'todos' || !!this.searchTerm.trim();
   }
@@ -110,6 +116,21 @@ export class IndicatorsViewComponent implements OnInit, OnDestroy {
   // ----- Reference / status display -----
   describe(i: MergedIndicator): ReferenceBand[] {
     return this.indicators.describeReference(i.reference, i.unit);
+  }
+
+  referenceSummary(i: MergedIndicator): string {
+    return this.describe(i).map((b) => `${b.label}: ${b.range}`).join(' | ');
+  }
+
+  formattedValue(i: MergedIndicator): string {
+    if (i.value === null) return '-';
+    return new Intl.NumberFormat('pt-BR', { maximumFractionDigits: 2 }).format(i.value);
+  }
+
+  noteLabel(i: MergedIndicator): string {
+    if (i.focusWithoutNote) return 'Pendente';
+    if (i.note?.hasApontamento) return 'Com apontamento';
+    return 'Sem apontamento';
   }
 
   statusLabel(status: IndicatorStatus): string {
@@ -131,6 +152,10 @@ export class IndicatorsViewComponent implements OnInit, OnDestroy {
   }
   closeEditor(): void {
     this.expandedCode = null;
+  }
+
+  isEditing(i: MergedIndicator): boolean {
+    return this.expandedCode === i.code;
   }
 
   // ----- Handover mark -----

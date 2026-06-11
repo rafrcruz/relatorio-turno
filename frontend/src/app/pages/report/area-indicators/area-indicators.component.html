@@ -1,86 +1,86 @@
-<section class="card overflow-visible border-t-[3px] border-t-hydro-light-blue">
-  <!-- Header -->
-  <div class="px-5 py-3.5 border-b border-border flex items-center gap-3 bg-gradient-to-r from-hydro-blue/5 to-transparent">
-    <lucide-icon name="bar-chart-2" [size]="16" class="text-hydro-light-blue flex-shrink-0"></lucide-icon>
-    <h2 class="text-base font-display text-[#1A1D21]">Indicadores do Turno</h2>
-    <span class="text-xs font-arial text-mid-gray">Resumo de passagem</span>
-    <button type="button" (click)="openAll.emit()" class="ml-auto btn-ghost text-xs">
+<section class="card handover-panel">
+  <div class="handover-header">
+    <div class="handover-title-wrap">
+      <lucide-icon name="bar-chart-2" [size]="17" class="text-hydro-light-blue flex-shrink-0"></lucide-icon>
+      <div>
+        <h2 class="handover-title">Indicadores do Turno</h2>
+        <p class="handover-subtitle">Resumo de passagem</p>
+      </div>
+    </div>
+    <button type="button" (click)="openAll.emit()" class="handover-all-button">
       Ver todos os indicadores
-      <lucide-icon name="bar-chart-2" [size]="13"></lucide-icon>
+      <lucide-icon name="bar-chart-2" [size]="14"></lucide-icon>
     </button>
   </div>
 
-  <div class="p-5">
-    <!-- Loading -->
-    <div *ngIf="loading" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-      <div *ngFor="let i of [1,2,3]" class="skeleton h-20 w-full"></div>
+  <div class="handover-body">
+    <div *ngIf="loading" class="handover-grid">
+      <div *ngFor="let i of [1,2,3]" class="skeleton h-24 w-full"></div>
     </div>
 
     <ng-container *ngIf="!loading">
       <ng-container *ngIf="handover.length; else empty">
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-          <div
+        <div class="handover-grid">
+          <article
             *ngFor="let ind of handover; trackBy: trackByCode"
-            class="relative bg-white border rounded-2xl p-3.5 shadow-sm border-l-[3px] transition-all duration-200"
+            class="handover-item"
             [ngClass]="{
-              'border-l-warm-dark border-border': ind.status === 'atencao',
-              'border-l-bauxite border-border': ind.status === 'foco' && !ind.focusWithoutNote,
-              'border-l-bauxite border-bauxite/50 ring-1 ring-bauxite/30': ind.focusWithoutNote,
-              'border-l-green border-border': ind.status === 'na_meta',
-              'border-l-aluminium border-border': ind.status === 'unknown'
+              'handover-ok': ind.status === 'na_meta',
+              'handover-warn': ind.status === 'atencao',
+              'handover-focus': ind.status === 'foco' && !ind.focusWithoutNote,
+              'handover-pending': ind.focusWithoutNote,
+              'handover-unknown': ind.status === 'unknown'
             }"
           >
-            <div class="flex items-start justify-between gap-2">
+            <div class="handover-item-top">
               <div class="min-w-0">
-                <div class="text-xs font-arial font-medium text-mid-gray truncate">{{ ind.name }}</div>
-                <div class="text-xl font-display mt-1 leading-none">
-                  {{ ind.value !== null ? (ind.value | number:'1.0-2':'pt-BR') : '—' }}
-                  <span class="text-xs font-arial text-aluminium">{{ ind.unit }}</span>
-                </div>
+                <h3 class="handover-name" [title]="ind.name">{{ ind.name }}</h3>
+                <p class="handover-reason">{{ handoverReason(ind) }}</p>
               </div>
               <span
-                class="px-2 py-0.5 rounded-full text-[11px] font-arial font-semibold whitespace-nowrap"
+                class="handover-status"
                 [ngClass]="{
-                  'bg-green/10 text-green': ind.status === 'na_meta',
-                  'bg-warm/30 text-warm-dark': ind.status === 'atencao',
-                  'bg-bauxite/10 text-bauxite': ind.status === 'foco',
-                  'bg-aluminium/10 text-mid-gray': ind.status === 'unknown'
+                  'status-ok': ind.status === 'na_meta',
+                  'status-warn': ind.status === 'atencao',
+                  'status-focus': ind.status === 'foco',
+                  'status-unknown': ind.status === 'unknown'
                 }"
               >{{ statusLabel(ind.status) }}</span>
             </div>
 
-            <!-- Pendency -->
-            <div *ngIf="ind.focusWithoutNote" class="mt-2 flex items-center gap-1.5 text-xs font-arial font-semibold text-bauxite">
-              <lucide-icon name="alert-triangle" [size]="13"></lucide-icon>
-              Foco sem apontamento
+            <div class="handover-value">
+              {{ ind.value !== null ? (ind.value | number:'1.0-2':'pt-BR') : '-' }}
+              <span>{{ ind.unit || 'sem unidade' }}</span>
             </div>
 
-            <!-- Note access -->
-            <div class="mt-2 flex items-center gap-2">
-              <button *ngIf="ind.note?.hasApontamento" type="button" (click)="toggleContent(ind)"
-                class="text-[11px] font-arial text-hydro-blue flex items-center gap-1 hover:underline">
-                <lucide-icon name="message-square" [size]="12"></lucide-icon>
+            <div *ngIf="ind.focusWithoutNote" class="handover-alert">
+              <lucide-icon name="alert-triangle" [size]="14"></lucide-icon>
+              Apontamento obrigatorio
+            </div>
+
+            <div class="handover-actions">
+              <button *ngIf="ind.note?.hasApontamento" type="button" (click)="toggleContent(ind)" class="handover-note-button">
+                <lucide-icon name="message-square" [size]="13"></lucide-icon>
                 {{ expandedCode === ind.code ? 'Ocultar apontamento' : 'Ver apontamento' }}
               </button>
-              <span *ngIf="!ind.note?.hasApontamento && !ind.focusWithoutNote" class="text-[11px] font-arial text-mid-gray">Sem apontamento</span>
-              <button type="button" (click)="openAll.emit()" class="ml-auto text-[11px] font-arial text-hydro-blue hover:underline">Abrir</button>
+              <span *ngIf="!ind.note?.hasApontamento" class="handover-note-state">{{ noteLabel(ind) }}</span>
+              <button type="button" (click)="openAll.emit()" class="handover-open-button">Abrir</button>
             </div>
 
-            <!-- Read-only apontamento -->
             <div *ngIf="expandedCode === ind.code && ind.note?.hasApontamento"
-              class="mt-2 pt-2 border-t border-border prose prose-sm max-w-none text-sm font-arial"
+              class="handover-note-content prose prose-sm max-w-none"
               [innerHTML]="ind.note?.content">
             </div>
-          </div>
+          </article>
         </div>
       </ng-container>
     </ng-container>
 
     <ng-template #empty>
-      <div class="empty-state py-8 text-center">
-        <lucide-icon name="circle-check" [size]="32" class="opacity-30 text-green"></lucide-icon>
-        <p class="text-sm mt-2">Nenhum indicador em Atenção ou Foco, e nenhum marcado para a passagem.</p>
-        <button type="button" (click)="openAll.emit()" class="text-hydro-blue underline text-sm mt-1">Ver todos os indicadores</button>
+      <div class="empty-state handover-empty">
+        <lucide-icon name="circle-check" [size]="32" class="opacity-40 text-green"></lucide-icon>
+        <p>Nenhum indicador em Atencao ou Foco, e nenhum marcado para a passagem.</p>
+        <button type="button" (click)="openAll.emit()" class="handover-all-button">Ver todos os indicadores</button>
       </div>
     </ng-template>
   </div>

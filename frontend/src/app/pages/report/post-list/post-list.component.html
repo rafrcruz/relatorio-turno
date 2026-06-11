@@ -1,4 +1,4 @@
-<section class="card overflow-visible"
+<section class="card overflow-visible border border-[#cfd6de]"
   [ngClass]="{
     'border-t-[3px] border-t-bauxite': type === 'URGENCY',
     'border-t-[3px] border-t-warm-dark': type === 'PENDENCY',
@@ -15,7 +15,7 @@
   >
     <span class="badge" [ngClass]="badgeClass()">{{ typeLabel() }}</span>
     <h2 class="text-base font-display text-[#1A1D21]">{{ title }}</h2>
-    <span class="ml-auto text-xs font-arial text-mid-gray bg-surface-alt border border-border-light rounded-full px-2 py-0.5">{{ count }}</span>
+    <span class="ml-auto text-xs font-arial text-[#39424c] bg-white border border-[#c9d1da] rounded-full px-2 py-0.5">{{ count }}</span>
   </div>
 
   <div class="p-5 space-y-3">
@@ -35,7 +35,7 @@
     </div>
 
     <!-- Empty state -->
-    <div *ngIf="!loading && !error && posts.length === 0" class="empty-state">
+    <div *ngIf="!loading && !error && posts.length === 0" class="empty-state border border-dashed border-[#cfd6de] rounded-xl bg-surface-alt">
       <lucide-icon name="inbox" [size]="40" class="opacity-30"></lucide-icon>
       <p class="text-sm">Sem {{ title.toLowerCase() }} para este turno.</p>
     </div>
@@ -100,11 +100,11 @@
 
         <!-- Actions bar -->
         <div class="flex flex-wrap items-center gap-1 pt-2 border-t border-border-light">
-          <button class="btn-ghost text-xs px-2 py-0.5" (click)="thread.toggleComposer()">
+          <button class="btn-ghost text-xs px-2 py-0.5 border border-[#cfd6de]" (click)="thread.toggleComposer()">
             <lucide-icon name="message-circle" [size]="12"></lucide-icon>
             Responder
           </button>
-          <button class="btn-ghost text-xs px-2 py-0.5" (click)="copyLink(post)">
+          <button class="btn-ghost text-xs px-2 py-0.5 border border-[#cfd6de]" (click)="copyLink(post)">
             <lucide-icon name="link" [size]="12"></lucide-icon>
             Copiar link
           </button>

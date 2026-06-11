@@ -52,4 +52,15 @@ describe('IndicatorsService classification', () => {
       done();
     });
   });
+
+  it('demo data for Calcinação supports 20 varied indicators for dense validation', (done) => {
+    service.getIndicators('Calcinação', '2026-06-10', 1).subscribe((list) => {
+      expect(list.length).toBeGreaterThanOrEqual(20);
+      expect(new Set(list.map((i) => i.code)).size).toBe(list.length);
+      expect(list.some((i) => i.name.length > 35)).toBe(true);
+      expect(new Set(list.map((i) => i.unit)).size).toBeGreaterThanOrEqual(6);
+      expect(new Set(list.map((i) => i.reference.kind)).size).toBe(3);
+      done();
+    });
+  });
 });

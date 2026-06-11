@@ -1,28 +1,22 @@
-<div class="max-w-[90rem] mx-auto px-4 sm:px-6 lg:px-8 py-6 3xl:max-w-none 3xl:px-16">
+<div class="report-page">
 
   <!-- Context banner -->
-  <div *ngIf="context$ | async as ctx" class="mb-5">
-    <h1 class="text-2xl font-display text-black leading-tight">Relatório de Turno</h1>
-    <p class="mt-1 text-sm text-mid-gray font-arial">
-      {{ ctx.area }} &mdash; {{ ctx.date | date:'dd/MM/yyyy' }} &mdash; Turno {{ ctx.shift }}
+  <div *ngIf="context$ | async as ctx" class="report-context">
+    <h1 class="report-title">Relatorio de Turno</h1>
+    <p class="report-subtitle">
+      {{ ctx.area }} - {{ ctx.date | date:'dd/MM/yyyy' }} - Turno {{ ctx.shift }}
     </p>
   </div>
 
   <!-- Tabs: Passagem / Indicadores -->
-  <div
-    role="tablist"
-    aria-label="Visões do relatório"
-    class="inline-flex rounded-xl overflow-hidden border border-border shadow-sm bg-surface-alt divide-x divide-border text-sm mb-6"
-  >
+  <div role="tablist" aria-label="Visoes do relatorio" class="report-tabs">
     <button
       type="button"
       role="tab"
       [attr.aria-selected]="activeTab === 'passagem'"
       (click)="setTab('passagem')"
-      class="px-5 py-2 font-arial font-medium transition-all duration-150"
-      [ngClass]="activeTab === 'passagem'
-        ? 'bg-hydro-blue text-white shadow-inner'
-        : 'text-mid-gray hover:bg-surface-hover hover:text-[#1A1D21]'"
+      class="report-tab"
+      [ngClass]="activeTab === 'passagem' ? 'report-tab-active' : 'report-tab-idle'"
     >
       Passagem
     </button>
@@ -31,10 +25,8 @@
       role="tab"
       [attr.aria-selected]="activeTab === 'indicadores'"
       (click)="setTab('indicadores')"
-      class="px-5 py-2 font-arial font-medium transition-all duration-150"
-      [ngClass]="activeTab === 'indicadores'
-        ? 'bg-hydro-blue text-white shadow-inner'
-        : 'text-mid-gray hover:bg-surface-hover hover:text-[#1A1D21]'"
+      class="report-tab"
+      [ngClass]="activeTab === 'indicadores' ? 'report-tab-active' : 'report-tab-idle'"
     >
       Indicadores
     </button>
@@ -42,7 +34,7 @@
 
   <!-- ===== Passagem tab ===== -->
   <ng-container *ngIf="activeTab === 'passagem'">
-    <div class="space-y-5 mb-8">
+    <div class="report-main-flow">
       <section id="composer">
         <app-post-composer></app-post-composer>
       </section>
@@ -55,25 +47,25 @@
       </div>
     </div>
 
-    <div class="space-y-5 3xl:space-y-0 3xl:grid 3xl:grid-cols-3 3xl:gap-6 3xl:items-start">
+    <div class="report-lists">
       <app-post-list
         id="urgencies"
         type="URGENCY"
-        title="Urgências"
+        title="Urgencias"
         [highlightId]="highlightType === 'URGENCY' ? highlightId : undefined"
       ></app-post-list>
 
       <app-post-list
         id="pendencies"
         type="PENDENCY"
-        title="Pendências"
+        title="Pendencias"
         [highlightId]="highlightType === 'PENDENCY' ? highlightId : undefined"
       ></app-post-list>
 
       <app-post-list
         id="notes"
         type="ANNOTATION"
-        title="Anotações"
+        title="Anotacoes"
         [highlightId]="highlightType === 'ANNOTATION' ? highlightId : undefined"
       ></app-post-list>
     </div>

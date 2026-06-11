@@ -64,6 +64,17 @@ export class AreaIndicatorsComponent implements OnInit, OnDestroy {
     }
   }
 
+  noteLabel(i: MergedIndicator): string {
+    if (i.focusWithoutNote) return 'Foco sem apontamento';
+    if (i.note?.hasApontamento) return 'Com apontamento';
+    return 'Sem apontamento';
+  }
+
+  handoverReason(i: MergedIndicator): string {
+    if (i.status === 'atencao' || i.status === 'foco') return 'Automatico por status';
+    return 'Incluido manualmente';
+  }
+
   trackByCode(_: number, i: MergedIndicator): string {
     return i.code;
   }

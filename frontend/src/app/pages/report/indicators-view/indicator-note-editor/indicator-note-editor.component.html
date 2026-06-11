@@ -1,18 +1,30 @@
 <div class="space-y-3" (drop)="onDrop($event)" (dragover)="$event.preventDefault()">
+  <div class="rounded-xl border border-[#cfd6de] bg-white p-3 shadow-sm">
+    <div class="mb-3 flex flex-wrap items-start gap-2">
+      <div class="min-w-0">
+        <h3 class="font-arial text-sm font-bold text-[#1A1D21]">{{ title }}</h3>
+        <p class="font-arial text-xs text-[#4f5963] truncate">{{ indicator.name }}</p>
+      </div>
+      <span *ngIf="pendingRequired" class="ml-auto inline-flex items-center gap-1 rounded-full bg-[#fff0ea] px-2 py-1 font-arial text-xs font-bold text-[#8a372b]">
+        <lucide-icon name="alert-triangle" [size]="13"></lucide-icon>
+        Obrigatorio
+      </span>
+    </div>
 
-  <div class="border border-border rounded-xl overflow-hidden shadow-sm" (paste)="onPaste($event)">
-    <quill-editor
-      [(ngModel)]="content"
-      [modules]="modules"
-      format="html"
-      placeholder="Apontamento: causa provável, observação, ação tomada, ação pendente, orientação para o próximo turno…"
-      class="min-h-[120px] w-full block"
-    ></quill-editor>
+    <div class="border border-[#cfd6de] rounded-xl overflow-hidden shadow-sm" (paste)="onPaste($event)">
+      <quill-editor
+        [(ngModel)]="content"
+        [modules]="modules"
+        format="html"
+        placeholder="Registre causa provavel, observacao operacional, acao tomada, acao pendente e orientacao para o proximo turno."
+        class="min-h-[130px] w-full block"
+      ></quill-editor>
+    </div>
   </div>
 
   <!-- Existing attachments -->
   <div *ngIf="existing.length" class="space-y-1.5">
-    <div *ngFor="let att of existing" class="flex items-center gap-2.5 p-2 rounded-xl border border-border bg-surface-alt">
+    <div *ngFor="let att of existing" class="flex items-center gap-2.5 p-2 rounded-xl border border-[#cfd6de] bg-white">
       <img *ngIf="att.mimeType?.startsWith('image/')" [src]="att.url" alt="Anexo" class="w-10 h-10 object-cover rounded-lg flex-shrink-0 border border-border" />
       <lucide-icon *ngIf="!att.mimeType?.startsWith('image/')" name="paperclip" [size]="16" class="text-mid-gray flex-shrink-0"></lucide-icon>
       <a [href]="att.url" target="_blank" rel="noopener" class="text-sm font-arial text-hydro-blue truncate flex-1 hover:underline">{{ att.filename }}</a>
@@ -22,8 +34,8 @@
 
   <!-- New attachments preview -->
   <div *ngIf="newAttachments.length" class="space-y-1.5">
-    <div *ngFor="let att of newAttachments" class="flex items-center gap-2.5 p-2 rounded-xl border border-border bg-surface-alt">
-      <img *ngIf="att.url" [src]="att.url" alt="Pré-visualização" class="w-10 h-10 object-cover rounded-lg flex-shrink-0 border border-border" />
+    <div *ngFor="let att of newAttachments" class="flex items-center gap-2.5 p-2 rounded-xl border border-[#cfd6de] bg-white">
+      <img *ngIf="att.url" [src]="att.url" alt="Pre-visualizacao" class="w-10 h-10 object-cover rounded-lg flex-shrink-0 border border-border" />
       <lucide-icon *ngIf="!att.url" name="paperclip" [size]="16" class="text-mid-gray flex-shrink-0"></lucide-icon>
       <span class="text-sm font-arial text-aluminium truncate flex-1">
         {{ att.file.name }}
@@ -34,16 +46,15 @@
   </div>
 
   <!-- Actions -->
-  <div class="flex items-center gap-2">
-    <label class="btn-ghost cursor-pointer text-sm">
+  <div class="flex flex-wrap items-center gap-2">
+    <label class="btn-ghost cursor-pointer text-sm border border-[#cfd6de]">
       <input type="file" multiple class="hidden" (change)="onFileInput($event)" />
       <lucide-icon name="paperclip" [size]="14"></lucide-icon>
       Anexar
     </label>
-    <button type="button" (click)="cancel()" class="btn-ghost text-sm ml-auto">Cancelar</button>
+    <button type="button" (click)="cancel()" class="btn-ghost text-sm border border-[#cfd6de] ml-auto">Cancelar</button>
     <button type="button" (click)="save()" [disabled]="sending" class="btn btn-primary disabled:opacity-50">
-      {{ sending ? 'Salvando…' : 'Salvar apontamento' }}
+      {{ sending ? 'Salvando...' : 'Salvar apontamento' }}
     </button>
   </div>
-
 </div>

@@ -50,6 +50,14 @@ export class IndicatorNoteEditorComponent implements OnInit {
     this.existing = [...(this.indicator.note?.attachments || [])];
   }
 
+  get title(): string {
+    return this.indicator.note?.hasApontamento ? 'Editar apontamento' : 'Adicionar apontamento';
+  }
+
+  get pendingRequired(): boolean {
+    return this.indicator.focusWithoutNote;
+  }
+
   onFileInput(event: Event): void {
     const input = event.target as HTMLInputElement;
     if (input.files) this.addFiles(Array.from(input.files));
@@ -108,6 +116,10 @@ export class IndicatorNoteEditorComponent implements OnInit {
       return;
     }
     const sanitized = DOMPurify.sanitize(this.content || '');
+    if (this.pendingRequired && !DOMPurify.sanitize(this.content || '', { ALLOWED_TAGS: [] }).trim() && this.newAttachments.length === 0 && this.existing.length === 0) {
+      this.notify.error('Informe um apontamento para indicador em Foco.');
+      return;
+    }
     this.sending = true;
     this.notes
       .upsert({

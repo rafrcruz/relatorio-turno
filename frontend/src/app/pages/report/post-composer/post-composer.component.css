@@ -1,3 +1,14 @@
 :host ::ng-deep .ql-editor {
-  min-height: 100px;
+  min-height: 118px;
+  line-height: 1.55;
+  color: #1A1D21;
+}
+
+:host ::ng-deep .ql-toolbar.ql-snow {
+  background: #f7f9fb;
+}
+
+:host ::ng-deep .ql-editor.ql-blank::before {
+  color: #5f6872;
+  font-style: normal;
 }

@@ -112,7 +112,21 @@ export class IndicatorsService {
       { id: 3, code: 'forno_disp', name: 'Disponibilidade do forno', unit: '%', reference: higher(90, 0.9) },
       { id: 31, code: 'loi', name: 'LOI', unit: '%', reference: lower(0.5) },
       { id: 32, code: 'producao', name: 'Produção', unit: 't', reference: higher(1000) },
-      { id: 33, code: 'bet', name: 'BET', unit: 'm²/g', reference: band(55, 65, 50, 70) }
+      { id: 33, code: 'bet', name: 'BET', unit: 'm²/g', reference: band(55, 65, 50, 70) },
+      { id: 55, code: 'sio2_produto', name: 'Sílica no produto final', unit: '%', reference: lower(0.03) },
+      { id: 56, code: 'soda_residual', name: 'Soda residual na alumina', unit: '%', reference: lower(0.35) },
+      { id: 57, code: 'alfa_alumina', name: 'Alfa alumina', unit: '%', reference: band(8, 12, 6, 14) },
+      { id: 58, code: 'perda_carga_filtro_gases', name: 'Perda de carga no filtro de gases do calciner', unit: 'mmCA', reference: lower(180) },
+      { id: 59, code: 'temperatura_leito_superior', name: 'Temperatura do leito superior', unit: '°C', reference: band(920, 950, 900, 970) },
+      { id: 60, code: 'temperatura_leito_inferior', name: 'Temperatura do leito inferior', unit: '°C', reference: band(880, 920, 860, 940) },
+      { id: 61, code: 'oxigenio_chamine', name: 'Oxigênio na chaminé', unit: '%', reference: band(2.5, 4.5, 1.5, 5.5) },
+      { id: 62, code: 'co_chamine', name: 'CO na chaminé', unit: 'ppm', reference: lower(80) },
+      { id: 63, code: 'vazao_ar_secundario', name: 'Vazão de ar secundário', unit: 'Nm³/h', reference: higher(18000, 0.9) },
+      { id: 64, code: 'pressao_gas_combustivel', name: 'Pressão do gás combustível', unit: 'bar', reference: band(3.8, 4.4, 3.5, 4.8) },
+      { id: 65, code: 'taxa_alimentacao_hidrato', name: 'Taxa de alimentação de hidrato', unit: 't/h', reference: higher(125, 0.88) },
+      { id: 66, code: 'umidade_hidrato_entrada', name: 'Umidade do hidrato na entrada', unit: '%', reference: lower(7) },
+      { id: 67, code: 'densidade_aparente', name: 'Densidade aparente do produto', unit: 'g/cm³', reference: band(0.9, 1.1, 0.82, 1.18) },
+      { id: 68, code: 'finos_retidos', name: 'Finos retidos na classificação pneumática', unit: '%', reference: lower(12) }
     ],
     'Vapor e Utilidades': [
       { id: 6, code: 'pressao_header', name: 'Pressão', unit: 'bar', reference: band(38, 42, 35, 45) },

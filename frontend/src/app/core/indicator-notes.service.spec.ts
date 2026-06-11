@@ -62,4 +62,11 @@ describe('IndicatorNotesService.merge', () => {
     const merged = service.merge([ind('a', 'atencao')], []);
     expect(merged[0].focusWithoutNote).toBe(false);
   });
+
+  it('clears focusWithoutNote when a foco indicator has saved apontamento content', () => {
+    const merged = service.merge([ind('b', 'foco')], [note({ indicatorCode: 'b', hasApontamento: true, content: '<p>Acao tomada</p>' })]);
+
+    expect(merged[0].focusWithoutNote).toBe(false);
+    expect(merged[0].note!.hasApontamento).toBe(true);
+  });
 });
