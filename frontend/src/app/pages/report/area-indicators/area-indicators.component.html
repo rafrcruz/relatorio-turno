@@ -2,37 +2,39 @@
   <div class="card-body space-y-3">
     <h2 class="text-lg font-display">Indicadores do Turno</h2>
 
-    <div *ngIf="loading" class="grid md:grid-cols-2 lg:grid-cols-3 gap-3">
-      <div *ngFor="let i of [1,2,3,4,5,6]" class="skeleton h-20 w-full rounded-xl"></div>
-    </div>
+    <ng-container *ngIf="indicators$ | async as list">
+      <div *ngIf="loading" class="grid md:grid-cols-2 lg:grid-cols-3 gap-3">
+        <div *ngFor="let i of [1,2,3,4,5,6]" class="skeleton h-20 w-full rounded-xl"></div>
+      </div>
 
-    <ng-container *ngIf="!loading && (indicators$ | async) as list">
-      <ng-container *ngIf="list.length; else empty">
-        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-3">
-          <div *ngFor="let ind of list" class="card p-3 border-l-4"
-            [ngClass]="{
-              'border-l-green': ind.status === 'good',
-              'border-l-warm': ind.status === 'warning',
-              'border-l-bauxite': ind.status === 'critical',
-              'border-l-aluminium': ind.status === 'unknown'
-            }"
-          >
-            <div class="text-sm font-medium text-black">{{ ind.name }}</div>
-            <div class="text-xl font-display mt-0.5">
-              {{ ind.value !== null ? (ind.value | number:'1.2-2':'pt-BR') : '—' }}
-              <span class="text-sm font-arial text-aluminium">{{ ind.unit }}</span>
-            </div>
-            <div *ngIf="ind.target !== undefined" class="text-xs text-mid-gray">Meta: {{ ind.target | number:'1.2-2':'pt-BR' }} {{ ind.unit }}</div>
-            <div class="text-xs mt-1 font-medium"
+      <ng-container *ngIf="!loading">
+        <ng-container *ngIf="list.length; else empty">
+          <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-3">
+            <div *ngFor="let ind of list" class="card p-3 border-l-4"
               [ngClass]="{
-                'text-green': ind.status === 'good',
-                'text-warm': ind.status === 'warning',
-                'text-bauxite': ind.status === 'critical'
+                'border-l-green': ind.status === 'good',
+                'border-l-warm': ind.status === 'warning',
+                'border-l-bauxite': ind.status === 'critical',
+                'border-l-aluminium': ind.status === 'unknown'
               }"
-            >{{ statusLabel(ind) }}</div>
+            >
+              <div class="text-sm font-medium text-black">{{ ind.name }}</div>
+              <div class="text-xl font-display mt-0.5">
+                {{ ind.value !== null ? (ind.value | number:'1.2-2':'pt-BR') : '—' }}
+                <span class="text-sm font-arial text-aluminium">{{ ind.unit }}</span>
+              </div>
+              <div *ngIf="ind.target !== undefined" class="text-xs text-mid-gray">Meta: {{ ind.target | number:'1.2-2':'pt-BR' }} {{ ind.unit }}</div>
+              <div class="text-xs mt-1 font-medium"
+                [ngClass]="{
+                  'text-green': ind.status === 'good',
+                  'text-warm': ind.status === 'warning',
+                  'text-bauxite': ind.status === 'critical'
+                }"
+              >{{ statusLabel(ind) }}</div>
+            </div>
           </div>
-        </div>
-        <p *ngIf="source" class="text-xs text-mid-gray">Fonte: {{ source === 'mock' ? 'Dados simulados' : source }}</p>
+          <p *ngIf="source" class="text-xs text-mid-gray">Fonte: {{ source === 'mock' ? 'Dados simulados' : source }}</p>
+        </ng-container>
       </ng-container>
     </ng-container>
 
