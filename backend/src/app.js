@@ -11,6 +11,7 @@ const postsRouter = require('./routes/posts');
 const profileRouter = require('./routes/profile');
 const reportsRouter = require('./routes/reports');
 const attachmentsRouter = require('./routes/attachments');
+const indicatorNotesRouter = require('./routes/indicator-notes');
 
 const app = express();
 
@@ -103,6 +104,7 @@ app.get('/', (req, res) => {
 
 app.use('/api/areas', areasRouter);
 app.use('/api/posts', postsRouter);
+app.use('/api/indicator-notes', indicatorNotesRouter);
 app.use('/api', profileRouter);
 app.use('/api', reportsRouter);
 app.use('/api', attachmentsRouter);

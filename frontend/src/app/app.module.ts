@@ -16,6 +16,10 @@ import {
   Link,
   MessageSquare,
   Wrench,
+  BarChart2,
+  AlertTriangle,
+  Search,
+  Paperclip,
 } from 'lucide-angular';
 
 import { AppComponent } from './app.component';
@@ -24,6 +28,8 @@ import { FooterComponent } from './layout/footer/footer.component';
 import { ReportComponent } from './pages/report/report.component';
 import { PostComposerComponent } from './pages/report/post-composer/post-composer.component';
 import { AreaIndicatorsComponent } from './pages/report/area-indicators/area-indicators.component';
+import { IndicatorsViewComponent } from './pages/report/indicators-view/indicators-view.component';
+import { IndicatorNoteEditorComponent } from './pages/report/indicators-view/indicator-note-editor/indicator-note-editor.component';
 import { PostListComponent } from './pages/report/post-list/post-list.component';
 import { ReplyThreadComponent } from './pages/report/reply-thread/reply-thread.component';
 import { AdminComponent } from './pages/admin/admin.component';
@@ -41,6 +47,8 @@ registerLocaleData(localePt);
     ReportComponent,
     PostComposerComponent,
     AreaIndicatorsComponent,
+    IndicatorsViewComponent,
+    IndicatorNoteEditorComponent,
     PostListComponent,
     ReplyThreadComponent,
     AdminComponent,
@@ -53,7 +61,7 @@ registerLocaleData(localePt);
     HttpClientModule,
     FormsModule,
     QuillModule.forRoot(),
-    LucideAngularModule.pick({ Inbox, CircleCheck, CircleX, Info, Trash2, Link, MessageSquare, Wrench }),
+    LucideAngularModule.pick({ Inbox, CircleCheck, CircleX, Info, Trash2, Link, MessageSquare, Wrench, BarChart2, AlertTriangle, Search, Paperclip }),
     AppRoutingModule
   ],
   providers: [{ provide: LOCALE_ID, useValue: 'pt-BR' }],
