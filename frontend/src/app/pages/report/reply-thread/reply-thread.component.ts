@@ -1,4 +1,4 @@
-import { Component, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit, ViewChild, ChangeDetectorRef } from '@angular/core';
 import { QuillEditorComponent } from 'ngx-quill';
 import { Subject, takeUntil } from 'rxjs';
 import DOMPurify from 'dompurify';
@@ -33,7 +33,7 @@ export class ReplyThreadComponent implements OnInit, OnDestroy {
   modalImageUrl?: string;
   modalAlt?: string;
   content = '';
-    modules = {
+  modules = {
     toolbar: [
       ['bold', 'italic', 'underline', 'strike'],
       [{ list: 'ordered' }, { list: 'bullet' }],
@@ -43,7 +43,11 @@ export class ReplyThreadComponent implements OnInit, OnDestroy {
 
   private readonly destroy$ = new Subject<void>();
 
-    constructor(private readonly repliesService: RepliesService, private readonly notify: NotificationService) {}
+  constructor(
+    private readonly repliesService: RepliesService, 
+    private readonly notify: NotificationService,
+    private readonly cdr: ChangeDetectorRef
+  ) {}
 
   ngOnInit(): void {
     this.load();
@@ -51,9 +55,10 @@ export class ReplyThreadComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe((r) => {
         if (r.postId === this.post.id && !this.replies.some((rr) => rr.id === r.id)) {
-          this.replies.push(r);
+          this.replies = [...this.replies, r];
           this.post._count.replies++;
           this.total++;
+          this.cdr.markForCheck();
         }
       });
   }

@@ -2,14 +2,14 @@
 
   <!-- Context banner -->
   <div *ngIf="context$ | async as ctx" class="report-context">
-    <h1 class="report-title">Relatorio de Turno</h1>
+    <h1 class="report-title">Relatório de Turno</h1>
     <p class="report-subtitle">
       {{ ctx.area }} - {{ ctx.date | date:'dd/MM/yyyy' }} - Turno {{ ctx.shift }}
     </p>
   </div>
 
   <!-- Tabs: Passagem / Indicadores -->
-  <div role="tablist" aria-label="Visoes do relatorio" class="report-tabs">
+  <div role="tablist" aria-label="Visões do relatório" class="report-tabs">
     <button
       type="button"
       role="tab"
@@ -51,21 +51,21 @@
       <app-post-list
         id="urgencies"
         type="URGENCY"
-        title="Urgencias"
+        title="Urgências"
         [highlightId]="highlightType === 'URGENCY' ? highlightId : undefined"
       ></app-post-list>
 
       <app-post-list
         id="pendencies"
         type="PENDENCY"
-        title="Pendencias"
+        title="Pendências"
         [highlightId]="highlightType === 'PENDENCY' ? highlightId : undefined"
       ></app-post-list>
 
       <app-post-list
         id="notes"
         type="ANNOTATION"
-        title="Anotacoes"
+        title="Anotações"
         [highlightId]="highlightType === 'ANNOTATION' ? highlightId : undefined"
       ></app-post-list>
     </div>

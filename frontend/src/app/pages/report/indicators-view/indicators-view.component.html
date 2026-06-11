@@ -4,7 +4,7 @@
       <lucide-icon name="bar-chart-2" [size]="18" class="text-hydro-light-blue flex-shrink-0"></lucide-icon>
       <div>
         <h2 class="indicator-title">Indicadores do Turno</h2>
-        <p class="indicator-subtitle">Visao completa para comparacao operacional</p>
+        <p class="indicator-subtitle">Visão completa para comparação operacional</p>
       </div>
     </div>
     <span class="indicator-total">{{ total }} indicadores</span>
@@ -17,7 +17,7 @@
         <strong>{{ focoSemApontamento }} em Foco sem apontamento.</strong>
         <span>Todo indicador em Foco exige apontamento antes da passagem.</span>
       </div>
-      <button type="button" (click)="setFilter('pendencia')" class="indicator-alert-action">Ver pendencias</button>
+      <button type="button" (click)="setFilter('pendencia')" class="indicator-alert-action">Ver pendências</button>
     </div>
 
     <div class="indicator-toolbar" aria-label="Filtros de indicadores">
@@ -32,7 +32,7 @@
         </button>
         <button type="button" (click)="setFilter('atencao')" class="filter-chip"
           [ngClass]="activeFilter === 'atencao' ? 'filter-chip-active warn' : 'filter-chip-idle warn-idle'">
-          Atencao <span>{{ countByStatus('atencao') }}</span>
+          Atenção <span>{{ countByStatus('atencao') }}</span>
         </button>
         <button type="button" (click)="setFilter('foco')" class="filter-chip"
           [ngClass]="activeFilter === 'foco' ? 'filter-chip-active focus' : 'filter-chip-idle focus-idle'">
@@ -67,10 +67,10 @@
               <div role="columnheader">Indicador</div>
               <div role="columnheader">Valor</div>
               <div role="columnheader">Status</div>
-              <div role="columnheader">Referencia</div>
+              <div role="columnheader">Referência</div>
               <div role="columnheader">Apontamento</div>
               <div role="columnheader">Passagem</div>
-              <div role="columnheader">Acao</div>
+              <div role="columnheader">Ação</div>
             </div>
 
             <ng-container *ngFor="let ind of filtered; trackBy: trackByCode">
@@ -131,12 +131,16 @@
                 </div>
 
                 <div class="handover-cell" role="cell">
-                  <span *ngIf="isAutoHandover(ind)" class="handover-auto">Automatico</span>
-                  <button *ngIf="!isAutoHandover(ind)" type="button" (click)="toggleHandover(ind)"
-                    class="handover-button"
-                    [ngClass]="ind.note?.includedInHandover ? 'handover-button-active' : 'handover-button-idle'">
-                    {{ ind.note?.includedInHandover ? 'Na passagem' : 'Incluir' }}
-                  </button>
+                  <label class="checkbox-container">
+                    <input type="checkbox" 
+                           [checked]="isAutoHandover(ind) || ind.note?.includedInHandover" 
+                           [disabled]="isAutoHandover(ind)"
+                           (change)="!isAutoHandover(ind) && toggleHandover(ind)">
+                    <span class="checkmark"></span>
+                    <span class="checkbox-label" [ngClass]="{'text-mid-gray': isAutoHandover(ind)}">
+                      {{ isAutoHandover(ind) ? 'Automático' : (ind.note?.includedInHandover ? 'Na passagem' : 'Incluir') }}
+                    </span>
+                  </label>
                 </div>
 
                 <div class="action-cell" role="cell">
@@ -144,6 +148,21 @@
                     <lucide-icon name="message-square" [size]="14"></lucide-icon>
                     {{ ind.note?.hasApontamento ? 'Editar' : 'Adicionar' }}
                   </button>
+                </div>
+              </div>
+
+              <!-- Read-only pointing content if not editing but note exists -->
+              <div *ngIf="!isEditing(ind) && ind.note?.hasApontamento" class="note-view-row">
+                <div class="note-view-card">
+                  <div class="note-view-header">
+                    <lucide-icon name="message-square" [size]="12" class="text-hydro-light-blue"></lucide-icon>
+                    <span>Apontamento registrado:</span>
+                    <button type="button" (click)="toggleEditor(ind)" class="note-view-edit-link">
+                      <lucide-icon name="edit-3" [size]="11"></lucide-icon>
+                      Editar
+                    </button>
+                  </div>
+                  <div class="prose prose-sm max-w-none note-view-content" [innerHTML]="ind.note?.content"></div>
                 </div>
               </div>
 
@@ -172,7 +191,7 @@
     <ng-template #noIndicators>
       <div class="empty-state indicator-empty">
         <lucide-icon name="inbox" [size]="36" class="opacity-40"></lucide-icon>
-        <p>Sem indicadores configurados para esta area.</p>
+        <p>Sem indicadores configurados para esta área.</p>
       </div>
     </ng-template>
   </div>

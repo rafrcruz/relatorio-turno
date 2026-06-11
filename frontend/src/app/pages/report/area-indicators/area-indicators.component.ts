@@ -71,8 +71,8 @@ export class AreaIndicatorsComponent implements OnInit, OnDestroy {
   }
 
   handoverReason(i: MergedIndicator): string {
-    if (i.status === 'atencao' || i.status === 'foco') return 'Automatico por status';
-    return 'Incluido manualmente';
+    if (i.status === 'atencao' || i.status === 'foco') return 'Automático por status';
+    return 'Incluído manualmente';
   }
 
   trackByCode(_: number, i: MergedIndicator): string {

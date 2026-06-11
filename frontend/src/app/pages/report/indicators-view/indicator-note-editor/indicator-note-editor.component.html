@@ -7,7 +7,7 @@
       </div>
       <span *ngIf="pendingRequired" class="ml-auto inline-flex items-center gap-1 rounded-full bg-[#fff0ea] px-2 py-1 font-arial text-xs font-bold text-[#8a372b]">
         <lucide-icon name="alert-triangle" [size]="13"></lucide-icon>
-        Obrigatorio
+        Obrigatório
       </span>
     </div>
 
@@ -16,8 +16,8 @@
         [(ngModel)]="content"
         [modules]="modules"
         format="html"
-        placeholder="Registre causa provavel, observacao operacional, acao tomada, acao pendente e orientacao para o proximo turno."
-        class="min-h-[130px] w-full block"
+        placeholder="Registre causa provável, observação operacional, ação tomada, ação pendente e orientação para o próximo turno."
+        class="min-h-[220px] w-full block"
       ></quill-editor>
     </div>
   </div>
@@ -35,7 +35,7 @@
   <!-- New attachments preview -->
   <div *ngIf="newAttachments.length" class="space-y-1.5">
     <div *ngFor="let att of newAttachments" class="flex items-center gap-2.5 p-2 rounded-xl border border-[#cfd6de] bg-white">
-      <img *ngIf="att.url" [src]="att.url" alt="Pre-visualizacao" class="w-10 h-10 object-cover rounded-lg flex-shrink-0 border border-border" />
+      <img *ngIf="att.url" [src]="att.url" alt="Pré-visualização" class="w-10 h-10 object-cover rounded-lg flex-shrink-0 border border-border" />
       <lucide-icon *ngIf="!att.url" name="paperclip" [size]="16" class="text-mid-gray flex-shrink-0"></lucide-icon>
       <span class="text-sm font-arial text-aluminium truncate flex-1">
         {{ att.file.name }}

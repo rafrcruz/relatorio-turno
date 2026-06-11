@@ -1,4 +1,4 @@
-import { Component, Input, OnDestroy, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, Input, OnDestroy, OnChanges, SimpleChanges, ChangeDetectorRef } from '@angular/core';
 import { AppStateService, ReportContext } from '../../../core/app-state.service';
 import { PostsService, PostType, Post } from '../../../core/posts.service';
 import { AreasService } from '../../../core/areas.service';
@@ -20,19 +20,20 @@ export class PostListComponent implements OnDestroy, OnChanges {
   count = 0;
   loading = true;
   error = false;
-    modalImageUrl?: string;
-    modalAlt?: string;
+  modalImageUrl?: string;
+  modalAlt?: string;
   private page = 1;
   private ctx!: ReportContext;
   private readonly areaMap = new Map<string, number>();
   private readonly destroy$ = new Subject<void>();
 
-    constructor(
-      private readonly appState: AppStateService,
-      private readonly postsService: PostsService,
-      private readonly areas: AreasService,
-      private readonly notify: NotificationService,
-    ) {
+  constructor(
+    private readonly appState: AppStateService,
+    private readonly postsService: PostsService,
+    private readonly areas: AreasService,
+    private readonly notify: NotificationService,
+    private readonly cdr: ChangeDetectorRef
+  ) {
     this.areas.getAreasWithIds().pipe(takeUntil(this.destroy$)).subscribe((areas) => {
       for (const a of areas) this.areaMap.set(a.name, a.id);
       if (this.ctx) this.reset();
@@ -44,10 +45,16 @@ export class PostListComponent implements OnDestroy, OnChanges {
     });
 
     this.postsService.created$.pipe(takeUntil(this.destroy$)).subscribe((post: Post) => {
-      const areaName = [...this.areaMap.entries()].find(([, id]) => id === post.areaId)?.[0];
-      const dateIso = post.date.substring(0,10);
-      if (post.type === this.type && areaName === this.ctx.area && dateIso === this.ctx.date && post.shift === this.ctx.shift) {
+      const currentAreaId = this.areaMap.get(this.ctx.area);
+      const postDateStr = post.date ? post.date.substring(0, 10) : '';
+      if (
+        post.type === this.type &&
+        Number(post.areaId) === Number(currentAreaId) &&
+        postDateStr === this.ctx.date &&
+        Number(post.shift) === Number(this.ctx.shift)
+      ) {
         this.reset();
+        this.cdr.markForCheck();
       }
     });
   }

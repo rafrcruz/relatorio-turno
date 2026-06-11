@@ -55,7 +55,7 @@
 
             <div *ngIf="ind.focusWithoutNote" class="handover-alert">
               <lucide-icon name="alert-triangle" [size]="14"></lucide-icon>
-              Apontamento obrigatorio
+              Apontamento obrigatório
             </div>
 
             <div class="handover-actions">
@@ -79,7 +79,7 @@
     <ng-template #empty>
       <div class="empty-state handover-empty">
         <lucide-icon name="circle-check" [size]="32" class="opacity-40 text-green"></lucide-icon>
-        <p>Nenhum indicador em Atencao ou Foco, e nenhum marcado para a passagem.</p>
+        <p>Nenhum indicador em Atenção ou Foco, e nenhum marcado para a passagem.</p>
         <button type="button" (click)="openAll.emit()" class="handover-all-button">Ver todos os indicadores</button>
       </div>
     </ng-template>
